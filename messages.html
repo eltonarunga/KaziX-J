@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Messages — KaziX</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0D0D0D;--cream:#F5F0E8;--saffron:#F5A623;--rust:#C0392B;--green:#1B6B3A;--steel:#2C3E50;--muted:#7A7468;--border:rgba(13,13,13,0.1)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:0.35}
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:60px;background:var(--ink);flex-shrink:0;z-index:200}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:-0.04em;color:#F5F0E8;text-decoration:none}.logo span{color:var(--saffron)}
+.topnav-right{display:flex;align-items:center;gap:1.25rem}
+.notif-btn{position:relative;background:rgba(245,240,232,0.08);border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#F5F0E8}
+.notif-dot{position:absolute;top:7px;right:7px;width:8px;height:8px;border-radius:50%;background:var(--saffron);border:2px solid var(--ink)}
+.user-chip{display:flex;align-items:center;gap:0.6rem;cursor:pointer;padding:0.3rem 0.75rem 0.3rem 0.3rem;border-radius:20px;background:rgba(245,240,232,0.08)}
+.user-avatar-sm{width:30px;height:30px;border-radius:50%;background:var(--saffron);display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;color:var(--ink)}
+.user-name{font-size:0.82rem;font-weight:500;color:#F5F0E8}
+.app-shell{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{width:220px;flex-shrink:0;background:white;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+.sidebar-section{padding:1.25rem 1rem 0.5rem;font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+.nav-item{display:flex;align-items:center;gap:0.75rem;padding:0.7rem 1rem;margin:0.1rem 0.5rem;border-radius:4px;cursor:pointer;font-size:0.875rem;color:var(--muted);text-decoration:none;transition:all 0.18s;font-weight:500}
+.nav-item:hover{background:var(--cream);color:var(--ink)}
+.nav-item.active{background:var(--ink);color:#F5F0E8}
+.nav-item .ni-icon{width:18px;text-align:center;font-size:1rem;flex-shrink:0}
+.nav-item .ni-badge{margin-left:auto;background:var(--saffron);color:var(--ink);font-size:0.62rem;font-weight:700;padding:0.15rem 0.45rem;border-radius:10px}
+.sidebar-bottom{margin-top:auto;padding:1rem;border-top:1px solid var(--border)}
+.sidebar-profile{display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border-radius:4px}
+.sp-avatar{width:36px;height:36px;border-radius:50%;background:var(--saffron);display:flex;align-items:center;justify-content:center;font-size:1rem}
+.sp-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem}
+.sp-role{font-size:0.68rem;color:var(--muted)}
+
+/* MESSAGES LAYOUT */
+.msg-shell{display:flex;flex:1;overflow:hidden}
+
+/* CONVERSATION LIST */
+.conv-list{width:320px;flex-shrink:0;background:white;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.conv-header{padding:1.25rem 1.25rem 1rem;border-bottom:1px solid var(--border);flex-shrink:0}
+.conv-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;margin-bottom:0.75rem}
+.conv-search{width:100%;padding:0.6rem 1rem;border:1.5px solid var(--border);border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.82rem;background:var(--cream);color:var(--ink);outline:none;transition:border-color 0.2s}
+.conv-search:focus{border-color:var(--ink)}
+.conv-items{flex:1;overflow-y:auto}
+.conv-item{display:flex;align-items:flex-start;gap:0.85rem;padding:1rem 1.25rem;cursor:pointer;transition:background 0.15s;border-bottom:1px solid var(--border);position:relative}
+.conv-item:hover{background:var(--cream)}
+.conv-item.active{background:rgba(13,13,13,0.04)}
+.conv-item.unread{background:rgba(245,166,35,0.04)}
+.ci-avatar{width:42px;height:42px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;border:1px solid var(--border);position:relative}
+.ci-online{position:absolute;bottom:1px;right:1px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid white}
+.ci-info{flex:1;min-width:0}
+.ci-name{font-weight:600;font-size:0.875rem;display:flex;justify-content:space-between;align-items:center;margin-bottom:0.15rem}
+.ci-time{font-size:0.65rem;color:var(--muted);font-weight:400}
+.ci-job{font-size:0.68rem;color:var(--rust);font-weight:600;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.2rem}
+.ci-preview{font-size:0.78rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ci-unread-badge{position:absolute;right:1rem;top:1rem;width:18px;height:18px;border-radius:50%;background:var(--saffron);color:var(--ink);font-size:0.65rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+
+/* CHAT AREA */
+.chat-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.chat-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);background:white;display:flex;align-items:center;gap:1rem;flex-shrink:0}
+.chat-header-avatar{width:42px;height:42px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:1.2rem;border:1px solid var(--border);position:relative}
+.chat-online{position:absolute;bottom:1px;right:1px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid white}
+.chat-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem}
+.chat-sub{font-size:0.72rem;color:var(--muted);margin-top:0.1rem}
+.chat-actions{margin-left:auto;display:flex;gap:0.5rem}
+.chat-action-btn{padding:0.4rem 0.85rem;border:1px solid var(--border);border-radius:2px;background:white;cursor:pointer;font-family:'Syne',sans-serif;font-weight:600;font-size:0.72rem;transition:all 0.2s;text-decoration:none;color:var(--ink);display:inline-flex;align-items:center;gap:0.3rem}
+.chat-action-btn:hover{background:var(--ink);color:white;border-color:var(--ink)}
+.chat-action-btn.primary{background:var(--ink);color:white;border-color:var(--ink)}
+.chat-action-btn.primary:hover{background:var(--green)}
+.chat-messages{flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:1rem;background:var(--cream)}
+
+/* DATE SEPARATOR */
+.date-sep{text-align:center;font-size:0.68rem;color:var(--muted);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;position:relative;margin:0.5rem 0}
+.date-sep::before,.date-sep::after{content:'';position:absolute;top:50%;width:38%;height:1px;background:var(--border)}
+.date-sep::before{left:0}
+.date-sep::after{right:0}
+
+/* MESSAGES */
+.msg-bubble{display:flex;gap:0.6rem;align-items:flex-end;max-width:72%}
+.msg-bubble.outgoing{flex-direction:row-reverse;margin-left:auto}
+.bubble-avatar{width:28px;height:28px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;border:1px solid var(--border)}
+.bubble-content{background:white;border:1px solid var(--border);border-radius:12px;border-bottom-left-radius:3px;padding:0.75rem 1rem;font-size:0.875rem;line-height:1.55;color:var(--ink);max-width:100%;word-break:break-word}
+.msg-bubble.outgoing .bubble-content{background:var(--ink);color:#F5F0E8;border-color:var(--ink);border-bottom-right-radius:3px;border-bottom-left-radius:12px}
+.bubble-time{font-size:0.62rem;color:var(--muted);flex-shrink:0;padding-bottom:2px}
+.msg-bubble.outgoing .bubble-time{text-align:right}
+
+/* SYSTEM MESSAGE */
+.sys-msg{text-align:center;font-size:0.75rem;color:var(--muted);background:rgba(13,13,13,0.05);border-radius:20px;padding:0.4rem 1rem;margin:0 auto;max-width:80%}
+.sys-msg a{color:var(--rust);font-weight:600;text-decoration:none}
+
+/* JOB CARD IN CHAT */
+.chat-job-card{background:white;border:1px solid var(--border);border-radius:8px;padding:1rem 1.1rem;font-size:0.82rem;max-width:280px}
+.cjc-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;margin-bottom:0.3rem}
+.cjc-sub{color:var(--muted);font-size:0.72rem}
+.cjc-btn{display:inline-block;margin-top:0.65rem;padding:0.4rem 1rem;background:var(--ink);color:white;border-radius:2px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.72rem;cursor:pointer;border:none}
+
+/* CHAT INPUT */
+.chat-input-area{padding:1rem 1.5rem;border-top:1px solid var(--border);background:white;flex-shrink:0}
+.chat-input-wrap{display:flex;gap:0.75rem;align-items:flex-end}
+.chat-input-box{flex:1;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:20px;font-family:'DM Sans',sans-serif;font-size:0.875rem;resize:none;outline:none;background:var(--cream);max-height:120px;line-height:1.5;transition:border-color 0.2s}
+.chat-input-box:focus{border-color:var(--ink)}
+.send-btn{width:42px;height:42px;border-radius:50%;background:var(--ink);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:white;flex-shrink:0;transition:background 0.2s}
+.send-btn:hover{background:var(--green)}
+.chat-input-extras{display:flex;gap:0.5rem;margin-bottom:0.6rem}
+.extra-btn{padding:0.3rem 0.75rem;border:1px solid var(--border);border-radius:20px;background:white;font-size:0.72rem;cursor:pointer;transition:all 0.2s;color:var(--muted)}
+.extra-btn:hover{border-color:var(--ink);color:var(--ink)}
+
+@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:900px){.sidebar{display:none}.conv-list{width:280px}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html" class="logo">Kazi<span>X</span></a>
+  <div class="topnav-right">
+    <button class="notif-btn">🔔<span class="notif-dot"></span></button>
+    <div class="user-chip"><div class="user-avatar-sm">AK</div><span class="user-name">Alex Kuria</span></div>
+  </div>
+</nav>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-section">Main</div>
+    <a class="nav-item" href="client-dashboard.html"><span class="ni-icon">📊</span>Dashboard</a>
+    <a class="nav-item" href="my-jobs.html"><span class="ni-icon">📋</span>My Jobs<span class="ni-badge">3</span></a>
+    <a class="nav-item" href="job-applicants.html"><span class="ni-icon">👥</span>Applications<span class="ni-badge">7</span></a>
+    <a class="nav-item" href="my-hires.html"><span class="ni-icon">🤝</span>My Hires</a>
+    <div class="sidebar-section">Discover</div>
+    <a class="nav-item" href="find-workers.html"><span class="ni-icon">🔍</span>Find Fundis</a>
+    <a class="nav-item" href="saved-workers.html"><span class="ni-icon">❤️</span>Saved Fundis<span class="ni-badge">5</span></a>
+    <a class="nav-item" href="post-job.html"><span class="ni-icon">➕</span>Post a Job</a>
+    <div class="sidebar-section">Account</div>
+    <a class="nav-item active" href="messages.html"><span class="ni-icon">💬</span>Messages<span class="ni-badge">2</span></a>
+    <a class="nav-item" href="payments.html"><span class="ni-icon">💳</span>Payments</a>
+    <a class="nav-item" href="client-profile.html"><span class="ni-icon">👤</span>My Profile</a>
+    <div class="sidebar-bottom">
+      <div class="sidebar-profile"><div class="sp-avatar">🏠</div><div><div class="sp-name">Alex Kuria</div><div class="sp-role">Client Account</div></div></div>
+    </div>
+  </aside>
+
+  <div class="msg-shell">
+    <!-- CONVERSATION LIST -->
+    <div class="conv-list">
+      <div class="conv-header">
+        <div class="conv-title">Messages</div>
+        <input class="conv-search" type="text" placeholder="Search conversations…">
+      </div>
+      <div class="conv-items">
+        <div class="conv-item unread active" onclick="selectConv('james')">
+          <div class="ci-avatar">🔧<div class="ci-online"></div></div>
+          <div class="ci-info">
+            <div class="ci-name">James Kamau <span class="ci-time">2 min</span></div>
+            <div class="ci-job">Plumber · Job #KX-0187</div>
+            <div class="ci-preview" style="color:var(--ink);font-weight:500">Nimewasili Westlands, niko njiani…</div>
+          </div>
+          <div class="ci-unread-badge">1</div>
+        </div>
+        <div class="conv-item unread" onclick="selectConv('mary')">
+          <div class="ci-avatar">🎨<div class="ci-online"></div></div>
+          <div class="ci-info">
+            <div class="ci-name">Mary Akinyi <span class="ci-time">1 hr</span></div>
+            <div class="ci-job">Painter · Job #KX-0192</div>
+            <div class="ci-preview" style="color:var(--ink);font-weight:500">Nimekamilisha chumba cha kwanza…</div>
+          </div>
+          <div class="ci-unread-badge">1</div>
+        </div>
+        <div class="conv-item" onclick="selectConv('faith')">
+          <div class="ci-avatar">⚡</div>
+          <div class="ci-info">
+            <div class="ci-name">Faith Njeri <span class="ci-time">Yesterday</span></div>
+            <div class="ci-job">Electrician · Job #KX-0198</div>
+            <div class="ci-preview">I can come Thursday morning…</div>
+          </div>
+        </div>
+        <div class="conv-item" onclick="selectConv('peter')">
+          <div class="ci-avatar">🪚</div>
+          <div class="ci-info">
+            <div class="ci-name">Peter Odhiambo <span class="ci-time">3 days</span></div>
+            <div class="ci-job">Carpenter · Job #KX-0181</div>
+            <div class="ci-preview">Thank you for the review! Any…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT AREA -->
+    <div class="chat-area">
+      <div class="chat-header">
+        <div class="chat-header-avatar">🔧<div class="chat-online"></div></div>
+        <div>
+          <div class="chat-name">James Kamau</div>
+          <div class="chat-sub">Master Plumber · ● Online now · Nairobi</div>
+        </div>
+        <div class="chat-actions">
+          <a href="worker-profile.html" class="chat-action-btn">👤 View Profile</a>
+          <a href="my-jobs.html" class="chat-action-btn">📋 Job #KX-0187</a>
+          <button class="chat-action-btn primary" onclick="alert('M-Pesa STK push will be sent to hire James for this job')">✅ Hire James</button>
+        </div>
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+        <!-- System: booking created -->
+        <div class="sys-msg">James applied to your job · <a href="job-applicants.html">View application →</a></div>
+
+        <div class="date-sep">Today</div>
+
+        <!-- James messages -->
+        <div class="msg-bubble">
+          <div class="bubble-avatar">🔧</div>
+          <div>
+            <div class="bubble-content">Habari Alex! Nimeona kazi yako ya kutengeneza bomba. Ninaweza kuja leo asubuhi au kesho. Nimefanya kazi kama hii mara nyingi Westlands.</div>
+            <div class="bubble-time">9:14 AM</div>
+          </div>
+        </div>
+
+        <!-- Alex response -->
+        <div class="msg-bubble outgoing">
+          <div class="bubble-avatar">🏠</div>
+          <div>
+            <div class="bubble-content">Asante James. Bomba liko chini ya sinki ya kitchen — linatoa maji mengi. Je, unaweza kuja leo mchana?</div>
+            <div class="bubble-time">9:22 AM</div>
+          </div>
+        </div>
+
+        <!-- Job card attachment -->
+        <div class="msg-bubble">
+          <div class="bubble-avatar">🔧</div>
+          <div>
+            <div class="chat-job-card">
+              <div class="cjc-title">Fix leaking pipe — Westlands</div>
+              <div class="cjc-sub">🚿 Plumber · KES 500–1,500 · My bid: KES 800</div>
+              <button class="cjc-btn" onclick="alert('View full application')">View my application</button>
+            </div>
+            <div class="bubble-time">9:25 AM</div>
+          </div>
+        </div>
+
+        <div class="msg-bubble">
+          <div class="bubble-avatar">🔧</div>
+          <div>
+            <div class="bubble-content">Ndiyo, ninaweza kuja saa 6 mchana — yaani saa sita. Nitatumia spare parts zangu. Bei yangu ni KES 800 kwa kazi hii yote.</div>
+            <div class="bubble-time">9:26 AM</div>
+          </div>
+        </div>
+
+        <div class="msg-bubble outgoing">
+          <div class="bubble-avatar">🏠</div>
+          <div>
+            <div class="bubble-content">Sawa James, nakusubiria. Address yangu ni Westlands Gardens, Block C, Apartment 12. Gate code: 4521.</div>
+            <div class="bubble-time">9:31 AM</div>
+          </div>
+        </div>
+
+        <div class="sys-msg">Alex sent James a booking request · KES 800 · <a href="my-hires.html">View booking →</a></div>
+
+        <!-- Latest unread -->
+        <div class="msg-bubble" style="animation:slideUp 0.3s ease both">
+          <div class="bubble-avatar">🔧</div>
+          <div>
+            <div class="bubble-content">Nimewasili Westlands, niko njiani kwako sasa. Nitafika dakika 5 — 10.</div>
+            <div class="bubble-time" style="color:var(--saffron);font-weight:600">Just now · Unread</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INPUT -->
+      <div class="chat-input-area">
+        <div class="chat-input-extras">
+          <button class="extra-btn">📎 Attach photo</button>
+          <button class="extra-btn">📍 Share location</button>
+          <button class="extra-btn">📋 Share job</button>
+        </div>
+        <div class="chat-input-wrap">
+          <textarea class="chat-input-box" id="msgInput" placeholder="Type a message… / Andika ujumbe…" rows="1" onkeydown="handleKey(event)"></textarea>
+          <button class="send-btn" onclick="sendMessage()">➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function sendMessage() {
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if (!text) return;
+  const msgs = document.getElementById('chatMessages');
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble outgoing';
+  bubble.style.animation = 'slideUp 0.25s ease both';
+  bubble.innerHTML = `<div class="bubble-avatar">🏠</div><div><div class="bubble-content">${text}</div><div class="bubble-time">Just now</div></div>`;
+  msgs.appendChild(bubble);
+  input.value = '';
+  msgs.scrollTop = msgs.scrollHeight;
+}
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+function selectConv(name) {
+  document.querySelectorAll('.conv-item').forEach(c => c.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  event.currentTarget.classList.remove('unread');
+  event.currentTarget.querySelector('.ci-unread-badge')?.remove();
+}
+document.getElementById('chatMessages').scrollTop = 99999;
+</script>
+</body>
+</html>

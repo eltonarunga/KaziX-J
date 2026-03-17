@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How KaziX Works — Kenya's Skilled Worker Marketplace</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0D0D0D;--cream:#F5F0E8;--saffron:#F5A623;--rust:#C0392B;--green:#1B6B3A;--steel:#2C3E50;--muted:#7A7468;--border:rgba(13,13,13,0.1)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.35}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1.4rem 5%;position:sticky;top:0;background:rgba(245,240,232,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:100}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:-.04em;color:var(--ink);text-decoration:none}.logo span{color:var(--saffron)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-size:.875rem;font-weight:500;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--ink)}
+.nav-cta{background:var(--ink);color:var(--cream)!important;padding:.55rem 1.2rem;border-radius:2px;font-weight:500}
+.nav-cta:hover{background:var(--green)!important}
+
+/* HERO */
+.hiw-hero{background:var(--ink);color:#F5F0E8;padding:6rem 5%;text-align:center;position:relative;overflow:hidden}
+.hiw-hero::after{content:'HOW';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(100px,24vw,320px);opacity:.04;pointer-events:none;letter-spacing:-.06em;white-space:nowrap}
+.eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--saffron);margin-bottom:1rem}
+.hero-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,5vw,4rem);letter-spacing:-.04em;margin-bottom:1rem;line-height:1.0}
+.hero-sub{color:rgba(245,240,232,.55);font-size:1rem;max-width:540px;margin:0 auto 3rem;line-height:1.7}
+.tab-switch{display:inline-flex;border:1.5px solid rgba(245,240,232,.2);border-radius:2px;overflow:hidden}
+.ts-btn{padding:.75rem 2.5rem;font-family:'Syne',sans-serif;font-weight:700;font-size:.875rem;cursor:pointer;border:none;transition:all .2s;color:rgba(245,240,232,.6);background:transparent}
+.ts-btn.active{background:#F5F0E8;color:var(--ink)}
+
+/* STEP SECTIONS */
+.steps-section{padding:5rem 5%;max-width:1100px;margin:0 auto}
+.section-eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--rust);margin-bottom:.75rem}
+.section-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.8rem,3.5vw,2.8rem);letter-spacing:-.04em;margin-bottom:1rem}
+.section-sub{color:var(--muted);font-size:.95rem;max-width:520px;margin-bottom:3rem;line-height:1.7}
+
+/* STEP CARDS */
+.step-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative}
+.step-cards::before{content:'';position:absolute;top:32px;left:5%;right:5%;height:2px;background:repeating-linear-gradient(90deg,var(--border) 0,var(--border) 8px,transparent 8px,transparent 16px)}
+.step-card{padding:1.75rem 1.5rem 1.5rem;position:relative;animation:up .5s ease both}
+.step-card:nth-child(2){animation-delay:.1s}
+.step-card:nth-child(3){animation-delay:.2s}
+.step-card:nth-child(4){animation-delay:.3s}
+.step-num{width:64px;height:64px;border-radius:50%;border:2px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--ink);margin-bottom:1.25rem;position:relative;z-index:1}
+.step-card.highlighted .step-num{background:var(--ink);border-color:var(--ink);color:#F5F0E8}
+.step-card.highlighted .step-num::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1.5px dashed var(--saffron)}
+.step-icon{font-size:1.5rem;margin-bottom:.75rem}
+.step-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.5rem}
+.step-text{font-size:.85rem;line-height:1.65;color:var(--muted)}
+
+/* FEATURE GRID */
+.features-section{background:var(--ink);color:#F5F0E8;padding:5rem 5%;position:relative;overflow:hidden}
+.features-section::before{content:'';position:absolute;right:-10%;bottom:-10%;width:500px;height:500px;border-radius:50%;background:rgba(245,166,35,.04)}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem;max-width:1100px;margin-left:auto;margin-right:auto}
+.feat-card{border:1px solid rgba(245,240,232,.1);border-radius:6px;padding:1.75rem;transition:border-color .3s}
+.feat-card:hover{border-color:var(--saffron)}
+.feat-icon{font-size:1.8rem;margin-bottom:1rem}
+.feat-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.5rem}
+.feat-text{font-size:.85rem;color:rgba(245,240,232,.55);line-height:1.65}
+.feat-highlight{color:var(--saffron);font-weight:600}
+
+/* PAYMENT EXPLAINER */
+.payment-section{padding:5rem 5%;max-width:1100px;margin:0 auto}
+.payment-flow{display:flex;align-items:center;gap:0;margin-top:3rem;background:white;border-radius:6px;overflow:hidden;border:1px solid var(--border)}
+.pf-step{flex:1;padding:2rem 1.5rem;text-align:center;position:relative}
+.pf-step:not(:last-child)::after{content:'→';position:absolute;right:-12px;top:50%;transform:translateY(-50%);font-size:1.5rem;color:var(--saffron);font-weight:700;z-index:1}
+.pf-step:nth-child(odd){background:var(--cream)}
+.pf-num{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;color:var(--saffron);margin-bottom:.5rem;letter-spacing:-.04em}
+.pf-icon{font-size:1.8rem;margin-bottom:.75rem}
+.pf-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:.4rem}
+.pf-text{font-size:.75rem;color:var(--muted);line-height:1.55}
+
+/* FAQ */
+.faq-section{padding:5rem 5%;max-width:800px;margin:0 auto}
+.faq-item{border-bottom:1px solid var(--border);overflow:hidden}
+.faq-q{padding:1.25rem 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;transition:color .2s}
+.faq-q:hover{color:var(--rust)}
+.faq-arrow{font-size:1.1rem;transition:transform .25s;flex-shrink:0;margin-left:1rem}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s}
+.faq-a.open{max-height:200px;padding-bottom:1.25rem}
+.faq-a p{font-size:.875rem;line-height:1.7;color:var(--steel)}
+
+/* CTA SECTION */
+.hiw-cta{background:var(--saffron);padding:5rem 5%;text-align:center;position:relative;overflow:hidden}
+.hiw-cta::after{content:'→';position:absolute;right:3%;top:50%;transform:translateY(-50%);font-family:'Syne',sans-serif;font-size:16rem;opacity:.07;line-height:1;pointer-events:none}
+.hiw-cta h2{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,4vw,3.2rem);letter-spacing:-.04em;color:var(--ink);margin-bottom:1rem}
+.hiw-cta p{color:rgba(13,13,13,.6);font-size:.95rem;margin-bottom:2.5rem;max-width:480px;margin-left:auto;margin-right:auto;line-height:1.7}
+.cta-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.ctab-dark{background:var(--ink);color:#F5F0E8;padding:.95rem 2.5rem;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;border:none;border-radius:2px;cursor:pointer;text-decoration:none;transition:all .2s}
+.ctab-dark:hover{background:var(--green);transform:translateY(-2px)}
+.ctab-border{background:transparent;color:var(--ink);padding:.95rem 2.5rem;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;border:1.5px solid var(--ink);border-radius:2px;cursor:pointer;text-decoration:none;transition:all .2s}
+.ctab-border:hover{background:var(--ink);color:#F5F0E8;transform:translateY(-2px)}
+
+/* FOOTER */
+footer{background:var(--ink);color:#F5F0E8;padding:3rem 5% 2rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem}
+.fb .logo{display:block;margin-bottom:.75rem}
+.fb p{font-size:.85rem;color:rgba(245,240,232,.5);line-height:1.7;max-width:280px}
+.fc h4{font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(245,240,232,.4);margin-bottom:1rem}
+.fc ul{list-style:none}.fc ul li{margin-bottom:.6rem}
+.fc ul a{color:rgba(245,240,232,.7);text-decoration:none;font-size:.875rem;transition:color .2s}
+.fc ul a:hover{color:var(--saffron)}
+.footer-bottom{background:var(--ink);border-top:1px solid rgba(245,240,232,.08);padding:1.25rem 5%;display:flex;justify-content:space-between;align-items:center;font-size:.78rem;color:rgba(245,240,232,.35)}
+.footer-bottom a{color:var(--saffron);text-decoration:none}
+
+/* TAB SECTIONS */
+.for-section{display:none}.for-section.active{display:block}
+
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:900px){.step-cards,.features-grid{grid-template-columns:1fr 1fr}.payment-flow{flex-direction:column}.pf-step:not(:last-child)::after{content:'↓';right:50%;top:auto;bottom:-16px;transform:translateX(50%)}.step-cards::before{display:none}footer{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Kazi<span>X</span></a>
+  <ul class="nav-links">
+    <li><a href="find-workers.html">Find Workers</a></li>
+    <li><a href="post-job.html">Post a Job</a></li>
+    <li><a href="for-pros.html">For Pros</a></li>
+    <li><a href="how-it-works.html" style="color:var(--ink);font-weight:700;border-bottom:2px solid var(--saffron);padding-bottom:2px">How It Works</a></li>
+    <li><a href="login.html" class="nav-cta">Get Started</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hiw-hero">
+  <div class="eyebrow">Simple · Secure · Kenyan</div>
+  <h1 class="hero-title">How KaziX Works</h1>
+  <p class="hero-sub">Connect with verified fundis in minutes. Pay securely via M-Pesa. Get quality work done.</p>
+  <div class="tab-switch">
+    <button class="ts-btn active" onclick="switchView('client',this)">👤 I need a Fundi</button>
+    <button class="ts-btn" onclick="switchView('pro',this)">🔧 I am a Fundi</button>
+  </div>
+</div>
+
+<!-- CLIENT VIEW -->
+<div class="for-section active" id="for-client">
+  <div class="steps-section">
+    <div class="eyebrow">For Clients</div>
+    <h2 class="section-title">Get work done in 4 steps</h2>
+    <p class="section-sub">From posting a job to paying via M-Pesa — the whole process takes less than 5 minutes to set up.</p>
+    <div class="step-cards">
+      <div class="step-card highlighted">
+        <div class="step-num">1</div>
+        <div class="step-icon">📋</div>
+        <div class="step-title">Post your job</div>
+        <div class="step-text">Describe what you need, set your budget, and share your location. Takes under 2 minutes. Free to post.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-icon">📲</div>
+        <div class="step-title">Receive applications</div>
+        <div class="step-text">Nearby verified fundis are notified by SMS instantly. Review profiles, ratings, and bids. Average response time: under 20 minutes.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-icon">✅</div>
+        <div class="step-title">Hire & pay via M-Pesa</div>
+        <div class="step-text">Choose your fundi and confirm via M-Pesa STK push. Your payment is held in secure escrow — released only when you're satisfied.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-icon">⭐</div>
+        <div class="step-title">Confirm & review</div>
+        <div class="step-text">Mark the job complete to release payment. Leave a review to help the community. The whole process is protected end-to-end.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRO VIEW -->
+<div class="for-section" id="for-pro">
+  <div class="steps-section">
+    <div class="eyebrow">For Fundis</div>
+    <h2 class="section-title">Start earning in 4 steps</h2>
+    <p class="section-sub">Register free, get job alerts in your area, and receive instant M-Pesa payments. No monthly fees — ever.</p>
+    <div class="step-cards">
+      <div class="step-card highlighted">
+        <div class="step-num">1</div>
+        <div class="step-icon">📝</div>
+        <div class="step-title">Register & verify</div>
+        <div class="step-text">Create your free profile, upload your Kenya National ID, and pass KYC verification. Takes under 10 minutes. Verification approved in 2–4 hours.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-icon">🔔</div>
+        <div class="step-title">Get job alerts</div>
+        <div class="step-text">You'll receive SMS alerts for jobs matching your trade within your set radius. No need to browse — we bring the jobs to you.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-icon">🤝</div>
+        <div class="step-title">Apply & get hired</div>
+        <div class="step-text">Apply in seconds — the client reviews your profile and rating, then hires you. M-Pesa escrow confirms the booking immediately.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-icon">💸</div>
+        <div class="step-title">Do the work & get paid</div>
+        <div class="step-text">Complete the job, client confirms, and M-Pesa sends your payment within minutes. KaziX takes 10% — you keep 90%.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="features-section">
+  <div style="max-width:1100px;margin:0 auto">
+    <div class="eyebrow" style="color:var(--saffron)">Why KaziX</div>
+    <h2 class="section-title" style="color:#F5F0E8">Built for Kenya, by Kenyans</h2>
+    <div class="features-grid">
+      <div class="feat-card"><div class="feat-icon">📱</div><div class="feat-title">M-Pesa Escrow</div><div class="feat-text">Your payment is locked safely until the job is done. <span class="feat-highlight">No M-Pesa, no start.</span> No completion, no payment. Both sides always protected.</div></div>
+      <div class="feat-card"><div class="feat-icon">✓</div><div class="feat-title">ID Verification</div><div class="feat-text">Every fundi on KaziX has been verified with their <span class="feat-highlight">Kenya National ID</span> and a selfie match. You always know who's coming to your home.</div></div>
+      <div class="feat-card"><div class="feat-icon">⭐</div><div class="feat-title">Real Reviews</div><div class="feat-text">Reviews can only be left by people who actually hired a fundi and paid via KaziX. <span class="feat-highlight">No fake ratings.</span> No paid placements.</div></div>
+      <div class="feat-card"><div class="feat-icon">📍</div><div class="feat-title">Geo-matched Jobs</div><div class="feat-text">PostGIS technology matches your job to verified fundis within your preferred radius. <span class="feat-highlight">Average distance: 3.2km.</span> Fast response guaranteed.</div></div>
+      <div class="feat-card"><div class="feat-icon">🌐</div><div class="feat-title">Swahili + English</div><div class="feat-text">Full bilingual support — communicate with fundis in <span class="feat-highlight">Kiswahili or English</span>, whichever is more comfortable. SMS alerts in your language.</div></div>
+      <div class="feat-card"><div class="feat-icon">⚖️</div><div class="feat-title">Fair Dispute Resolution</div><div class="feat-text">If something goes wrong, our admin team reviews both sides equally. Decisions within 5 business days. <span class="feat-highlight">M-Pesa refunds</span> within 48hrs of resolution.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT EXPLAINER -->
+<div class="payment-section">
+  <div class="eyebrow">M-Pesa Escrow</div>
+  <h2 class="section-title">How your money stays safe</h2>
+  <p class="section-sub">KaziX uses a secure escrow model so neither side can be cheated. Here's exactly how it works:</p>
+  <div class="payment-flow">
+    <div class="pf-step"><div class="pf-icon">📱</div><div class="pf-num">1</div><div class="pf-title">Client pays</div><div class="pf-text">M-Pesa STK push to your phone. You approve with your PIN.</div></div>
+    <div class="pf-step"><div class="pf-icon">🔒</div><div class="pf-num">2</div><div class="pf-title">KaziX holds escrow</div><div class="pf-text">KES locked on KaziX Paybill 888700. Neither side can touch it.</div></div>
+    <div class="pf-step"><div class="pf-icon">🔧</div><div class="pf-num">3</div><div class="pf-title">Fundi does the work</div><div class="pf-text">Fundi attends, completes the job. Client inspects.</div></div>
+    <div class="pf-step"><div class="pf-icon">✅</div><div class="pf-num">4</div><div class="pf-title">Client confirms</div><div class="pf-text">Client taps "Job Complete" in app. Auto-release after 48hrs if no action.</div></div>
+    <div class="pf-step"><div class="pf-icon">💸</div><div class="pf-num">5</div><div class="pf-title">Fundi gets paid</div><div class="pf-text">M-Pesa B2C to fundi's number. Instant. KaziX keeps 10%.</div></div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="faq-section">
+  <div style="text-align:center;margin-bottom:3rem">
+    <div class="eyebrow" style="text-align:center">FAQ</div>
+    <h2 class="section-title" style="text-align:center">Common Questions</h2>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Is KaziX free to use for clients? <span class="faq-arrow">+</span></div>
+    <div class="faq-a"><p>Yes — posting jobs and contacting fundis is completely free for clients. You only pay the agreed job fee via M-Pesa when you hire a fundi. There are no subscription fees or hidden charges.</p></div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">How is the 10% fee charged? <span class="faq-arrow">+</span></div>
+    <div class="faq-a"><p>The 10% platform fee is deducted from the fundi's payment — not from the client. If you agree KES 1,000 for a job, you pay KES 1,000 and the fundi receives KES 900. This keeps the service free for clients.</p></div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">What if the fundi doesn't show up? <span class="faq-arrow">+</span></div>
+    <div class="faq-a"><p>If the fundi doesn't arrive, your escrow is automatically refunded within 2 business days. You can also open a dispute immediately and our admin team will resolve it within 24 hours. Your M-Pesa payment is always safe.</p></div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">How do I know the fundi is trustworthy? <span class="faq-arrow">+</span></div>
+    <div class="faq-a"><p>Every fundi with the green "Verified" badge has been verified with a Kenya National ID and selfie match using our KYC system. Additionally, reviews on KaziX can only be left by verified clients who actually hired and paid — so ratings are 100% real.</p></div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">Can I negotiate the price with the fundi? <span class="faq-arrow">+</span></div>
+    <div class="faq-a"><p>Absolutely. Use the in-app messaging to discuss scope and price before committing. Most fundis are flexible, especially for larger jobs. The M-Pesa payment is only triggered when you both agree on a final amount.</p></div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFaq(this)">How fast will a fundi respond to my job? <span class="faq-arrow">+</span></div>
+    <div class="faq-a"><p>On average, you'll receive your first application within 20 minutes of posting. For urgent jobs, mark it "🔴 Urgent" and nearby fundis get an SMS priority alert. In Nairobi, most jobs receive 3–7 applications within 2 hours.</p></div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="hiw-cta">
+  <h2>Ready to get started?</h2>
+  <p>Post your first job free or register as a fundi — it takes under 3 minutes and your first job could come within the hour.</p>
+  <div class="cta-btns">
+    <a href="post-job.html" class="ctab-dark">📋 Post a Job — Free</a>
+    <a href="register.html" class="ctab-border">🔧 Register as a Fundi</a>
+  </div>
+</div>
+
+<footer>
+  <div class="fb"><a href="index.html" class="logo">Kazi<span>X</span></a><p>Kenya's premier marketplace for skilled workers. Verified fundis, real reviews, M-Pesa payments.</p></div>
+  <div class="fc"><h4>Platform</h4><ul><li><a href="find-workers.html">Find Workers</a></li><li><a href="post-job.html">Post a Job</a></li><li><a href="for-pros.html">For Pros</a></li><li><a href="how-it-works.html">How It Works</a></li></ul></div>
+  <div class="fc"><h4>Company</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Blog</a></li><li><a href="#">Careers</a></li><li><a href="help-centre.html">Help Centre</a></li></ul></div>
+  <div class="fc"><h4>Account</h4><ul><li><a href="login.html">Sign In</a></li><li><a href="register.html">Register</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms</a></li></ul></div>
+</footer>
+<div class="footer-bottom">
+  <span>© 2025 KaziX Ltd. All rights reserved.</span>
+  <span>Built for Kenya 🇰🇪 · <a href="#">Powered by M-Pesa</a></span>
+</div>
+
+<script>
+function switchView(view, btn) {
+  document.querySelectorAll('.ts-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.for-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('for-' + view).classList.add('active');
+}
+function toggleFaq(el) {
+  const answer = el.nextElementSibling;
+  const arrow = el.querySelector('.faq-arrow');
+  const isOpen = answer.classList.contains('open');
+  document.querySelectorAll('.faq-a').forEach(a => a.classList.remove('open'));
+  document.querySelectorAll('.faq-arrow').forEach(a => { a.textContent = '+'; a.style.transform = 'rotate(0)'; });
+  if (!isOpen) {
+    answer.classList.add('open');
+    arrow.textContent = '−';
+  }
+}
+</script>
+</body>
+</html>
