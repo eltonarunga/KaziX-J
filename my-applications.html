@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Applications — KaziX</title>
+<style id="base-styles">
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap");
+
+:root{
+  --ink:#0D0D0D;
+  --cream:#F5F0E8;
+  --saffron:#F5A623;
+  --rust:#C0392B;
+  --green:#1B6B3A;
+  --steel:#2C3E50;
+  --muted:#7A7468;
+  --border:rgba(13,13,13,0.1);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  overflow-x:hidden;
+  min-height:100vh;
+}
+
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:9999;
+  opacity:0.35;
+}
+
+body.app{display:flex;flex-direction:column}
+
+.logo{
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:1.4rem;
+  letter-spacing:-0.04em;
+  text-decoration:none;
+  color:inherit;
+}
+
+.logo span{color:var(--saffron)}
+
+.topnav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 2rem;
+  height:60px;
+  background:var(--ink);
+  position:sticky;
+  top:0;
+  z-index:200;
+  flex-shrink:0;
+}
+
+.topnav .logo{color:#F5F0E8}
+
+.topnav-right{display:flex;align-items:center;gap:1.25rem}
+
+.notif-btn{
+  position:relative;
+  background:rgba(245,240,232,0.08);
+  border:none;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1rem;
+  color:#F5F0E8;
+  transition:background 0.2s;
+}
+
+.notif-btn:hover{background:rgba(245,240,232,0.15)}
+
+.notif-dot{
+  position:absolute;
+  top:7px;
+  right:7px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--saffron);
+  border:2px solid var(--ink);
+}
+
+.user-chip{
+  display:flex;
+  align-items:center;
+  gap:0.6rem;
+  cursor:pointer;
+  padding:0.3rem 0.75rem 0.3rem 0.3rem;
+  border-radius:20px;
+  background:rgba(245,240,232,0.08);
+  transition:background 0.2s;
+}
+
+.user-chip:hover{background:rgba(245,240,232,0.15)}
+
+.user-avatar{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  background:var(--saffron);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:0.85rem;
+  font-weight:700;
+  color:var(--ink);
+}
+
+.user-name{font-size:0.82rem;font-weight:500;color:#F5F0E8}
+
+.app-shell{display:flex;flex:1;overflow:hidden}
+
+.sidebar{
+  width:220px;
+  flex-shrink:0;
+  background:white;
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  position:sticky;
+  top:60px;
+  height:calc(100vh - 60px);
+  overflow-y:auto;
+}
+
+.sidebar-section{
+  padding:1.25rem 1rem 0.5rem;
+  font-size:0.65rem;
+  font-weight:700;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+.nav-item{
+  display:flex;
+  align-items:center;
+  gap:0.75rem;
+  padding:0.7rem 1rem;
+  margin:0.1rem 0.5rem;
+  border-radius:4px;
+  cursor:pointer;
+  font-size:0.875rem;
+  color:var(--muted);
+  text-decoration:none;
+  transition:all 0.18s;
+  font-weight:500;
+}
+
+.nav-item:hover{background:var(--cream);color:var(--ink)}
+
+.nav-item.active{background:var(--ink);color:#F5F0E8}
+
+.nav-item .ni-icon{width:18px;text-align:center;font-size:1rem;flex-shrink:0}
+
+.nav-item .ni-badge{
+  margin-left:auto;
+  background:var(--saffron);
+  color:var(--ink);
+  font-size:0.62rem;
+  font-weight:700;
+  padding:0.15rem 0.45rem;
+  border-radius:10px;
+  min-width:18px;
+  text-align:center;
+}
+
+.nav-item.active .ni-badge{background:var(--saffron);color:var(--ink)}
+
+.sidebar-bottom{margin-top:auto;padding:1rem;border-top:1px solid var(--border)}
+
+.sidebar-profile{
+  display:flex;
+  align-items:center;
+  gap:0.75rem;
+  padding:0.75rem;
+  border-radius:4px;
+  cursor:pointer;
+  transition:background 0.2s;
+}
+
+.sidebar-profile:hover{background:var(--cream)}
+
+.sp-avatar{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:var(--saffron);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1rem;
+  flex-shrink:0;
+}
+
+.sp-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem}
+
+.sp-role{font-size:0.68rem;color:var(--muted)}
+
+.main{flex:1;overflow-y:auto;padding:2rem 2.5rem}
+
+.page-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.75rem;letter-spacing:-0.04em;margin-bottom:0.25rem}
+
+.page-sub{font-size:0.9rem;color:var(--muted);margin-bottom:2rem}
+
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:900px){.sidebar{display:none}}
+</style>
+
+<style>
+.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:2rem}
+.tab{padding:0.75rem 1.5rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s;display:flex;align-items:center;gap:0.4rem}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--ink);border-bottom-color:var(--ink)}
+.tab .tc{font-size:0.65rem;padding:0.1rem 0.45rem;border-radius:10px;background:var(--cream);color:var(--muted)}
+.tab.active .tc{background:var(--ink);color:#F5F0E8}
+.apps-list{display:flex;flex-direction:column;gap:1rem}
+.app-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.5rem;transition:box-shadow 0.2s;position:relative;overflow:hidden;animation:slideUp 0.4s ease both}
+.app-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.06)}
+.app-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px}
+.app-card.c-pending::before{background:var(--saffron)}
+.app-card.c-hired::before{background:var(--green)}
+.app-card.c-shortlisted::before{background:var(--ink)}
+.app-card.c-rejected::before{background:var(--muted)}
+.ac-top{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1rem}
+.ac-icon{width:42px;height:42px;border-radius:4px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.ac-info{flex:1;min-width:0}
+.ac-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:0.25rem}
+.ac-sub{font-size:0.75rem;color:var(--muted);display:flex;gap:0.75rem;flex-wrap:wrap}
+.ac-right{display:flex;flex-direction:column;align-items:flex-end;gap:0.35rem;flex-shrink:0}
+.status-pill{font-size:0.65rem;font-weight:700;padding:0.2rem 0.55rem;border-radius:2px;text-transform:uppercase}
+.sp-pending{background:rgba(245,166,35,0.15);color:#854F0B}
+.sp-hired{background:rgba(27,107,58,0.1);color:var(--green)}
+.sp-shortlisted{background:rgba(13,13,13,0.08);color:var(--ink)}
+.sp-rejected{background:var(--cream);color:var(--muted)}
+.ac-bid{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem}
+.timeline{display:flex;margin-bottom:1rem}
+.tl-step{flex:1;text-align:center;position:relative}
+.tl-step:not(:last-child)::after{content:'';position:absolute;top:9px;left:50%;right:-50%;height:2px;background:var(--border)}
+.tl-step.done:not(:last-child)::after{background:var(--ink)}
+.tl-dot{width:18px;height:18px;border-radius:50%;margin:0 auto 0.35rem;font-size:0.6rem;display:flex;align-items:center;justify-content:center;position:relative;z-index:1}
+.dot-done{background:var(--ink);color:#F5F0E8}
+.dot-active{background:var(--saffron);color:var(--ink)}
+.dot-wait{background:white;border:2px solid var(--border)}
+.tl-label{font-size:0.6rem;color:var(--muted)}
+.tl-step.done .tl-label{color:var(--ink);font-weight:600}
+.tl-step.active .tl-label{font-weight:700;color:var(--ink)}
+.ac-note{font-size:0.875rem;line-height:1.65;color:var(--steel);padding-left:0.85rem;border-left:2px solid var(--border);margin-bottom:1rem;font-style:italic}
+.hired-banner{background:rgba(27,107,58,0.07);border:1px solid rgba(27,107,58,0.2);border-radius:4px;padding:0.75rem 1rem;font-size:0.82rem;color:var(--green);margin-bottom:1rem}
+.ac-actions{display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center}
+.ac-actions a,.ac-actions button{padding:0.45rem 1rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;border-radius:2px;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;gap:0.3rem}
+.btn-view{background:var(--ink);color:#F5F0E8;border:none}
+.btn-view:hover{background:var(--green)}
+.btn-msg{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+.btn-msg:hover{background:var(--ink);color:#F5F0E8}
+.btn-withdraw{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-withdraw:hover{color:var(--rust);border-color:var(--rust)}
+.ac-applied{font-size:0.72rem;color:var(--muted);margin-left:auto}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:900px){.sidebar{display:none}}
+</style>
+</head>
+<body class="app">
+<nav class="topnav">
+  <a href="index.html" class="logo">Kazi<span>X</span></a>
+  <div class="topnav-right">
+    <button class="notif-btn">🔔<span class="notif-dot"></span></button>
+    <div class="user-chip"><div class="user-avatar">JK</div><span class="user-name">James Kamau</span></div>
+  </div>
+</nav>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-section">Work</div>
+    <a class="nav-item" href="worker-dashboard.html"><span class="ni-icon">📊</span>Dashboard</a>
+    <a class="nav-item" href="worker-jobs.html"><span class="ni-icon">🔍</span>Find Jobs<span class="ni-badge">8</span></a>
+    <a class="nav-item active" href="my-applications.html"><span class="ni-icon">📋</span>My Applications<span class="ni-badge">3</span></a>
+    <a class="nav-item" href="worker-hires.html"><span class="ni-icon">🤝</span>Active Contracts<span class="ni-badge">2</span></a>
+    <div class="sidebar-section">Account</div>
+    <a class="nav-item" href="messages.html"><span class="ni-icon">💬</span>Messages<span class="ni-badge">1</span></a>
+    <a class="nav-item" href="worker-earnings.html"><span class="ni-icon">💳</span>Earnings</a>
+    <a class="nav-item" href="worker-reviews.html"><span class="ni-icon">⭐</span>My Reviews</a>
+    <a class="nav-item" href="worker-profile-edit.html"><span class="ni-icon">👤</span>My Profile</a>
+    <div class="sidebar-bottom">
+      <div class="sidebar-profile"><div class="sp-avatar">🔧</div><div><div class="sp-name">James Kamau</div><div class="sp-role">Pro Account · Plumber</div></div></div>
+    </div>
+  </aside>
+  <main class="main">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;animation:slideUp 0.4s ease both">
+      <div><div class="page-title">My Applications</div><div class="page-sub">Track every job you've applied to on KaziX</div></div>
+      <a href="worker-jobs.html" style="padding:0.65rem 1.25rem;background:var(--ink);color:#F5F0E8;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;border-radius:2px;text-decoration:none;flex-shrink:0">🔍 Find More Jobs</a>
+    </div>
+    <div class="tabs">
+      <div class="tab active" onclick="filterApps('all',this)">All <span class="tc">6</span></div>
+      <div class="tab" onclick="filterApps('pending',this)">Pending <span class="tc">3</span></div>
+      <div class="tab" onclick="filterApps('shortlisted',this)">Shortlisted <span class="tc">1</span></div>
+      <div class="tab" onclick="filterApps('hired',this)">Hired <span class="tc">1</span></div>
+      <div class="tab" onclick="filterApps('rejected',this)">Not Selected <span class="tc">1</span></div>
+    </div>
+    <div class="apps-list" id="appsList">
+      <!-- HIRED -->
+      <div class="app-card c-hired" data-status="hired" style="animation-delay:0.05s">
+        <div class="ac-top">
+          <div class="ac-icon">🚿</div>
+          <div class="ac-info"><div class="ac-title">Fix leaking pipe — Westlands kitchen</div><div class="ac-sub"><span>🚿 Plumber</span><span>📍 Westlands · 0.9km</span><span>Applied 3 days ago</span></div></div>
+          <div class="ac-right"><span class="status-pill sp-hired">✓ Hired</span><div class="ac-bid">KES 800</div></div>
+        </div>
+        <div class="hired-banner">🎉 You were hired! Escrow of KES 800 confirmed. Job starts today.</div>
+        <div class="timeline">
+          <div class="tl-step done"><div class="tl-dot dot-done">✓</div><div class="tl-label">Applied</div></div>
+          <div class="tl-step done"><div class="tl-dot dot-done">✓</div><div class="tl-label">Shortlisted</div></div>
+          <div class="tl-step done"><div class="tl-dot dot-done">✓</div><div class="tl-label">Hired</div></div>
+          <div class="tl-step active"><div class="tl-dot dot-active">●</div><div class="tl-label">In Progress</div></div>
+          <div class="tl-step"><div class="tl-dot dot-wait"></div><div class="tl-label">Complete</div></div>
+        </div>
+        <div class="ac-actions">
+          <a href="worker-hires.html" class="btn-view">✅ View Contract</a>
+          <a href="messages.html" class="btn-msg">💬 Message Client</a>
+        </div>
+      </div>
+      <!-- SHORTLISTED -->
+      <div class="app-card c-shortlisted" data-status="shortlisted" style="animation-delay:0.1s">
+        <div class="ac-top">
+          <div class="ac-icon">💧</div>
+          <div class="ac-info"><div class="ac-title">Water tank installation — Lavington</div><div class="ac-sub"><span>🚿 Plumber</span><span>📍 Lavington · 4.2km</span><span>Applied 1 day ago</span></div></div>
+          <div class="ac-right"><span class="status-pill sp-shortlisted">★ Shortlisted</span><div class="ac-bid">KES 5,500</div></div>
+        </div>
+        <div class="timeline">
+          <div class="tl-step done"><div class="tl-dot dot-done">✓</div><div class="tl-label">Applied</div></div>
+          <div class="tl-step active"><div class="tl-dot dot-active">★</div><div class="tl-label">Shortlisted</div></div>
+          <div class="tl-step"><div class="tl-dot dot-wait"></div><div class="tl-label">Decision</div></div>
+          <div class="tl-step"><div class="tl-dot dot-wait"></div><div class="tl-label">Hired</div></div>
+          <div class="tl-step"><div class="tl-dot dot-wait"></div><div class="tl-label">Complete</div></div>
+        </div>
+        <div class="ac-note">"Available immediately. I will supply a 10,000L tank + all fittings and handle complete installation."</div>
+        <div class="ac-actions">
+          <a href="job-detail.html" class="btn-view">👁 View Job</a>
+          <a href="messages.html" class="btn-msg">💬 Message</a>
+          <button class="btn-withdraw" onclick="this.closest('.app-card').style.opacity='0.5'">Withdraw</button>
+          <span class="ac-applied">Applied 1 day ago · 4 applicants</span>
+        </div>
+      </div>
+      <!-- PENDING 1 -->
+      <div class="app-card c-pending" data-status="pending" style="animation-delay:0.15s">
+        <div class="ac-top">
+          <div class="ac-icon">☀️</div>
+          <div class="ac-info"><div class="ac-title">Solar water heater installation — Karen</div><div class="ac-sub"><span>🚿 Plumber</span><span>📍 Karen · 8.4km</span><span>Applied 2 days ago</span></div></div>
+          <div class="ac-right"><span class="status-pill sp-pending">Pending</span><div class="ac-bid">KES 9,500</div></div>
+        </div>
+        <div class="ac-note">"I have installed 15+ solar systems this year. Can supply and install within 2 days. NCA certified."</div>
+        <div class="ac-actions">
+          <a href="job-detail.html" class="btn-view">👁 View Job</a>
+          <button class="btn-withdraw" onclick="this.closest('.app-card').style.opacity='0.5'">Withdraw</button>
+          <span class="ac-applied">Applied 2 days ago · 6 applicants</span>
+        </div>
+      </div>
+      <!-- PENDING 2 -->
+      <div class="app-card c-pending" data-status="pending" style="animation-delay:0.2s">
+        <div class="ac-top">
+          <div class="ac-icon">🏗️</div>
+          <div class="ac-info"><div class="ac-title">Commercial plumbing — CBD office block</div><div class="ac-sub"><span>🚿 Plumber</span><span>📍 CBD · 5.1km</span><span>Applied today</span></div></div>
+          <div class="ac-right"><span class="status-pill sp-pending">Pending</span><div class="ac-bid">KES 18,000</div></div>
+        </div>
+        <div class="ac-note">"NCA-certified. I have completed 3 office block plumbing projects in CBD this year."</div>
+        <div class="ac-actions">
+          <a href="job-detail.html" class="btn-view">👁 View Job</a>
+          <button class="btn-withdraw" onclick="this.closest('.app-card').style.opacity='0.5'">Withdraw</button>
+          <span class="ac-applied">Applied today · 2 applicants</span>
+        </div>
+      </div>
+      <!-- PENDING 3 -->
+      <div class="app-card c-pending" data-status="pending" style="animation-delay:0.22s">
+        <div class="ac-top">
+          <div class="ac-icon">🚰</div>
+          <div class="ac-info"><div class="ac-title">Drain unblocking — Kasarani apartment</div><div class="ac-sub"><span>🚿 Plumber</span><span>📍 Kasarani · 6.3km</span><span>Applied today</span></div></div>
+          <div class="ac-right"><span class="status-pill sp-pending">Pending</span><div class="ac-bid">KES 1,200</div></div>
+        </div>
+        <div class="ac-actions">
+          <a href="job-detail.html" class="btn-view">👁 View Job</a>
+          <button class="btn-withdraw" onclick="this.closest('.app-card').style.opacity='0.5'">Withdraw</button>
+          <span class="ac-applied">Applied today · 8 applicants</span>
+        </div>
+      </div>
+      <!-- REJECTED -->
+      <div class="app-card c-rejected" data-status="rejected" style="animation-delay:0.25s;opacity:0.7">
+        <div class="ac-top">
+          <div class="ac-icon" style="opacity:0.5">🔧</div>
+          <div class="ac-info"><div class="ac-title" style="color:var(--muted)">Bathroom renovation — South B</div><div class="ac-sub"><span>🚿 Plumber</span><span>📍 South B · 7.8km</span><span>Applied 5 days ago</span></div></div>
+          <div class="ac-right"><span class="status-pill sp-rejected">Not selected</span><div class="ac-bid" style="color:var(--muted)">KES 12,000</div></div>
+        </div>
+        <div style="font-size:0.78rem;color:var(--muted);padding:0.6rem 0.85rem;background:var(--cream);border-radius:4px;margin-bottom:1rem">Another fundi was selected. Consider adding more photos to your profile to improve your chances.</div>
+        <div class="ac-actions"><a href="worker-jobs.html" class="btn-view">🔍 Find Similar Jobs</a></div>
+      </div>
+    </div>
+  </main>
+</div>
+<script>
+function filterApps(status,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.app-card').forEach(c=>{c.style.display=(status==='all'||c.dataset.status===status)?'block':'none'});
+}
+</script>
+</body>
+</html>

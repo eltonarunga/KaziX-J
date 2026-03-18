@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Earnings — KaziX</title>
+<style id="base-styles">
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap");
+
+:root{
+  --ink:#0D0D0D;
+  --cream:#F5F0E8;
+  --saffron:#F5A623;
+  --rust:#C0392B;
+  --green:#1B6B3A;
+  --steel:#2C3E50;
+  --muted:#7A7468;
+  --border:rgba(13,13,13,0.1);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  overflow-x:hidden;
+  min-height:100vh;
+}
+
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:9999;
+  opacity:0.35;
+}
+
+body.app{display:flex;flex-direction:column}
+
+.logo{
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:1.4rem;
+  letter-spacing:-0.04em;
+  text-decoration:none;
+  color:inherit;
+}
+
+.logo span{color:var(--saffron)}
+
+.topnav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 2rem;
+  height:60px;
+  background:var(--ink);
+  position:sticky;
+  top:0;
+  z-index:200;
+  flex-shrink:0;
+}
+
+.topnav .logo{color:#F5F0E8}
+
+.topnav-right{display:flex;align-items:center;gap:1.25rem}
+
+.notif-btn{
+  position:relative;
+  background:rgba(245,240,232,0.08);
+  border:none;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1rem;
+  color:#F5F0E8;
+  transition:background 0.2s;
+}
+
+.notif-btn:hover{background:rgba(245,240,232,0.15)}
+
+.notif-dot{
+  position:absolute;
+  top:7px;
+  right:7px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--saffron);
+  border:2px solid var(--ink);
+}
+
+.user-chip{
+  display:flex;
+  align-items:center;
+  gap:0.6rem;
+  cursor:pointer;
+  padding:0.3rem 0.75rem 0.3rem 0.3rem;
+  border-radius:20px;
+  background:rgba(245,240,232,0.08);
+  transition:background 0.2s;
+}
+
+.user-chip:hover{background:rgba(245,240,232,0.15)}
+
+.user-avatar{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  background:var(--saffron);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:0.85rem;
+  font-weight:700;
+  color:var(--ink);
+}
+
+.user-name{font-size:0.82rem;font-weight:500;color:#F5F0E8}
+
+.app-shell{display:flex;flex:1;overflow:hidden}
+
+.sidebar{
+  width:220px;
+  flex-shrink:0;
+  background:white;
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  position:sticky;
+  top:60px;
+  height:calc(100vh - 60px);
+  overflow-y:auto;
+}
+
+.sidebar-section{
+  padding:1.25rem 1rem 0.5rem;
+  font-size:0.65rem;
+  font-weight:700;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+.nav-item{
+  display:flex;
+  align-items:center;
+  gap:0.75rem;
+  padding:0.7rem 1rem;
+  margin:0.1rem 0.5rem;
+  border-radius:4px;
+  cursor:pointer;
+  font-size:0.875rem;
+  color:var(--muted);
+  text-decoration:none;
+  transition:all 0.18s;
+  font-weight:500;
+}
+
+.nav-item:hover{background:var(--cream);color:var(--ink)}
+
+.nav-item.active{background:var(--ink);color:#F5F0E8}
+
+.nav-item .ni-icon{width:18px;text-align:center;font-size:1rem;flex-shrink:0}
+
+.nav-item .ni-badge{
+  margin-left:auto;
+  background:var(--saffron);
+  color:var(--ink);
+  font-size:0.62rem;
+  font-weight:700;
+  padding:0.15rem 0.45rem;
+  border-radius:10px;
+  min-width:18px;
+  text-align:center;
+}
+
+.nav-item.active .ni-badge{background:var(--saffron);color:var(--ink)}
+
+.sidebar-bottom{margin-top:auto;padding:1rem;border-top:1px solid var(--border)}
+
+.sidebar-profile{
+  display:flex;
+  align-items:center;
+  gap:0.75rem;
+  padding:0.75rem;
+  border-radius:4px;
+  cursor:pointer;
+  transition:background 0.2s;
+}
+
+.sidebar-profile:hover{background:var(--cream)}
+
+.sp-avatar{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:var(--saffron);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1rem;
+  flex-shrink:0;
+}
+
+.sp-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem}
+
+.sp-role{font-size:0.68rem;color:var(--muted)}
+
+.main{flex:1;overflow-y:auto;padding:2rem 2.5rem}
+
+.page-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.75rem;letter-spacing:-0.04em;margin-bottom:0.25rem}
+
+.page-sub{font-size:0.9rem;color:var(--muted);margin-bottom:2rem}
+
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:900px){.sidebar{display:none}}
+</style>
+
+<style>
+.earn-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.earn-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.25rem 1.5rem;position:relative;overflow:hidden}
+.earn-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.ec-green::before{background:var(--green)}
+.ec-saffron::before{background:var(--saffron)}
+.ec-ink::before{background:var(--ink)}
+.ec-muted::before{background:var(--muted)}
+.ec-label{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem}
+.ec-value{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:-0.04em;color:var(--ink)}
+.ec-sub{font-size:0.72rem;color:var(--muted);margin-top:0.2rem}
+.escrow-in{background:var(--ink);color:#F5F0E8;border-radius:6px;padding:1.4rem 2rem;margin-bottom:2rem;display:flex;align-items:center;gap:2rem;flex-wrap:wrap}
+.ei-label{font-size:0.65rem;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:rgba(245,240,232,0.4);margin-bottom:0.25rem}
+.ei-val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--saffron);letter-spacing:-0.04em}
+.ei-div{width:1px;height:48px;background:rgba(245,240,232,0.1)}
+.ei-note{flex:1;font-size:0.8rem;color:rgba(245,240,232,0.5);line-height:1.6}
+.chart-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin-bottom:2rem}
+.chart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.75rem}
+.chart-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem}
+.period-tabs{display:flex;gap:0.25rem}
+.period-tab{padding:0.3rem 0.75rem;border:1px solid var(--border);border-radius:2px;font-family:'Syne',sans-serif;font-weight:600;font-size:0.72rem;cursor:pointer;background:white;color:var(--muted);transition:all 0.2s}
+.period-tab.active{background:var(--ink);color:#F5F0E8;border-color:var(--ink)}
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:100px;margin-bottom:0.5rem;padding-bottom:1.5rem;position:relative}
+.bar-chart::after{content:'';position:absolute;bottom:1.5rem;left:0;right:0;height:1px;background:var(--border)}
+.bar-group{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar{width:100%;border-radius:2px 2px 0 0;cursor:pointer;transition:opacity 0.2s}
+.bar:hover{opacity:0.75}
+.bar.filled{background:var(--steel);opacity:0.45}
+.bar.current{background:var(--ink);opacity:1}
+.bar-label{font-size:0.62rem;color:var(--muted);text-align:center}
+.bar-label.now{font-weight:700;color:var(--ink)}
+.table-card{background:white;border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.table-head{padding:1.1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem}
+.table-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem}
+.table-controls{display:flex;align-items:center;gap:0.6rem}
+.sel{padding:0.45rem 0.75rem;border:1px solid var(--border);border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.78rem;background:var(--cream);color:var(--ink);outline:none}
+.export-btn{padding:0.45rem 1rem;background:var(--ink);color:#F5F0E8;border:none;border-radius:2px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;cursor:pointer;transition:background 0.2s}
+.export-btn:hover{background:var(--green)}
+.tx-table{width:100%;border-collapse:collapse}
+.tx-table th{font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:0.75rem 1.5rem;text-align:left;border-bottom:1px solid var(--border);background:#fafaf9}
+.tx-table td{padding:1rem 1.5rem;border-bottom:1px solid var(--border);font-size:0.85rem;vertical-align:middle}
+.tx-table tr:last-child td{border-bottom:none}
+.tx-table tr:hover td{background:rgba(245,240,232,0.4)}
+.tx-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.95rem;flex-shrink:0;border:1px solid var(--border)}
+.tx-green{background:rgba(27,107,58,0.07)}
+.tx-held{background:rgba(245,166,35,0.1)}
+.tx-type{font-weight:600;color:var(--ink)}
+.tx-sub{font-size:0.72rem;color:var(--muted);margin-top:0.1rem}
+.tx-ref{font-size:0.72rem;color:var(--muted);font-family:monospace}
+.mpesa-tag{font-size:0.62rem;font-weight:600;color:var(--green);background:rgba(27,107,58,0.08);padding:0.1rem 0.45rem;border-radius:2px;display:inline-block;margin-top:0.2rem}
+.tx-amount{font-family:'Syne',sans-serif;font-weight:800;font-size:0.9rem}
+.tx-credit{color:var(--green)}
+.tx-held-c{color:#854F0B}
+.status-pill{font-size:0.65rem;font-weight:700;padding:0.2rem 0.55rem;border-radius:2px;text-transform:uppercase}
+.sp-paid{background:rgba(27,107,58,0.1);color:var(--green)}
+.sp-escrow{background:rgba(245,166,35,0.15);color:#854F0B}
+.receipt-btn{padding:0.3rem 0.65rem;border:1px solid var(--border);border-radius:2px;font-family:'Syne',sans-serif;font-weight:600;font-size:0.68rem;cursor:pointer;transition:all 0.2s;color:var(--ink);background:white}
+.receipt-btn:hover{background:var(--ink);color:#F5F0E8;border-color:var(--ink)}
+.pagination{display:flex;justify-content:center;align-items:center;gap:0.4rem;padding:1.5rem}
+.pg-btn{width:34px;height:34px;border:1px solid var(--border);border-radius:2px;background:white;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;color:var(--ink)}
+.pg-btn.active{background:var(--ink);color:#F5F0E8;border-color:var(--ink)}
+.pg-btn:hover:not(.active):not(:disabled){background:var(--cream)}
+.pg-btn:disabled{opacity:0.35;cursor:default}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:900px){.sidebar{display:none}.earn-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body class="app">
+<nav class="topnav">
+  <a href="index.html" class="logo">Kazi<span>X</span></a>
+  <div class="topnav-right">
+    <button class="notif-btn">🔔<span class="notif-dot"></span></button>
+    <div class="user-chip"><div class="user-avatar">JK</div><span class="user-name">James Kamau</span></div>
+  </div>
+</nav>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-section">Work</div>
+    <a class="nav-item" href="worker-dashboard.html"><span class="ni-icon">📊</span>Dashboard</a>
+    <a class="nav-item" href="worker-jobs.html"><span class="ni-icon">🔍</span>Find Jobs<span class="ni-badge">8</span></a>
+    <a class="nav-item" href="my-applications.html"><span class="ni-icon">📋</span>My Applications<span class="ni-badge">3</span></a>
+    <a class="nav-item" href="worker-hires.html"><span class="ni-icon">🤝</span>Active Contracts<span class="ni-badge">2</span></a>
+    <div class="sidebar-section">Account</div>
+    <a class="nav-item" href="messages.html"><span class="ni-icon">💬</span>Messages<span class="ni-badge">1</span></a>
+    <a class="nav-item active" href="worker-earnings.html"><span class="ni-icon">💳</span>Earnings</a>
+    <a class="nav-item" href="worker-reviews.html"><span class="ni-icon">⭐</span>My Reviews</a>
+    <a class="nav-item" href="worker-profile-edit.html"><span class="ni-icon">👤</span>My Profile</a>
+    <div class="sidebar-bottom">
+      <div class="sidebar-profile"><div class="sp-avatar">🔧</div><div><div class="sp-name">James Kamau</div><div class="sp-role">Pro Account · Plumber</div></div></div>
+    </div>
+  </aside>
+  <main class="main">
+    <div style="margin-bottom:2rem;animation:slideUp 0.4s ease both">
+      <div class="page-title">Earnings</div>
+      <div class="page-sub">M-Pesa payout history and income overview</div>
+    </div>
+    <div class="earn-grid" style="animation:slideUp 0.4s 0.05s ease both">
+      <div class="earn-card ec-green"><div class="ec-label">Total Earned (All Time)</div><div class="ec-value">KES 487,000</div><div class="ec-sub">Since March 2021</div></div>
+      <div class="earn-card ec-saffron"><div class="ec-label">Pending Escrow</div><div class="ec-value">KES 12,800</div><div class="ec-sub">2 active contracts</div></div>
+      <div class="earn-card ec-ink"><div class="ec-label">This Month</div><div class="ec-value">KES 87,400</div><div class="ec-sub" style="color:var(--green);font-weight:600">↑ 16% vs last month</div></div>
+      <div class="earn-card ec-muted"><div class="ec-label">Platform Fees Paid</div><div class="ec-value">KES 54,111</div><div class="ec-sub">10% of gross earnings</div></div>
+    </div>
+    <div class="escrow-in" style="animation:slideUp 0.4s 0.1s ease both">
+      <div><div class="ei-label">Pending M-Pesa Payout</div><div class="ei-val">KES 12,800</div></div>
+      <div class="ei-div"></div>
+      <div><div class="ei-label">Active contracts</div><div class="ei-val">2</div></div>
+      <div class="ei-div"></div>
+      <div class="ei-note">🔒 Funds held in escrow — released to your M-Pesa when clients confirm completion. Auto-released after 48hrs if no action.</div>
+      <a href="worker-hires.html" style="padding:0.65rem 1.25rem;background:var(--saffron);color:var(--ink);font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;border-radius:2px;text-decoration:none;white-space:nowrap;align-self:center">View Contracts →</a>
+    </div>
+    <div class="chart-card" style="animation:slideUp 0.4s 0.15s ease both">
+      <div class="chart-head">
+        <div class="chart-title">Monthly Earnings</div>
+        <div class="period-tabs">
+          <button class="period-tab" onclick="setPeriod(this)">3M</button>
+          <button class="period-tab active" onclick="setPeriod(this)">6M</button>
+          <button class="period-tab" onclick="setPeriod(this)">1Y</button>
+        </div>
+      </div>
+      <div class="bar-chart">
+        <div class="bar-group"><div class="bar filled" style="height:52%"></div><div class="bar-label">Oct</div></div>
+        <div class="bar-group"><div class="bar filled" style="height:48%"></div><div class="bar-label">Nov</div></div>
+        <div class="bar-group"><div class="bar filled" style="height:65%"></div><div class="bar-label">Dec</div></div>
+        <div class="bar-group"><div class="bar filled" style="height:56%"></div><div class="bar-label">Jan</div></div>
+        <div class="bar-group"><div class="bar filled" style="height:72%"></div><div class="bar-label">Feb</div></div>
+        <div class="bar-group"><div class="bar current" style="height:87%"></div><div class="bar-label now">Mar</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.75rem;color:var(--muted)"><div style="width:10px;height:10px;border-radius:2px;background:var(--ink)"></div>Net earnings (after 10% fee)</div>
+    </div>
+    <div class="table-card" style="animation:slideUp 0.4s 0.2s ease both">
+      <div class="table-head">
+        <div class="table-title">Payout History</div>
+        <div class="table-controls">
+          <select class="sel"><option>All payouts</option><option>This month</option><option>Last 3 months</option></select>
+          <button class="export-btn" onclick="alert('PDF statement downloaded')">⬇ Export PDF</button>
+        </div>
+      </div>
+      <table class="tx-table">
+        <thead><tr><th></th><th>Job</th><th>Client</th><th>M-Pesa Ref</th><th>Date</th><th>Net (KES)</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          <tr>
+            <td><div class="tx-icon tx-held">🔒</div></td>
+            <td><div class="tx-type">Fix leaking pipe — Westlands</div><div class="tx-sub">#KX-0187</div></td>
+            <td style="font-size:0.82rem">Alex Kuria</td>
+            <td><div class="tx-ref">Pending</div></td>
+            <td style="font-size:0.78rem;color:var(--muted)">Today · In progress</td>
+            <td><div class="tx-amount tx-held-c">720</div><div style="font-size:0.62rem;color:var(--muted)">(800 − 10%)</div></td>
+            <td><span class="status-pill sp-escrow">In Escrow</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><div class="tx-icon tx-green">✅</div></td>
+            <td><div class="tx-type">Kitchen pipe repair</div><div class="tx-sub">#KX-0181</div></td>
+            <td style="font-size:0.82rem">Purity N.</td>
+            <td><div class="tx-ref">QHJ4MKPL8R</div><div class="mpesa-tag">M-Pesa paid</div></td>
+            <td style="font-size:0.78rem;color:var(--muted)">Yesterday, 16:22</td>
+            <td><div class="tx-amount tx-credit">1,620</div></td>
+            <td><span class="status-pill sp-paid">Paid Out</span></td>
+            <td><button class="receipt-btn">📄</button></td>
+          </tr>
+          <tr>
+            <td><div class="tx-icon tx-green">✅</div></td>
+            <td><div class="tx-type">Solar heater installation</div><div class="tx-sub">#KX-0172</div></td>
+            <td style="font-size:0.82rem">Purity N.</td>
+            <td><div class="tx-ref">QMN5KLPR2T</div><div class="mpesa-tag">M-Pesa paid</div></td>
+            <td style="font-size:0.78rem;color:var(--muted)">1 week ago</td>
+            <td><div class="tx-amount tx-credit">7,200</div></td>
+            <td><span class="status-pill sp-paid">Paid Out</span></td>
+            <td><button class="receipt-btn">📄</button></td>
+          </tr>
+          <tr>
+            <td><div class="tx-icon tx-green">✅</div></td>
+            <td><div class="tx-type">Water tank cleaning</div><div class="tx-sub">#KX-0168</div></td>
+            <td style="font-size:0.82rem">Brian O.</td>
+            <td><div class="tx-ref">QKL8NPJR4T</div><div class="mpesa-tag">M-Pesa paid</div></td>
+            <td style="font-size:0.78rem;color:var(--muted)">2 weeks ago</td>
+            <td><div class="tx-amount tx-credit">2,700</div></td>
+            <td><span class="status-pill sp-paid">Paid Out</span></td>
+            <td><button class="receipt-btn">📄</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <button class="pg-btn" disabled>←</button>
+        <button class="pg-btn active">1</button>
+        <button class="pg-btn">2</button>
+        <button class="pg-btn">3</button>
+        <button class="pg-btn">→</button>
+      </div>
+    </div>
+  </main>
+</div>
+<script>
+function setPeriod(el){document.querySelectorAll('.period-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active')}
+document.querySelectorAll('.receipt-btn').forEach(b=>b.addEventListener('click',()=>alert('Receipt downloaded')))
+document.querySelectorAll('.pg-btn:not([disabled])').forEach(btn=>{btn.addEventListener('click',function(){if(this.textContent==='←'||this.textContent==='→')return;document.querySelectorAll('.pg-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')})})
+</script>
+</body>
+</html>

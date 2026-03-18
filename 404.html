@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page Not Found — KaziX</title>
+<style id="base-styles">
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap");
+
+:root{
+  --ink:#0D0D0D;
+  --cream:#F5F0E8;
+  --saffron:#F5A623;
+  --rust:#C0392B;
+  --green:#1B6B3A;
+  --steel:#2C3E50;
+  --muted:#7A7468;
+  --border:rgba(13,13,13,0.1);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  overflow-x:hidden;
+  min-height:100vh;
+}
+
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:9999;
+  opacity:0.35;
+}
+
+body.app{display:flex;flex-direction:column}
+
+.logo{
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:1.4rem;
+  letter-spacing:-0.04em;
+  text-decoration:none;
+  color:inherit;
+}
+
+.logo span{color:var(--saffron)}
+
+.topnav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 2rem;
+  height:60px;
+  background:var(--ink);
+  position:sticky;
+  top:0;
+  z-index:200;
+  flex-shrink:0;
+}
+
+.topnav .logo{color:#F5F0E8}
+
+.topnav-right{display:flex;align-items:center;gap:1.25rem}
+
+.notif-btn{
+  position:relative;
+  background:rgba(245,240,232,0.08);
+  border:none;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1rem;
+  color:#F5F0E8;
+  transition:background 0.2s;
+}
+
+.notif-btn:hover{background:rgba(245,240,232,0.15)}
+
+.notif-dot{
+  position:absolute;
+  top:7px;
+  right:7px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--saffron);
+  border:2px solid var(--ink);
+}
+
+.user-chip{
+  display:flex;
+  align-items:center;
+  gap:0.6rem;
+  cursor:pointer;
+  padding:0.3rem 0.75rem 0.3rem 0.3rem;
+  border-radius:20px;
+  background:rgba(245,240,232,0.08);
+  transition:background 0.2s;
+}
+
+.user-chip:hover{background:rgba(245,240,232,0.15)}
+
+.user-avatar{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  background:var(--saffron);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:0.85rem;
+  font-weight:700;
+  color:var(--ink);
+}
+
+.user-name{font-size:0.82rem;font-weight:500;color:#F5F0E8}
+
+.app-shell{display:flex;flex:1;overflow:hidden}
+
+.sidebar{
+  width:220px;
+  flex-shrink:0;
+  background:white;
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  position:sticky;
+  top:60px;
+  height:calc(100vh - 60px);
+  overflow-y:auto;
+}
+
+.sidebar-section{
+  padding:1.25rem 1rem 0.5rem;
+  font-size:0.65rem;
+  font-weight:700;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+.nav-item{
+  display:flex;
+  align-items:center;
+  gap:0.75rem;
+  padding:0.7rem 1rem;
+  margin:0.1rem 0.5rem;
+  border-radius:4px;
+  cursor:pointer;
+  font-size:0.875rem;
+  color:var(--muted);
+  text-decoration:none;
+  transition:all 0.18s;
+  font-weight:500;
+}
+
+.nav-item:hover{background:var(--cream);color:var(--ink)}
+
+.nav-item.active{background:var(--ink);color:#F5F0E8}
+
+.nav-item .ni-icon{width:18px;text-align:center;font-size:1rem;flex-shrink:0}
+
+.nav-item .ni-badge{
+  margin-left:auto;
+  background:var(--saffron);
+  color:var(--ink);
+  font-size:0.62rem;
+  font-weight:700;
+  padding:0.15rem 0.45rem;
+  border-radius:10px;
+  min-width:18px;
+  text-align:center;
+}
+
+.nav-item.active .ni-badge{background:var(--saffron);color:var(--ink)}
+
+.sidebar-bottom{margin-top:auto;padding:1rem;border-top:1px solid var(--border)}
+
+.sidebar-profile{
+  display:flex;
+  align-items:center;
+  gap:0.75rem;
+  padding:0.75rem;
+  border-radius:4px;
+  cursor:pointer;
+  transition:background 0.2s;
+}
+
+.sidebar-profile:hover{background:var(--cream)}
+
+.sp-avatar{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:var(--saffron);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1rem;
+  flex-shrink:0;
+}
+
+.sp-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem}
+
+.sp-role{font-size:0.68rem;color:var(--muted)}
+
+.main{flex:1;overflow-y:auto;padding:2rem 2.5rem}
+
+.page-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.75rem;letter-spacing:-0.04em;margin-bottom:0.25rem}
+
+.page-sub{font-size:0.9rem;color:var(--muted);margin-bottom:2rem}
+
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:900px){.sidebar{display:none}}
+</style>
+
+<style>
+/* Public nav — matches index.html / how-it-works.html exactly */
+nav{display:flex;align-items:center;justify-content:space-between;padding:1.4rem 6%;position:sticky;top:0;background:rgba(245,240,232,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:100}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-size:0.875rem;font-weight:500;color:var(--muted);text-decoration:none;transition:color 0.2s}
+.nav-links a:hover{color:var(--ink)}
+.nav-cta{background:var(--ink);color:var(--cream)!important;padding:0.55rem 1.2rem;border-radius:2px;font-weight:600;text-decoration:none;transition:background 0.2s}
+.nav-cta:hover{background:var(--green)!important}
+
+/* Page layout */
+.error-page{flex:1;display:flex;align-items:center;justify-content:center;padding:4rem 6%;min-height:calc(100vh - 130px);position:relative;overflow:hidden}
+.error-bg{position:absolute;font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(160px,30vw,420px);opacity:0.05;letter-spacing:-0.06em;pointer-events:none;user-select:none;color:var(--ink);top:50%;left:50%;transform:translate(-50%,-50%);white-space:nowrap;z-index:0}
+.error-main{position:relative;z-index:1;text-align:center;max-width:520px;animation:slideUp 0.5s ease both}
+.error-emoji{font-size:3.5rem;display:block;margin-bottom:1.5rem;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.error-code{display:inline-block;font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);background:white;border:1px solid var(--border);padding:0.3rem 0.85rem;border-radius:2px;margin-bottom:1.5rem}
+.error-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,5vw,3rem);letter-spacing:-0.04em;margin-bottom:0.75rem;line-height:1.05}
+.error-sub{font-size:0.95rem;color:var(--muted);line-height:1.7;margin-bottom:2.5rem;max-width:380px;margin-left:auto;margin-right:auto}
+.error-actions{display:flex;gap:0.85rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem}
+.btn-primary{padding:0.85rem 2rem;background:var(--ink);color:#F5F0E8;font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;border:none;border-radius:2px;cursor:pointer;text-decoration:none;transition:background 0.2s}
+.btn-primary:hover{background:var(--green)}
+.btn-secondary{padding:0.85rem 2rem;background:transparent;color:var(--ink);font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;border:1.5px solid var(--border);border-radius:2px;cursor:pointer;text-decoration:none;transition:all 0.2s}
+.btn-secondary:hover{border-color:var(--ink)}
+.quick-links-title{font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem}
+.quick-links{display:grid;grid-template-columns:repeat(2,1fr);gap:0.75rem;max-width:400px;margin:0 auto}
+.ql-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1rem;text-decoration:none;color:var(--ink);transition:all 0.2s;display:flex;align-items:center;gap:0.75rem;text-align:left}
+.ql-card:hover{border-color:var(--ink);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.06)}
+.ql-icon{font-size:1.3rem;flex-shrink:0}
+.ql-label{font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem}
+.ql-sub{font-size:0.68rem;color:var(--muted);margin-top:0.1rem}
+
+/* Footer — matches index.html footer */
+.footer{padding:2rem 6%;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.footer a{color:var(--muted);text-decoration:none;font-size:0.85rem}
+.footer a:hover{color:var(--ink)}
+.footer p{font-size:0.78rem;color:var(--muted)}
+
+@media(max-width:720px){.nav-links{display:none}.quick-links{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Kazi<span>X</span></a>
+  <ul class="nav-links">
+    <li><a href="find-workers.html">Find Workers</a></li>
+    <li><a href="post-job.html">Post a Job</a></li>
+    <li><a href="for-pros.html">For Pros</a></li>
+    <li><a href="login.html" class="nav-cta">Sign In</a></li>
+  </ul>
+</nav>
+
+<div class="error-page">
+  <div class="error-bg">404</div>
+  <div class="error-main">
+    <span class="error-emoji">🔧</span>
+    <div class="error-code">Error 404 — Page not found</div>
+    <div class="error-title">This page doesn't exist</div>
+    <div class="error-sub">The page you're looking for may have moved, been removed, or the URL might be incorrect. Let's get you back on track.</div>
+    <div class="error-actions">
+      <a href="index.html" class="btn-primary">← Back to Home</a>
+      <button class="btn-secondary" onclick="history.back()">Go Back</button>
+    </div>
+    <div class="quick-links-title">Or try one of these</div>
+    <div class="quick-links">
+      <a href="find-workers.html" class="ql-card"><span class="ql-icon">🔍</span><div><div class="ql-label">Find Fundis</div><div class="ql-sub">Browse verified workers</div></div></a>
+      <a href="post-job.html" class="ql-card"><span class="ql-icon">📋</span><div><div class="ql-label">Post a Job</div><div class="ql-sub">Free job posting</div></div></a>
+      <a href="for-pros.html" class="ql-card"><span class="ql-icon">🔧</span><div><div class="ql-label">Join as a Fundi</div><div class="ql-sub">Start earning today</div></div></a>
+      <a href="help-centre.html" class="ql-card"><span class="ql-icon">❓</span><div><div class="ql-label">Help Centre</div><div class="ql-sub">Get support</div></div></a>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <a href="index.html" class="logo">Kazi<span>X</span></a>
+  <p>© 2025 KaziX Ltd. All rights reserved. Built for Kenya 🇰🇪</p>
+  <div style="display:flex;gap:1.5rem">
+    <a href="help-centre.html">Help</a>
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+  </div>
+</footer>
+
+</body>
+</html>
