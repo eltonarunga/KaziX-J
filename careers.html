@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Careers - KaziX</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+:root{--card-bg:#FFFFFF}
+
+nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:1.2rem 6%;
+  position:sticky;
+  top:0;
+  background:rgba(245,240,232,0.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  z-index:100;
+}
+
+.nav-links{display:flex;gap:1.8rem;list-style:none;align-items:center}
+.nav-links a{font-size:0.875rem;font-weight:500;color:var(--muted);text-decoration:none;transition:color 0.2s}
+.nav-links a:hover{color:var(--ink)}
+.nav-cta{background:var(--ink);color:var(--cream)!important;padding:0.55rem 1.2rem;border-radius:2px;font-weight:600;text-decoration:none;transition:background 0.2s}
+.nav-cta:hover{background:var(--green)}
+
+.page-hero{
+  background:linear-gradient(135deg,#0D0D0D 0%, #24313D 55%, #C0392B 100%);
+  color:var(--cream);
+  padding:4.5rem 6% 4rem;
+  position:relative;
+  overflow:hidden;
+}
+
+.page-hero::after{
+  content:'CAREERS';
+  position:absolute;
+  right:-6%;
+  top:10%;
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:clamp(80px,18vw,220px);
+  opacity:0.08;
+  letter-spacing:-0.06em;
+  pointer-events:none;
+}
+
+.eyebrow{font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--saffron);margin-bottom:1rem}
+.hero-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2.2rem,4.5vw,3.4rem);letter-spacing:-0.04em;margin-bottom:1rem}
+.hero-sub{max-width:640px;font-size:1rem;line-height:1.7;color:rgba(245,240,232,0.7)}
+.hero-actions{margin-top:1.5rem;display:flex;gap:0.75rem;flex-wrap:wrap}
+.hero-btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.8rem 1.4rem;border-radius:2px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;text-decoration:none;transition:all 0.2s}
+.hero-primary{background:var(--saffron);color:var(--ink)}
+.hero-primary:hover{background:#E2931D;transform:translateY(-2px)}
+.hero-secondary{border:1.5px solid rgba(245,240,232,0.6);color:var(--cream)}
+.hero-secondary:hover{background:var(--cream);color:var(--ink)}
+
+.page-content{padding:3.5rem 6% 4.5rem;max-width:1100px;margin:0 auto}
+
+.benefits-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2.5rem}
+.benefit-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.5rem}
+.benefit-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:0.5rem}
+.benefit-text{font-size:0.85rem;color:var(--muted);line-height:1.6}
+
+.roles-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-bottom:2.5rem}
+.role-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.5rem;display:flex;flex-direction:column;gap:0.6rem}
+.role-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem}
+.role-meta{font-size:0.8rem;color:var(--muted)}
+.role-tags{display:flex;gap:0.5rem;flex-wrap:wrap}
+.role-tag{background:var(--cream);color:var(--ink);font-size:0.7rem;font-weight:600;padding:0.2rem 0.6rem;border-radius:999px}
+.role-link{margin-top:auto;display:inline-flex;align-items:center;gap:0.5rem;font-size:0.8rem;font-weight:700;color:var(--ink);text-decoration:none}
+.role-link:hover{color:var(--green)}
+
+.process-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.process-card{background:rgba(13,13,13,0.04);border:1px solid rgba(13,13,13,0.12);border-radius:6px;padding:1.5rem}
+.process-step{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:var(--saffron)}
+.process-title{font-family:'Syne',sans-serif;font-weight:700;margin-top:0.4rem;margin-bottom:0.4rem}
+.process-text{font-size:0.85rem;color:var(--muted);line-height:1.6}
+
+footer{background:var(--ink);color:#F5F0E8;padding:3rem 6% 2rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem}
+.fb .logo{display:block;margin-bottom:0.75rem}
+.fb p{font-size:0.85rem;color:rgba(245,240,232,0.5);line-height:1.7;max-width:280px}
+.fc h4{font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(245,240,232,0.45);margin-bottom:1rem}
+.fc ul{list-style:none;margin:0;padding:0}
+.fc ul li{margin-bottom:0.6rem}
+.fc ul a{color:rgba(245,240,232,0.7);text-decoration:none;font-size:0.875rem;transition:color 0.2s}
+.fc ul a:hover{color:var(--saffron)}
+.footer-bottom{background:var(--ink);border-top:1px solid rgba(245,240,232,0.08);padding:1.25rem 6%;display:flex;justify-content:space-between;font-size:0.78rem;color:rgba(245,240,232,0.35)}
+
+.section-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:-0.02em;margin-bottom:1.2rem}
+
+@media(max-width:900px){
+  .benefits-grid{grid-template-columns:1fr}
+  .roles-grid{grid-template-columns:1fr}
+  .process-grid{grid-template-columns:1fr}
+  footer{grid-template-columns:1fr 1fr}
+  .footer-bottom{flex-direction:column;gap:0.5rem}
+  nav{flex-direction:column;align-items:flex-start;gap:0.75rem}
+  .nav-links{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">Kazi<span>X</span></a>
+  <ul class="nav-links">
+    <li><a href="find-workers.html">Find Workers</a></li>
+    <li><a href="post-job.html">Post a Job</a></li>
+    <li><a href="for-pros.html">For Pros</a></li>
+    <li><a href="help-centre.html">Help Centre</a></li>
+  </ul>
+  <a href="login.html" class="nav-cta">Get Started</a>
+</nav>
+
+<section class="page-hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Careers</div>
+    <h1 class="hero-title">Build the trusted services marketplace</h1>
+    <p class="hero-sub">Join KaziX to create tools that help local pros thrive and give clients confidence in every booking.</p>
+    <div class="hero-actions">
+      <a href="#roles" class="hero-btn hero-primary">View Open Roles</a>
+      <a href="about.html" class="hero-btn hero-secondary">Learn About KaziX</a>
+    </div>
+  </div>
+</section>
+
+<section class="page-content">
+  <h2 class="section-title">Why KaziX</h2>
+  <div class="benefits-grid">
+    <div class="benefit-card">
+      <div class="benefit-title">Mission-driven impact</div>
+      <div class="benefit-text">Your work helps fundis grow their livelihoods and helps clients hire with confidence.</div>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-title">Built for Kenya</div>
+      <div class="benefit-text">We design for local realities with reliable payments, mobile-first UX, and fast support.</div>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-title">High ownership</div>
+      <div class="benefit-text">Small teams, big responsibility, and room to build end-to-end features.</div>
+    </div>
+  </div>
+
+  <h2 id="roles" class="section-title">Open Roles</h2>
+  <div class="roles-grid">
+    <div class="role-card">
+      <div class="role-title">Product Designer</div>
+      <div class="role-meta">Nairobi or Remote - Full time</div>
+      <div class="role-tags">
+        <span class="role-tag">Design System</span>
+        <span class="role-tag">Research</span>
+      </div>
+      <a class="role-link" href="mailto:careers@kazix.co.ke">Apply via email</a>
+    </div>
+    <div class="role-card">
+      <div class="role-title">Frontend Engineer</div>
+      <div class="role-meta">Nairobi or Remote - Full time</div>
+      <div class="role-tags">
+        <span class="role-tag">HTML/CSS</span>
+        <span class="role-tag">Accessibility</span>
+      </div>
+      <a class="role-link" href="mailto:careers@kazix.co.ke">Apply via email</a>
+    </div>
+    <div class="role-card">
+      <div class="role-title">Operations Lead</div>
+      <div class="role-meta">Nairobi - Full time</div>
+      <div class="role-tags">
+        <span class="role-tag">Disputes</span>
+        <span class="role-tag">Quality</span>
+      </div>
+      <a class="role-link" href="mailto:careers@kazix.co.ke">Apply via email</a>
+    </div>
+    <div class="role-card">
+      <div class="role-title">Trust and Safety Analyst</div>
+      <div class="role-meta">Remote - Contract</div>
+      <div class="role-tags">
+        <span class="role-tag">Escrow</span>
+        <span class="role-tag">Compliance</span>
+      </div>
+      <a class="role-link" href="mailto:careers@kazix.co.ke">Apply via email</a>
+    </div>
+  </div>
+
+  <h2 class="section-title">Hiring Process</h2>
+  <div class="process-grid">
+    <div class="process-card">
+      <div class="process-step">01</div>
+      <div class="process-title">Intro Call</div>
+      <div class="process-text">We learn about your experience and share what we are building.</div>
+    </div>
+    <div class="process-card">
+      <div class="process-step">02</div>
+      <div class="process-title">Skill Exercise</div>
+      <div class="process-text">A practical task focused on the role, with clear expectations.</div>
+    </div>
+    <div class="process-card">
+      <div class="process-step">03</div>
+      <div class="process-title">Team Chat</div>
+      <div class="process-text">Meet the team and discuss how you would approach real problems.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="fb">
+    <a href="index.html" class="logo">Kazi<span>X</span></a>
+    <p>Trusted fundis, protected payments, and a dispute process that puts fairness first.</p>
+  </div>
+  <div class="fc">
+    <h4>Company</h4>
+    <ul>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="careers.html">Careers</a></li>
+    </ul>
+  </div>
+  <div class="fc">
+    <h4>Support</h4>
+    <ul>
+      <li><a href="help-centre.html">Help Centre</a></li>
+      <li><a href="dispute.html">Disputes</a></li>
+      <li><a href="privacy.html">Privacy Policy</a></li>
+      <li><a href="terms.html">Terms</a></li>
+    </ul>
+  </div>
+  <div class="fc">
+    <h4>Product</h4>
+    <ul>
+      <li><a href="find-workers.html">Find Workers</a></li>
+      <li><a href="post-job.html">Post a Job</a></li>
+      <li><a href="for-pros.html">For Pros</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <span>Built for Kenya. Escrow payments via M-Pesa.</span>
+  <span>Copyright 2026 KaziX.</span>
+</div>
+</body>
+</html>

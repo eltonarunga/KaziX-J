@@ -297,5 +297,27 @@ function filterJobs(status, el) {
   });
 }
 </script>
+
+<nav class="mobile-nav" aria-label="Primary">
+  <a class="mobile-nav-item" href="client-dashboard.html"><span class="mn-icon">📊</span><span class="mn-label">Dashboard</span></a>
+  <a class="mobile-nav-item active" href="my-jobs.html"><span class="mn-icon">📋</span><span class="mn-label">Jobs</span></a>
+  <a class="mobile-nav-item" href="find-workers.html"><span class="mn-icon">🔍</span><span class="mn-label">Find</span></a>
+  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon">💬</span><span class="mn-label">Messages</span></a>
+  <div class="mobile-nav-more">
+    <button class="mobile-nav-item mobile-nav-more-toggle" type="button" aria-expanded="false" aria-label="Open more pages">
+      <span class="mn-icon">⋯</span><span class="mn-label">More</span>
+    </button>
+    <div class="mobile-nav-drawer" role="menu" aria-label="Secondary pages">
+      <a class="mobile-nav-drawer-item" href="client-profile.html" role="menuitem">👤 Profile</a>
+      <a class="mobile-nav-drawer-item" href="notifications.html" role="menuitem">🔔 Notifications</a>
+      <a class="mobile-nav-drawer-item" href="payments.html" role="menuitem">💳 Payments</a>
+      <a class="mobile-nav-drawer-item" href="reviews.html" role="menuitem">⭐ Reviews</a>
+      <a class="mobile-nav-drawer-item" href="saved-workers.html" role="menuitem">❤️ Saved Fundis</a>
+    </div>
+  </div>
+</nav>
+
+
+<script src="mobile-nav.js"></script>
 </body>
 </html>

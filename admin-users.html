@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Users - KaziX</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="admin.css">
+<style>
+.users-grid{display:grid;grid-template-columns:1fr;gap:1.5rem}
+.user-status{font-size:0.75rem;color:var(--muted)}
+
+@media(max-width:900px){
+  .panel-body{padding:0.85rem 1rem}
+}
+</style>
+</head>
+<body class="app" data-admin-active="users">
+<main class="main" data-admin-main>
+  <div class="admin-header">
+    <div>
+      <div class="page-title">User Management</div>
+      <div class="page-sub">Search, review, and update client or fundi accounts.</div>
+    </div>
+    <div class="admin-actions">
+      <button class="btn">Export CSV</button>
+      <button class="btn primary">Invite Admin</button>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="sc-label">Active Users</div>
+      <div class="sc-value">12,480</div>
+      <div class="sc-sub">Clients and fundis</div>
+    </div>
+    <div class="stat-card c-green">
+      <div class="sc-label">New This Week</div>
+      <div class="sc-value">430</div>
+      <div class="sc-sub">Average 62 per day</div>
+    </div>
+    <div class="stat-card c-rust">
+      <div class="sc-label">Suspended</div>
+      <div class="sc-value">19</div>
+      <div class="sc-sub">Needs review</div>
+    </div>
+  </div>
+
+  <section class="panel users-grid">
+    <div class="panel-head">
+      <div class="panel-title">Search Users</div>
+      <span class="pill">Live</span>
+    </div>
+    <div class="panel-body">
+      <div class="filters" style="margin-bottom:1rem">
+        <input class="search-input" type="search" placeholder="Search by name, phone, or user ID">
+        <button class="btn">Filter</button>
+        <button class="btn ghost">Export</button>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Last Activity</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div style="font-weight:700">Alex Kuria</div>
+              <div class="user-status">Client - ID: CL-2231</div>
+            </td>
+            <td>Client</td>
+            <td><span class="pill">Active</span></td>
+            <td>Mar 18, 10:22 AM</td>
+            <td><a class="row-action" href="#">View</a></td>
+          </tr>
+          <tr>
+            <td>
+              <div style="font-weight:700">James Kamau</div>
+              <div class="user-status">Fundi - ID: FD-8812</div>
+            </td>
+            <td>Fundi</td>
+            <td><span class="pill">Active</span></td>
+            <td>Mar 18, 9:05 AM</td>
+            <td><a class="row-action" href="#">View</a></td>
+          </tr>
+          <tr>
+            <td>
+              <div style="font-weight:700">Mercy Wairimu</div>
+              <div class="user-status">Client - ID: CL-1740</div>
+            </td>
+            <td>Client</td>
+            <td><span class="pill">Warning</span></td>
+            <td>Mar 17, 7:32 PM</td>
+            <td><a class="row-action" href="#">View</a></td>
+          </tr>
+          <tr>
+            <td>
+              <div style="font-weight:700">Peter Otieno</div>
+              <div class="user-status">Fundi - ID: FD-5620</div>
+            </td>
+            <td>Fundi</td>
+            <td><span class="pill">Suspended</span></td>
+            <td>Mar 16, 2:45 PM</td>
+            <td><a class="row-action" href="#">Review</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<script src="admin-shell.js" defer></script>
+</body>
+</html>

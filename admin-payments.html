@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Payments - KaziX</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="admin.css">
+<style>
+.payments-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:1.5rem}
+.section-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem}
+
+@media(max-width:1100px){
+  .payments-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body class="app" data-admin-active="payments">
+<main class="main" data-admin-main>
+  <div class="admin-header">
+    <div>
+      <div class="page-title">Payments Console</div>
+      <div class="page-sub">Track escrow holds, releases, and refunds.</div>
+    </div>
+    <div class="admin-actions">
+      <button class="btn">Export CSV</button>
+      <button class="btn primary">Create Payout Batch</button>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="sc-label">Escrow Held</div>
+      <div class="sc-value">KES 1.84M</div>
+      <div class="sc-sub">Across 68 active bookings</div>
+    </div>
+    <div class="stat-card c-green">
+      <div class="sc-label">Payouts Scheduled</div>
+      <div class="sc-value">KES 312K</div>
+      <div class="sc-sub">Next release in 3 hrs</div>
+    </div>
+    <div class="stat-card c-rust">
+      <div class="sc-label">Refunds Pending</div>
+      <div class="sc-value">KES 74K</div>
+      <div class="sc-sub">4 cases need approval</div>
+    </div>
+  </div>
+
+  <div class="payments-grid">
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Recent Transactions</div>
+        <span class="pill">Today</span>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Booking</th>
+              <th>Fundi</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Mar 18</td>
+              <td>DX-2050</td>
+              <td>James Kamau</td>
+              <td>KES 32,000</td>
+              <td><span class="pill">Release queued</span></td>
+            </tr>
+            <tr>
+              <td>Mar 18</td>
+              <td>DX-2047</td>
+              <td>Rose Akinyi</td>
+              <td>KES 8,500</td>
+              <td><span class="pill">Escrow hold</span></td>
+            </tr>
+            <tr>
+              <td>Mar 17</td>
+              <td>DX-2042</td>
+              <td>Peter Otieno</td>
+              <td>KES 18,500</td>
+              <td><span class="pill">Refund initiated</span></td>
+            </tr>
+            <tr>
+              <td>Mar 17</td>
+              <td>DX-2039</td>
+              <td>Samuel Mwangi</td>
+              <td>KES 21,000</td>
+              <td><span class="pill">Released</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Escrow Holds</div>
+        <button class="btn">Review All</button>
+      </div>
+      <div class="panel-body">
+        <div style="display:grid;gap:0.9rem">
+          <div>
+            <div class="section-title">DX-2047 - Kitchen plumbing</div>
+            <div style="font-size:0.8rem;color:var(--muted)">Client evidence requested - due Mar 19</div>
+          </div>
+          <div>
+            <div class="section-title">DX-2042 - Roof repair</div>
+            <div style="font-size:0.8rem;color:var(--muted)">Awaiting admin decision</div>
+          </div>
+          <div>
+            <div class="section-title">DX-2038 - Painting interior</div>
+            <div style="font-size:0.8rem;color:var(--muted)">Fundi response pending</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script src="admin-shell.js" defer></script>
+</body>
+</html>
