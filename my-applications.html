@@ -206,13 +206,13 @@ function filterApps(status,el){
   <a class="mobile-nav-item active" href="my-applications.html"><span class="mn-icon">📋</span><span class="mn-label">Applications</span></a>
   <a class="mobile-nav-item" href="messages.html"><span class="mn-icon">💬</span><span class="mn-label">Messages</span></a>
   <div class="mobile-nav-more">
-    <button class="mobile-nav-item mobile-nav-more-toggle" type="button" aria-expanded="false" aria-label="Open more pages">
+    <button class="mobile-nav-item mobile-nav-more-toggle" type="button" aria-controls="mobile-drawer" aria-expanded="false" aria-label="Open navigation menu">
       <span class="mn-icon">⋯</span><span class="mn-label">More</span>
     </button>
-    <div class="mobile-nav-drawer" role="menu" aria-label="Secondary pages">
-      <a class="mobile-nav-drawer-item" href="worker-profile-edit.html" role="menuitem">👤 Profile</a>
-      <a class="mobile-nav-drawer-item" href="worker-earnings.html" role="menuitem">💳 Earnings</a>
-      <a class="mobile-nav-drawer-item" href="worker-reviews.html" role="menuitem">⭐ Reviews</a>
+    <div class="mobile-nav-drawer" id="mobile-drawer" role="navigation" aria-label="Secondary pages" aria-hidden="true">
+      <a class="mobile-nav-drawer-item" href="worker-profile-edit.html">👤 Profile</a>
+      <a class="mobile-nav-drawer-item" href="worker-earnings.html">💳 Earnings</a>
+      <a class="mobile-nav-drawer-item" href="worker-reviews.html">⭐ Reviews</a>
     </div>
   </div>
 </nav>

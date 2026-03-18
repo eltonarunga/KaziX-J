@@ -1,54 +1,78 @@
 (function () {
+  var NAV_SECTIONS = [
+    {
+      title: "Overview",
+      links: [{ key: "dashboard", label: "Dashboard", href: "admin-dashboard.html", icon: "📊" }]
+    },
+    {
+      title: "Operations",
+      links: [
+        { key: "disputes", label: "Disputes", href: "admin-disputes.html", icon: "⚖️", badge: "18" },
+        { key: "payments", label: "Payments", href: "admin-payments.html", icon: "💳" },
+        { key: "escrow-holds", label: "Escrow Holds", href: "admin-payments.html#escrow-holds", icon: "🔒", badge: "12" }
+      ]
+    },
+    {
+      title: "Trust",
+      links: [
+        { key: "verifications", label: "KYC Verifications", href: "admin-verifications.html", icon: "🪪", badge: "23" },
+        { key: "users", label: "Users", href: "admin-users.html", icon: "👥" }
+      ]
+    },
+    {
+      title: "System",
+      links: [
+        { key: "settings", label: "Settings", href: "#", icon: "⚙️" },
+        { key: "audit-log", label: "Audit Log", href: "#", icon: "🧾" }
+      ]
+    }
+  ];
+
   function buildTopnav() {
     var nav = document.createElement('nav');
-    nav.className = 'topnav';
+    nav.className = 'topnav admin-topnav';
     nav.innerHTML = ''
-      + '<a href="index.html" class="logo">Kazi<span>X</span></a>'
+      + '<a href="admin-dashboard.html" class="logo">Kazi<span>X</span></a>'
       + '<div class="topnav-right">'
-      + '  <button class="notif-btn">!<span class="notif-dot"></span></button>'
+      + '  <span class="admin-badge">Admin</span>'
       + '  <div class="user-chip"><div class="user-avatar">AD</div><span class="user-name">Admin Desk</span></div>'
       + '</div>';
     return nav;
   }
 
+  function buildLink(item) {
+    var badge = item.badge ? '<span class="ni-badge">' + item.badge + '</span>' : '';
+    return ''
+      + '<a class="nav-item" data-admin-nav="' + item.key + '" href="' + item.href + '">'
+      + '<span class="ni-icon">' + item.icon + '</span>'
+      + item.label
+      + badge
+      + '</a>';
+  }
+
   function buildSidebar(activeKey) {
     var sidebar = document.createElement('aside');
-    sidebar.className = 'sidebar';
+    sidebar.className = 'admin-sidebar';
+    sidebar.innerHTML = NAV_SECTIONS.map(function (section) {
+      return ''
+        + '<div class="sidebar-section">' + section.title + '</div>'
+        + section.links.map(buildLink).join('');
+    }).join('');
 
-    var adminLinks = [
-      { key: 'disputes', label: 'Disputes', href: 'admin-disputes.html', icon: 'D', badge: '18' },
-      { key: 'payments', label: 'Payments', href: 'admin-payments.html', icon: 'P' }
-    ];
-
-    var opsLinks = [
-      { key: 'verifications', label: 'Verifications', href: 'admin-verifications.html', icon: 'K' },
-      { key: 'users', label: 'Users', href: 'admin-users.html', icon: 'U' }
-    ];
-
-    function renderLinks(items) {
-      return items.map(function (item) {
-        var badge = item.badge ? '<span class="ni-badge">' + item.badge + '</span>' : '';
-        return ''
-          + '<a class="nav-item" data-nav="' + item.key + '" href="' + item.href + '">'
-          + '<span class="ni-icon">' + item.icon + '</span>'
-          + item.label
-          + badge
-          + '</a>';
-      }).join('');
-    }
-
-    sidebar.innerHTML = ''
-      + '<div class="sidebar-section">Admin</div>'
-      + renderLinks(adminLinks)
-      + '<div class="sidebar-section">Operations</div>'
-      + renderLinks(opsLinks);
-
-    var activeLink = sidebar.querySelector('[data-nav="' + activeKey + '"]');
+    var activeLink = sidebar.querySelector('[data-admin-nav="' + activeKey + '"]');
     if (activeLink) {
       activeLink.classList.add('active');
     }
 
     return sidebar;
+  }
+
+  function getActiveKey() {
+    var activeKey = document.body.getAttribute('data-admin-active') || 'dashboard';
+    if (window.location.hash === '#escrow-holds') {
+      return 'escrow-holds';
+    }
+    return activeKey;
   }
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -57,26 +81,26 @@
       return;
     }
 
-    document.body.classList.add('app');
-    var activeKey = document.body.getAttribute('data-admin-active') || '';
+    document.body.classList.add('app', 'admin-portal');
+    var activeKey = getActiveKey();
 
-    if (!document.querySelector('.topnav')) {
+    if (!document.querySelector('.admin-topnav')) {
       var nav = buildTopnav();
       document.body.insertBefore(nav, document.body.firstChild);
     }
 
     var shell = document.createElement('div');
-    shell.className = 'app-shell';
+    shell.className = 'app-shell admin-shell';
 
     var sidebar = buildSidebar(activeKey);
     shell.appendChild(sidebar);
     shell.appendChild(main);
 
-    var existingShell = document.querySelector('.app-shell');
+    var existingShell = document.querySelector('.admin-shell') || document.querySelector('.app-shell');
     if (existingShell) {
       existingShell.replaceWith(shell);
     } else {
-      var navEl = document.querySelector('.topnav');
+      var navEl = document.querySelector('.admin-topnav') || document.querySelector('.topnav');
       if (navEl) {
         document.body.insertBefore(shell, navEl.nextSibling);
       } else {

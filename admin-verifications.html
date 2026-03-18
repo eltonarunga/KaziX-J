@@ -7,109 +7,250 @@
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="admin.css">
 <style>
-.verifications-grid{display:grid;grid-template-columns:1.05fr 0.95fr;gap:1.5rem}
-.queue-item{display:flex;justify-content:space-between;gap:1rem;padding:0.85rem 0;border-bottom:1px solid var(--border)}
-.queue-item:last-child{border-bottom:none}
-.queue-meta{display:flex;flex-direction:column;gap:0.3rem}
-.queue-name{font-weight:700}
-.queue-sub{font-size:0.8rem;color:var(--muted)}
-.queue-actions{display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center}
+.verification-queue{display:grid;gap:0.75rem}
+.kyc-row{border:1px solid var(--border);border-radius:8px;background:white;overflow:hidden}
+.kyc-summary{list-style:none;display:flex;justify-content:space-between;gap:1rem;align-items:center;padding:0.9rem 1rem;cursor:pointer}
+.kyc-summary::-webkit-details-marker{display:none}
+.kyc-summary:hover{background:var(--cream)}
 
-@media(max-width:1100px){
-  .verifications-grid{grid-template-columns:1fr}
+.kyc-meta{display:flex;gap:0.75rem;align-items:center;min-width:0}
+.kyc-avatar{width:38px;height:38px;border-radius:50%;background:var(--saffron);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;color:var(--ink);flex-shrink:0}
+.kyc-name{font-weight:700;font-size:0.86rem}
+.kyc-sub{font-size:0.76rem;color:var(--muted);margin-top:0.15rem}
+.kyc-id{font-size:0.74rem;color:var(--steel)}
+
+.status-pill{display:inline-flex;align-items:center;padding:0.2rem 0.6rem;border-radius:999px;font-size:0.65rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase}
+.status-pill.pending{background:rgba(245,166,35,0.15);color:#A1610C}
+.status-pill.approved{background:rgba(27,107,58,0.14);color:var(--green)}
+.status-pill.rejected{background:rgba(192,57,43,0.14);color:var(--rust)}
+
+.kyc-details{padding:1rem;border-top:1px solid var(--border);background:var(--cream)}
+.docs-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.75rem;margin-bottom:0.9rem}
+.doc-placeholder{min-height:150px;border:1.5px dashed var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.78rem;color:var(--muted);background:white}
+
+.details-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0.65rem;margin-bottom:0.95rem}
+.details-item{background:white;border:1px solid var(--border);border-radius:6px;padding:0.65rem}
+.details-label{font-size:0.64rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.2rem}
+.details-value{font-size:0.8rem;color:var(--ink)}
+
+.actions-row{display:flex;flex-wrap:wrap;gap:0.55rem;align-items:center}
+.reject-form{margin-top:0.75rem;padding:0.75rem;border:1px solid rgba(192,57,43,0.25);border-radius:6px;background:white}
+.reject-form label{font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:0.4rem}
+.reject-form select{width:100%;border:1.5px solid var(--border);border-radius:2px;padding:0.55rem 0.65rem;font-family:'DM Sans',sans-serif;font-size:0.8rem;background:white;margin-bottom:0.6rem}
+.reject-actions{display:flex;gap:0.45rem}
+
+@media(max-width:900px){
+  .kyc-summary{align-items:flex-start}
+  .docs-grid,.details-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
-<body class="app" data-admin-active="verifications">
+<body data-admin-active="verifications">
 <main class="main" data-admin-main>
   <div class="admin-header">
     <div>
-      <div class="page-title">Verification Queue</div>
-      <div class="page-sub">Review ID checks and professional credentials.</div>
+      <div class="page-title">KYC Verifications</div>
+      <div class="page-sub">Review submitted IDs, selfie matches, and verification details.</div>
     </div>
     <div class="admin-actions">
-      <button class="btn">Export CSV</button>
-      <button class="btn primary">Batch Approve</button>
+      <button class="btn">Export Queue</button>
+      <button class="btn primary">Auto-approve low risk</button>
     </div>
   </div>
 
-  <div class="stats-row">
-    <div class="stat-card c-rust">
-      <div class="sc-label">Pending KYC</div>
-      <div class="sc-value">23</div>
-      <div class="sc-sub">8 need manual review</div>
+  <section class="panel">
+    <div class="panel-head">
+      <div class="panel-title">Review Queue</div>
+      <span class="pill">23 pending</span>
     </div>
-    <div class="stat-card">
-      <div class="sc-label">Approved Today</div>
-      <div class="sc-value">41</div>
-      <div class="sc-sub">Avg review 12 mins</div>
-    </div>
-    <div class="stat-card c-green">
-      <div class="sc-label">Flagged</div>
-      <div class="sc-value">3</div>
-      <div class="sc-sub">Escalate to compliance</div>
-    </div>
-  </div>
+    <div class="panel-body">
+      <div class="verification-queue">
 
-  <div class="verifications-grid">
-    <section class="panel">
-      <div class="panel-head">
-        <div class="panel-title">Pending Reviews</div>
-        <span class="pill">Last 24 hrs</span>
-      </div>
-      <div class="panel-body">
-        <div class="queue-item">
-          <div class="queue-meta">
-            <div class="queue-name">Mary Wanjiku</div>
-            <div class="queue-sub">Fundi - Carpenter | Submitted Mar 18</div>
+        <details class="kyc-row" open>
+          <summary class="kyc-summary">
+            <div class="kyc-meta">
+              <div class="kyc-avatar">MW</div>
+              <div>
+                <div class="kyc-name">Mary Wanjiku</div>
+                <div class="kyc-sub">Carpenter | Submitted Mar 18, 11:08</div>
+                <div class="kyc-id">ID: 32******81</div>
+              </div>
+            </div>
+            <span class="status-pill pending">Pending</span>
+          </summary>
+          <div class="kyc-details">
+            <div class="docs-grid">
+              <div class="doc-placeholder">ID photo placeholder</div>
+              <div class="doc-placeholder">Selfie placeholder</div>
+            </div>
+            <div class="details-grid">
+              <div class="details-item"><div class="details-label">Phone</div><div class="details-value">+254 712 *** 381</div></div>
+              <div class="details-item"><div class="details-label">County</div><div class="details-value">Nairobi</div></div>
+              <div class="details-item"><div class="details-label">Trade</div><div class="details-value">Carpentry</div></div>
+              <div class="details-item"><div class="details-label">Document Type</div><div class="details-value">National ID</div></div>
+            </div>
+            <div class="actions-row">
+              <button class="btn primary">Approve</button>
+              <button class="btn danger" type="button" onclick="showRejectForm(this)">Reject</button>
+              <button class="btn ghost">Request resubmission</button>
+            </div>
+            <div class="reject-form" hidden>
+              <label>Rejection reason</label>
+              <select>
+                <option value="">Select reason</option>
+                <option value="blurry photo">Blurry photo</option>
+                <option value="selfie mismatch">Selfie mismatch</option>
+                <option value="id number mismatch">ID number mismatch</option>
+                <option value="other">Other</option>
+              </select>
+              <div class="reject-actions">
+                <button class="btn danger" type="button" onclick="confirmReject(this)">Confirm rejection</button>
+                <button class="btn" type="button" onclick="cancelReject(this)">Cancel</button>
+              </div>
+            </div>
           </div>
-          <div class="queue-actions">
-            <button class="btn">View</button>
-            <button class="btn primary">Approve</button>
-            <button class="btn danger">Reject</button>
-          </div>
-        </div>
-        <div class="queue-item">
-          <div class="queue-meta">
-            <div class="queue-name">Kevin Mutua</div>
-            <div class="queue-sub">Fundi - Electrician | Submitted Mar 18</div>
-          </div>
-          <div class="queue-actions">
-            <button class="btn">View</button>
-            <button class="btn primary">Approve</button>
-            <button class="btn danger">Reject</button>
-          </div>
-        </div>
-        <div class="queue-item">
-          <div class="queue-meta">
-            <div class="queue-name">Patricia Nyongesa</div>
-            <div class="queue-sub">Client - Business | Submitted Mar 17</div>
-          </div>
-          <div class="queue-actions">
-            <button class="btn">View</button>
-            <button class="btn primary">Approve</button>
-            <button class="btn danger">Reject</button>
-          </div>
-        </div>
-      </div>
-    </section>
+        </details>
 
-    <section class="panel">
-      <div class="panel-head">
-        <div class="panel-title">Verification Checklist</div>
+        <details class="kyc-row">
+          <summary class="kyc-summary">
+            <div class="kyc-meta">
+              <div class="kyc-avatar">KM</div>
+              <div>
+                <div class="kyc-name">Kevin Mutua</div>
+                <div class="kyc-sub">Electrician | Submitted Mar 18, 10:40</div>
+                <div class="kyc-id">ID: 28******66</div>
+              </div>
+            </div>
+            <span class="status-pill pending">Pending</span>
+          </summary>
+          <div class="kyc-details">
+            <div class="docs-grid"><div class="doc-placeholder">ID photo placeholder</div><div class="doc-placeholder">Selfie placeholder</div></div>
+            <div class="details-grid">
+              <div class="details-item"><div class="details-label">Phone</div><div class="details-value">+254 701 *** 266</div></div>
+              <div class="details-item"><div class="details-label">County</div><div class="details-value">Kiambu</div></div>
+              <div class="details-item"><div class="details-label">Trade</div><div class="details-value">Electrical</div></div>
+              <div class="details-item"><div class="details-label">Document Type</div><div class="details-value">National ID</div></div>
+            </div>
+            <div class="actions-row">
+              <button class="btn primary">Approve</button>
+              <button class="btn danger" type="button" onclick="showRejectForm(this)">Reject</button>
+              <button class="btn ghost">Request resubmission</button>
+            </div>
+            <div class="reject-form" hidden>
+              <label>Rejection reason</label>
+              <select>
+                <option value="">Select reason</option>
+                <option value="blurry photo">Blurry photo</option>
+                <option value="selfie mismatch">Selfie mismatch</option>
+                <option value="id number mismatch">ID number mismatch</option>
+                <option value="other">Other</option>
+              </select>
+              <div class="reject-actions">
+                <button class="btn danger" type="button" onclick="confirmReject(this)">Confirm rejection</button>
+                <button class="btn" type="button" onclick="cancelReject(this)">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <details class="kyc-row">
+          <summary class="kyc-summary">
+            <div class="kyc-meta">
+              <div class="kyc-avatar">PN</div>
+              <div>
+                <div class="kyc-name">Patricia Nyongesa</div>
+                <div class="kyc-sub">Painter | Submitted Mar 17, 18:12</div>
+                <div class="kyc-id">ID: 31******09</div>
+              </div>
+            </div>
+            <span class="status-pill approved">Approved</span>
+          </summary>
+          <div class="kyc-details">
+            <div class="docs-grid"><div class="doc-placeholder">ID photo placeholder</div><div class="doc-placeholder">Selfie placeholder</div></div>
+            <div class="details-grid">
+              <div class="details-item"><div class="details-label">Phone</div><div class="details-value">+254 733 *** 109</div></div>
+              <div class="details-item"><div class="details-label">County</div><div class="details-value">Mombasa</div></div>
+              <div class="details-item"><div class="details-label">Trade</div><div class="details-value">Painting</div></div>
+              <div class="details-item"><div class="details-label">Document Type</div><div class="details-value">National ID</div></div>
+            </div>
+            <div class="actions-row">
+              <button class="btn">Approved</button>
+              <button class="btn ghost">Request resubmission</button>
+            </div>
+          </div>
+        </details>
+
+        <details class="kyc-row">
+          <summary class="kyc-summary">
+            <div class="kyc-meta">
+              <div class="kyc-avatar">PO</div>
+              <div>
+                <div class="kyc-name">Peter Otieno</div>
+                <div class="kyc-sub">Mason | Submitted Mar 17, 12:26</div>
+                <div class="kyc-id">ID: 27******72</div>
+              </div>
+            </div>
+            <span class="status-pill rejected">Rejected</span>
+          </summary>
+          <div class="kyc-details">
+            <div class="docs-grid"><div class="doc-placeholder">ID photo placeholder</div><div class="doc-placeholder">Selfie placeholder</div></div>
+            <div class="details-grid">
+              <div class="details-item"><div class="details-label">Phone</div><div class="details-value">+254 726 *** 872</div></div>
+              <div class="details-item"><div class="details-label">County</div><div class="details-value">Nakuru</div></div>
+              <div class="details-item"><div class="details-label">Trade</div><div class="details-value">Masonry</div></div>
+              <div class="details-item"><div class="details-label">Document Type</div><div class="details-value">National ID</div></div>
+            </div>
+            <div class="actions-row">
+              <button class="btn primary">Approve</button>
+              <button class="btn ghost">Request resubmission</button>
+            </div>
+          </div>
+        </details>
+
       </div>
-      <div class="panel-body">
-        <div style="display:grid;gap:0.8rem;font-size:0.85rem;color:var(--steel)">
-          <div><span class="pill">1</span> Confirm ID document matches selfie photo.</div>
-          <div><span class="pill">2</span> Validate phone number and M-Pesa details.</div>
-          <div><span class="pill">3</span> Review trade certificate if provided.</div>
-          <div><span class="pill">4</span> Flag suspicious activity to compliance.</div>
-        </div>
-      </div>
-    </section>
-  </div>
+    </div>
+  </section>
 </main>
 
+<script>
+function showRejectForm(button) {
+  var block = button.closest('.kyc-details');
+  if (!block) return;
+  var form = block.querySelector('.reject-form');
+  if (!form) return;
+  form.hidden = false;
+  var select = form.querySelector('select');
+  if (select) select.focus();
+}
+
+function cancelReject(button) {
+  var form = button.closest('.reject-form');
+  if (!form) return;
+  form.hidden = true;
+}
+
+function confirmReject(button) {
+  var form = button.closest('.reject-form');
+  if (!form) return;
+  var select = form.querySelector('select');
+  var reason = select ? select.value : '';
+  if (!reason) {
+    alert('Select a rejection reason before confirming.');
+    return;
+  }
+
+  var row = button.closest('.kyc-row');
+  if (row) {
+    var pill = row.querySelector('.status-pill');
+    if (pill) {
+      pill.className = 'status-pill rejected';
+      pill.textContent = 'Rejected';
+    }
+  }
+
+  form.hidden = true;
+}
+</script>
 <script src="admin-shell.js" defer></script>
 </body>
 </html>
