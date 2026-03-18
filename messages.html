@@ -4,35 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Messages — KaziX</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
 <style>
-:root{--ink:#0D0D0D;--cream:#F5F0E8;--saffron:#F5A623;--rust:#C0392B;--green:#1B6B3A;--steel:#2C3E50;--muted:#7A7468;--border:rgba(13,13,13,0.1)}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);display:flex;flex-direction:column;height:100vh;overflow:hidden}
-body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:0.35}
-.topnav{display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:60px;background:var(--ink);flex-shrink:0;z-index:200}
-.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:-0.04em;color:#F5F0E8;text-decoration:none}.logo span{color:var(--saffron)}
-.topnav-right{display:flex;align-items:center;gap:1.25rem}
-.notif-btn{position:relative;background:rgba(245,240,232,0.08);border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#F5F0E8}
-.notif-dot{position:absolute;top:7px;right:7px;width:8px;height:8px;border-radius:50%;background:var(--saffron);border:2px solid var(--ink)}
-.user-chip{display:flex;align-items:center;gap:0.6rem;cursor:pointer;padding:0.3rem 0.75rem 0.3rem 0.3rem;border-radius:20px;background:rgba(245,240,232,0.08)}
-.user-avatar-sm{width:30px;height:30px;border-radius:50%;background:var(--saffron);display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;color:var(--ink)}
-.user-name{font-size:0.82rem;font-weight:500;color:#F5F0E8}
-.app-shell{display:flex;flex:1;overflow:hidden}
-
-/* SIDEBAR */
-.sidebar{width:220px;flex-shrink:0;background:white;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
-.sidebar-section{padding:1.25rem 1rem 0.5rem;font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
-.nav-item{display:flex;align-items:center;gap:0.75rem;padding:0.7rem 1rem;margin:0.1rem 0.5rem;border-radius:4px;cursor:pointer;font-size:0.875rem;color:var(--muted);text-decoration:none;transition:all 0.18s;font-weight:500}
-.nav-item:hover{background:var(--cream);color:var(--ink)}
-.nav-item.active{background:var(--ink);color:#F5F0E8}
-.nav-item .ni-icon{width:18px;text-align:center;font-size:1rem;flex-shrink:0}
-.nav-item .ni-badge{margin-left:auto;background:var(--saffron);color:var(--ink);font-size:0.62rem;font-weight:700;padding:0.15rem 0.45rem;border-radius:10px}
-.sidebar-bottom{margin-top:auto;padding:1rem;border-top:1px solid var(--border)}
-.sidebar-profile{display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border-radius:4px}
-.sp-avatar{width:36px;height:36px;border-radius:50%;background:var(--saffron);display:flex;align-items:center;justify-content:center;font-size:1rem}
-.sp-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem}
-.sp-role{font-size:0.68rem;color:var(--muted)}
+body.app{height:100vh;overflow:hidden}
 
 /* MESSAGES LAYOUT */
 .msg-shell{display:flex;flex:1;overflow:hidden}
@@ -111,12 +85,12 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 @media(max-width:900px){.sidebar{display:none}.conv-list{width:280px}}
 </style>
 </head>
-<body>
+<body class="app">
 <nav class="topnav">
   <a href="index.html" class="logo">Kazi<span>X</span></a>
   <div class="topnav-right">
     <button class="notif-btn">🔔<span class="notif-dot"></span></button>
-    <div class="user-chip"><div class="user-avatar-sm">AK</div><span class="user-name">Alex Kuria</span></div>
+    <div class="user-chip"><div class="user-avatar">AK</div><span class="user-name">Alex Kuria</span></div>
   </div>
 </nav>
 <div class="app-shell">
