@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — KaziX Pro</title>
+<link rel="stylesheet" href="../assets/css/styles.css">
+
+<style>
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.stat-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.25rem 1.5rem;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.c-green::before{background:var(--green)}
+.stat-card.c-saffron::before{background:var(--saffron)}
+.stat-card.c-ink::before{background:var(--ink)}
+.stat-card.c-rust::before{background:var(--rust)}
+.sc-label{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem}
+.sc-value{font-family:'Syne',sans-serif;font-weight:800;font-size:1.75rem;letter-spacing:-0.04em;color:var(--ink)}
+.sc-delta{font-size:0.72rem;color:var(--green);font-weight:600;margin-top:0.2rem}
+.avail-banner{display:flex;align-items:center;justify-content:space-between;background:var(--ink);color:#F5F0E8;border-radius:6px;padding:1rem 1.5rem;margin-bottom:2rem}
+.avail-left{display:flex;align-items:center;gap:0.85rem}
+.avail-dot{width:10px;height:10px;border-radius:50%;background:var(--saffron);flex-shrink:0}
+.avail-dot.offline{background:var(--muted)}
+.avail-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem}
+.avail-sub{font-size:0.72rem;color:rgba(245,240,232,0.5);margin-top:0.1rem}
+.avail-toggle-row{display:flex;align-items:center;gap:0.75rem;font-size:0.8rem;color:rgba(245,240,232,0.6)}
+.toggle-switch{position:relative;width:42px;height:24px;flex-shrink:0}
+.toggle-switch input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;inset:0;background:rgba(245,240,232,0.2);border-radius:12px;cursor:pointer;transition:background 0.2s}
+.toggle-slider::before{content:'';position:absolute;width:18px;height:18px;top:3px;left:3px;border-radius:50%;background:white;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
+.toggle-switch input:checked + .toggle-slider{background:var(--green)}
+.toggle-switch input:checked + .toggle-slider::before{transform:translateX(18px)}
+.quick-actions{display:flex;gap:0.75rem;margin-bottom:2rem;flex-wrap:wrap}
+.qa-btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.1rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem;border-radius:2px;cursor:pointer;text-decoration:none;transition:all 0.2s;border:1.5px solid var(--border);background:white;color:var(--ink)}
+.qa-btn:hover{border-color:var(--ink);background:var(--cream)}
+.qa-btn.primary{background:var(--ink);color:#F5F0E8;border-color:var(--ink)}
+.qa-btn.primary:hover{background:var(--green);border-color:var(--green)}
+.dash-grid{display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+.card{background:white;border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.card-head{padding:1.1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem}
+.card-link{font-size:0.78rem;color:var(--rust);text-decoration:none;font-weight:600}
+.card-link:hover{text-decoration:underline}
+.card-body{padding:1.5rem}
+.job-row{display:flex;align-items:center;gap:1rem;padding:0.9rem 1.5rem;border-bottom:1px solid var(--border)}
+.job-row:last-child{border-bottom:none}
+.jr-icon{width:38px;height:38px;border-radius:4px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.jr-info{flex:1;min-width:0}
+.jr-title{font-weight:500;font-size:0.875rem;color:var(--ink)}
+.jr-meta{font-size:0.72rem;color:var(--muted);margin-top:0.15rem;display:flex;gap:0.75rem}
+.jr-budget{font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;color:var(--ink);white-space:nowrap}
+.utag{display:inline-block;font-size:0.58rem;font-weight:700;padding:0.15rem 0.4rem;border-radius:2px;text-transform:uppercase;margin-left:0.4rem}
+.utag-urgent{background:var(--rust);color:white}
+.utag-new{background:var(--saffron);color:var(--ink)}
+.apply-btn{padding:0.4rem 0.85rem;background:var(--ink);color:#F5F0E8;font-family:'Syne',sans-serif;font-weight:700;font-size:0.72rem;border:none;border-radius:2px;cursor:pointer;transition:background 0.2s;white-space:nowrap}
+.apply-btn:hover{background:var(--green)}
+.contract-row{display:flex;align-items:center;gap:1rem;padding:0.9rem 1.5rem;border-bottom:1px solid var(--border)}
+.contract-row:last-child{border-bottom:none}
+.cr-avatar{width:36px;height:36px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;border:1px solid var(--border)}
+.cr-info{flex:1}
+.cr-title{font-weight:500;font-size:0.875rem}
+.cr-sub{font-size:0.72rem;color:var(--muted);margin-top:0.1rem}
+.status-pill{font-size:0.65rem;font-weight:700;padding:0.2rem 0.55rem;border-radius:2px;text-transform:uppercase}
+.sp-active{background:rgba(27,107,58,0.1);color:var(--green)}
+.sp-pending{background:rgba(245,166,35,0.15);color:#854F0B}
+.cr-amount{font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;text-align:right}
+.cr-amount-sub{font-size:0.62rem;color:var(--muted);font-weight:400}
+.rating-block{text-align:center;padding:1.25rem;border-bottom:1px solid var(--border)}
+.rating-big{font-family:'Syne',sans-serif;font-weight:800;font-size:2.5rem;letter-spacing:-0.06em}
+.rating-stars{color:var(--saffron);font-size:1rem;letter-spacing:2px;margin:0.2rem 0}
+.rating-count{font-size:0.72rem;color:var(--muted)}
+.mini-review{padding:0.75rem 0;border-bottom:1px solid var(--border)}
+.mini-review:last-child{border-bottom:none}
+.mr-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem}
+.mr-name{font-weight:600;font-size:0.82rem}
+.mr-stars{color:var(--saffron);font-size:0.72rem}
+.mr-text{font-size:0.78rem;color:var(--muted);line-height:1.5}
+.bar-chart{display:flex;align-items:flex-end;gap:5px;height:70px;margin-bottom:0.5rem}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bar{width:100%;border-radius:2px 2px 0 0;cursor:pointer;transition:opacity 0.2s}
+.bar:hover{opacity:0.75}
+.bar.filled{background:var(--steel);opacity:0.5}
+.bar.current{background:var(--ink);opacity:1}
+.bar-label{font-size:0.6rem;color:var(--muted)}
+.bar-label.now{font-weight:700;color:var(--ink)}
+.earn-total{font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;letter-spacing:-0.04em}
+.earn-sub{font-size:0.72rem;color:var(--muted)}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:900px){.sidebar{display:none}.stats-row{grid-template-columns:1fr 1fr}.dash-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body class="app">
+<nav class="topnav">
+  <a href="index.html" class="logo">Kazi<span>X</span></a>
+  <div class="topnav-right">
+    <button class="notif-btn" onclick="location.href='notifications.html'">🔔<span class="notif-dot"></span></button>
+    <div class="user-chip"><div class="user-avatar">JK</div><span class="user-name">James Kamau</span></div>
+  </div>
+</nav>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-section">Work</div>
+    <a class="nav-item active" href="worker-dashboard.html"><span class="ni-icon">📊</span>Dashboard</a>
+    <a class="nav-item" href="worker-jobs.html"><span class="ni-icon">🔍</span>Find Jobs<span class="ni-badge">8</span></a>
+    <a class="nav-item" href="my-applications.html"><span class="ni-icon">📋</span>My Applications<span class="ni-badge">3</span></a>
+    <a class="nav-item" href="worker-hires.html"><span class="ni-icon">🤝</span>Active Contracts<span class="ni-badge">2</span></a>
+    <div class="sidebar-section">Account</div>
+    <a class="nav-item" href="messages.html"><span class="ni-icon">💬</span>Messages<span class="ni-badge">1</span></a>
+    <a class="nav-item" href="worker-earnings.html"><span class="ni-icon">💳</span>Earnings</a>
+    <a class="nav-item" href="worker-reviews.html"><span class="ni-icon">⭐</span>My Reviews</a>
+    <a class="nav-item" href="worker-profile-edit.html"><span class="ni-icon">👤</span>My Profile</a>
+    <div class="sidebar-bottom">
+      <div class="sidebar-profile">
+        <div class="sp-avatar">🔧</div>
+        <div><div class="sp-name">James Kamau</div><div class="sp-role">Pro Account · Plumber</div></div>
+      </div>
+    </div>
+  </aside>
+  <main class="main">
+    <div style="animation:slideUp 0.4s ease both">
+      <div class="page-title">Good morning, James 👋</div>
+      <div class="page-sub">You have 8 new job alerts near you today</div>
+    </div>
+    <div class="avail-banner" style="animation:slideUp 0.4s 0.05s ease both">
+      <div class="avail-left">
+        <div class="avail-dot" id="availDot"></div>
+        <div><div class="avail-title" id="availTitle">You are available for work</div><div class="avail-sub" id="availSub">Clients and job alerts can reach you · Westlands, Nairobi</div></div>
+      </div>
+      <div class="avail-toggle-row">
+        <span id="availLabel">Available</span>
+        <label class="toggle-switch"><input type="checkbox" checked onchange="toggleAvail(this.checked)"><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+    <div class="quick-actions" style="animation:slideUp 0.4s 0.08s ease both">
+      <a href="worker-jobs.html" class="qa-btn primary">🔍 Browse Jobs</a>
+      <a href="my-applications.html" class="qa-btn">📋 Applications</a>
+      <a href="messages.html" class="qa-btn">💬 Messages</a>
+      <a href="worker-earnings.html" class="qa-btn">💳 Earnings</a>
+    </div>
+    <div class="stats-row" style="animation:slideUp 0.4s 0.1s ease both">
+      <div class="stat-card c-green"><div class="sc-label">This Month (KES)</div><div class="sc-value">87,400</div><div class="sc-delta">↑ 16% vs last month</div></div>
+      <div class="stat-card c-saffron"><div class="sc-label">Active Contracts</div><div class="sc-value">2</div><div class="sc-delta">1 starts tomorrow</div></div>
+      <div class="stat-card c-ink"><div class="sc-label">Jobs Completed</div><div class="sc-value">127</div><div class="sc-delta">↑ 24 this month</div></div>
+      <div class="stat-card c-rust"><div class="sc-label">My Rating</div><div class="sc-value">4.9★</div><div class="sc-delta">Top 5% of plumbers</div></div>
+    </div>
+    <div class="dash-grid" style="animation:slideUp 0.4s 0.15s ease both">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Nearby Job Alerts <span style="background:var(--saffron);color:var(--ink);font-size:0.62rem;font-weight:700;padding:0.15rem 0.45rem;border-radius:10px;margin-left:0.4rem">8 new</span></div>
+          <a href="worker-jobs.html" class="card-link">View all →</a>
+        </div>
+        <div>
+          <div class="job-row">
+            <div class="jr-icon">🚿</div>
+            <div class="jr-info"><div class="jr-title">Burst pipe — kitchen <span class="utag utag-urgent">Urgent</span></div><div class="jr-meta"><span>📍 Kilimani 1.8km</span><span>12 min ago</span><span>0 apps</span></div></div>
+            <div style="text-align:right"><div class="jr-budget">KES 1,500</div><button class="apply-btn" style="margin-top:0.3rem" onclick="location.href='job-detail.html'">Apply →</button></div>
+          </div>
+          <div class="job-row">
+            <div class="jr-icon">🚿</div>
+            <div class="jr-info"><div class="jr-title">Install bathroom fixtures — Westlands <span class="utag utag-new">New</span></div><div class="jr-meta"><span>📍 Westlands 0.9km</span><span>2 hrs ago</span><span>1 app</span></div></div>
+            <div style="text-align:right"><div class="jr-budget">KES 3,500</div><button class="apply-btn" style="margin-top:0.3rem" onclick="location.href='job-detail.html'">Apply →</button></div>
+          </div>
+          <div class="job-row">
+            <div class="jr-icon">💧</div>
+            <div class="jr-info"><div class="jr-title">Water tank repair — Parklands</div><div class="jr-meta"><span>📍 Parklands 3.1km</span><span>4 hrs ago</span><span>2 apps</span></div></div>
+            <div style="text-align:right"><div class="jr-budget">KES 2,000</div><button class="apply-btn" style="margin-top:0.3rem" onclick="location.href='job-detail.html'">Apply →</button></div>
+          </div>
+          <div class="job-row">
+            <div class="jr-icon">☀️</div>
+            <div class="jr-info"><div class="jr-title">Solar water heater — Karen</div><div class="jr-meta"><span>📍 Karen 8.4km</span><span>Yesterday</span><span>3 apps</span></div></div>
+            <div style="text-align:right"><div class="jr-budget">KES 8,000</div><button class="apply-btn" style="margin-top:0.3rem" onclick="location.href='job-detail.html'">Apply →</button></div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1.5rem">
+        <div class="card">
+          <div class="rating-block"><div class="rating-big">4.9</div><div class="rating-stars">★★★★★</div><div class="rating-count">127 reviews</div></div>
+          <div style="padding:0.75rem 1.25rem">
+            <div class="mini-review"><div class="mr-top"><span class="mr-name">Alex K.</span><span class="mr-stars">★★★★★</span></div><div class="mr-text">"Fixed burst pipe in 2 hours. Highly reliable."</div></div>
+            <div class="mini-review"><div class="mr-top"><span class="mr-name">Purity N.</span><span class="mr-stars">★★★★★</span></div><div class="mr-text">"Solar heater installed perfectly. Very professional."</div></div>
+            <a href="worker-reviews.html" class="card-link" style="display:block;margin-top:0.75rem;font-size:0.78rem">View all →</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Monthly Earnings</div><a href="worker-earnings.html" class="card-link">Details →</a></div>
+          <div class="card-body">
+            <div class="bar-chart">
+              <div class="bar-wrap"><div class="bar filled" style="height:52%"></div><div class="bar-label">Oct</div></div>
+              <div class="bar-wrap"><div class="bar filled" style="height:48%"></div><div class="bar-label">Nov</div></div>
+              <div class="bar-wrap"><div class="bar filled" style="height:65%"></div><div class="bar-label">Dec</div></div>
+              <div class="bar-wrap"><div class="bar filled" style="height:60%"></div><div class="bar-label">Feb</div></div>
+              <div class="bar-wrap"><div class="bar current" style="height:87%"></div><div class="bar-label now">Mar</div></div>
+            </div>
+            <div class="earn-total">KES 87,400</div>
+            <div class="earn-sub">This month · <span style="color:var(--green);font-weight:600">↑ 16%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="animation:slideUp 0.4s 0.2s ease both">
+      <div class="card-head"><div class="card-title">Active Contracts</div><a href="worker-hires.html" class="card-link">View all →</a></div>
+      <div>
+        <div class="contract-row">
+          <div class="cr-avatar">🏠</div>
+          <div class="cr-info"><div class="cr-title">Fix leaking pipe — Westlands kitchen</div><div class="cr-sub">Alex Kuria · Booking #KX-0187 · Today</div></div>
+          <span class="status-pill sp-active">● In Progress</span>
+          <div class="cr-amount">KES 800<div class="cr-amount-sub">in escrow</div></div>
+        </div>
+        <div class="contract-row">
+          <div class="cr-avatar">🏢</div>
+          <div class="cr-info"><div class="cr-title">Commercial pipe installation — CBD office</div><div class="cr-sub">FutureBuilds Ltd · Booking #KX-0201 · Tomorrow 9AM</div></div>
+          <span class="status-pill sp-pending">Confirmed · Thu</span>
+          <div class="cr-amount">KES 12,000<div class="cr-amount-sub">in escrow</div></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script>
+function toggleAvail(on){
+  document.getElementById('availDot').className='avail-dot'+(on?'':' offline');
+  document.getElementById('availTitle').textContent=on?'You are available for work':'You are offline';
+  document.getElementById('availSub').textContent=on?'Clients and job alerts can reach you · Westlands, Nairobi':'Job alerts and messages are paused';
+  document.getElementById('availLabel').textContent=on?'Available':'Offline';
+}
+</script>
+
+<nav class="mobile-nav" aria-label="Primary">
+  <a class="mobile-nav-item active" href="worker-dashboard.html"><span class="mn-icon">📊</span><span class="mn-label">Dashboard</span></a>
+  <a class="mobile-nav-item" href="worker-jobs.html"><span class="mn-icon">🔍</span><span class="mn-label">Jobs</span></a>
+  <a class="mobile-nav-item" href="my-applications.html"><span class="mn-icon">📋</span><span class="mn-label">Applications</span></a>
+  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon">💬</span><span class="mn-label">Messages</span></a>
+  <div class="mobile-nav-more">
+    <button class="mobile-nav-item mobile-nav-more-toggle" type="button" aria-controls="mobile-drawer" aria-expanded="false" aria-label="Open navigation menu">
+      <span class="mn-icon">⋯</span><span class="mn-label">More</span>
+    </button>
+    <div class="mobile-nav-drawer" id="mobile-drawer" role="navigation" aria-label="Secondary pages" aria-hidden="true">
+      <a class="mobile-nav-drawer-item" href="worker-profile-edit.html">👤 Profile</a>
+      <a class="mobile-nav-drawer-item" href="worker-earnings.html">💳 Earnings</a>
+      <a class="mobile-nav-drawer-item" href="worker-reviews.html">⭐ Reviews</a>
+    </div>
+  </div>
+</nav>
+
+
+<script src="../assets/js/mobile-nav.js"></script>
+</body>
+</html>

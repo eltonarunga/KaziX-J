@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Us - KaziX</title>
+<link rel="stylesheet" href="../assets/css/styles.css">
+<style>
+:root{--card-bg:#FFFFFF}
+
+nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:1.2rem 6%;
+  position:sticky;
+  top:0;
+  background:rgba(245,240,232,0.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  z-index:100;
+}
+
+.nav-links{display:flex;gap:1.8rem;list-style:none;align-items:center}
+.nav-links a{font-size:0.875rem;font-weight:500;color:var(--muted);text-decoration:none;transition:color 0.2s}
+.nav-links a:hover{color:var(--ink)}
+.nav-cta{background:var(--ink);color:var(--cream)!important;padding:0.55rem 1.2rem;border-radius:2px;font-weight:600;text-decoration:none;transition:background 0.2s}
+.nav-cta:hover{background:var(--green)}
+
+.page-hero{
+  background:linear-gradient(135deg,#0D0D0D 0%, #1B6B3A 55%, #F5A623 100%);
+  color:var(--cream);
+  padding:4.5rem 6% 4rem;
+  position:relative;
+  overflow:hidden;
+}
+
+.page-hero::after{
+  content:'ABOUT';
+  position:absolute;
+  right:-6%;
+  top:10%;
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:clamp(90px,18vw,240px);
+  opacity:0.08;
+  letter-spacing:-0.06em;
+  pointer-events:none;
+}
+
+.eyebrow{font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(245,240,232,0.7);margin-bottom:1rem}
+.hero-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2.2rem,4.5vw,3.4rem);letter-spacing:-0.04em;margin-bottom:1rem}
+.hero-sub{max-width:640px;font-size:1rem;line-height:1.7;color:rgba(245,240,232,0.75)}
+
+.page-content{padding:3.5rem 6% 4.5rem;max-width:1100px;margin:0 auto}
+
+.story-grid{display:grid;grid-template-columns:1.2fr 0.8fr;gap:1.5rem;margin-bottom:2.5rem}
+.story-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.8rem}
+.story-card h2{font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;margin-bottom:0.75rem}
+.story-card p{color:var(--steel);font-size:0.95rem;line-height:1.75;margin-bottom:0.9rem}
+
+.stat-stack{background:var(--ink);color:#F5F0E8;border-radius:6px;padding:1.6rem;display:grid;gap:1.2rem}
+.stat-item{border-bottom:1px solid rgba(245,240,232,0.12);padding-bottom:1rem}
+.stat-item:last-child{border-bottom:none;padding-bottom:0}
+.stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;color:var(--saffron)}
+.stat-label{font-size:0.8rem;color:rgba(245,240,232,0.6);margin-top:0.2rem}
+
+.values-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2.5rem}
+.value-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.5rem}
+.value-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:0.5rem}
+.value-text{font-size:0.85rem;color:var(--muted);line-height:1.6}
+
+.trust-banner{background:rgba(27,107,58,0.08);border:1px solid rgba(27,107,58,0.2);border-radius:6px;padding:1.8rem;display:grid;grid-template-columns:1.3fr 0.7fr;gap:1.5rem;align-items:center}
+.trust-banner h3{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;margin-bottom:0.6rem}
+.trust-banner p{color:var(--steel);font-size:0.9rem;line-height:1.7}
+.trust-actions{display:flex;flex-direction:column;gap:0.6rem}
+.trust-actions a{display:inline-flex;justify-content:center;padding:0.7rem 1rem;border-radius:2px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem;text-decoration:none;transition:all 0.2s}
+.trust-primary{background:var(--ink);color:#F5F0E8}
+.trust-primary:hover{background:var(--green)}
+.trust-outline{border:1.5px solid var(--ink);color:var(--ink)}
+.trust-outline:hover{background:var(--ink);color:#F5F0E8}
+
+footer{background:var(--ink);color:#F5F0E8;padding:3rem 6% 2rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem}
+.fb .logo{display:block;margin-bottom:0.75rem}
+.fb p{font-size:0.85rem;color:rgba(245,240,232,0.5);line-height:1.7;max-width:280px}
+.fc h4{font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(245,240,232,0.45);margin-bottom:1rem}
+.fc ul{list-style:none;margin:0;padding:0}
+.fc ul li{margin-bottom:0.6rem}
+.fc ul a{color:rgba(245,240,232,0.7);text-decoration:none;font-size:0.875rem;transition:color 0.2s}
+.fc ul a:hover{color:var(--saffron)}
+.footer-bottom{background:var(--ink);border-top:1px solid rgba(245,240,232,0.08);padding:1.25rem 6%;display:flex;justify-content:space-between;font-size:0.78rem;color:rgba(245,240,232,0.35)}
+
+@media(max-width:900px){
+  .story-grid{grid-template-columns:1fr}
+  .values-grid{grid-template-columns:1fr}
+  .trust-banner{grid-template-columns:1fr}
+  footer{grid-template-columns:1fr 1fr}
+  .footer-bottom{flex-direction:column;gap:0.5rem}
+  nav{flex-direction:column;align-items:flex-start;gap:0.75rem}
+  .nav-links{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">Kazi<span>X</span></a>
+  <ul class="nav-links">
+    <li><a href="find-workers.html">Find Workers</a></li>
+    <li><a href="post-job.html">Post a Job</a></li>
+    <li><a href="for-pros.html">For Pros</a></li>
+    <li><a href="help-centre.html">Help Centre</a></li>
+  </ul>
+  <a href="login.html" class="nav-cta">Get Started</a>
+</nav>
+
+<section class="page-hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Who We Are</div>
+    <h1 class="hero-title">Built to make hiring fundis feel effortless</h1>
+    <p class="hero-sub">KaziX connects homeowners and businesses with skilled fundis, backed by escrow payments and a dispute process designed to protect both sides.</p>
+  </div>
+</section>
+
+<section class="page-content">
+  <div class="story-grid">
+    <div class="story-card">
+      <h2>Our Mission</h2>
+      <p>We believe great local services should be easy to find and safe to pay for. KaziX was created to remove the stress from hiring, by verifying pros, holding payments in escrow, and giving both parties clear expectations.</p>
+      <p>We partner with trusted payment infrastructure to make sure work is confirmed before funds are released, while keeping the experience fast and familiar.</p>
+    </div>
+    <div class="stat-stack">
+      <div class="stat-item">
+        <div class="stat-num">4,200+</div>
+        <div class="stat-label">Verified fundis in the network</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">92%</div>
+        <div class="stat-label">Jobs completed on time</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">48 hrs</div>
+        <div class="stat-label">Average dispute resolution time</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="values-grid">
+    <div class="value-card">
+      <div class="value-title">Trust First</div>
+      <div class="value-text">Verification, reviews, and escrow protect the relationship between clients and fundis.</div>
+    </div>
+    <div class="value-card">
+      <div class="value-title">Clear Communication</div>
+      <div class="value-text">Every booking includes milestones, expectations, and shared progress updates.</div>
+    </div>
+    <div class="value-card">
+      <div class="value-title">Dignified Work</div>
+      <div class="value-text">We build tools that help fundis price fairly, track earnings, and grow their trade.</div>
+    </div>
+  </div>
+
+  <div class="trust-banner">
+    <div>
+      <h3>Trust and safety are built in</h3>
+      <p>From ID checks to escrow releases, the platform is designed to keep disputes rare and resolve them fast when they happen.</p>
+    </div>
+    <div class="trust-actions">
+      <a href="how-it-works.html" class="trust-primary">See How It Works</a>
+      <a href="help-centre.html" class="trust-outline">Visit Help Centre</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="fb">
+    <a href="index.html" class="logo">Kazi<span>X</span></a>
+    <p>Trusted fundis, protected payments, and a dispute process that puts fairness first.</p>
+  </div>
+  <div class="fc">
+    <h4>Company</h4>
+    <ul>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="careers.html">Careers</a></li>
+    </ul>
+  </div>
+  <div class="fc">
+    <h4>Support</h4>
+    <ul>
+      <li><a href="help-centre.html">Help Centre</a></li>
+      <li><a href="dispute.html">Disputes</a></li>
+      <li><a href="privacy.html">Privacy Policy</a></li>
+      <li><a href="terms.html">Terms</a></li>
+    </ul>
+  </div>
+  <div class="fc">
+    <h4>Product</h4>
+    <ul>
+      <li><a href="find-workers.html">Find Workers</a></li>
+      <li><a href="post-job.html">Post a Job</a></li>
+      <li><a href="for-pros.html">For Pros</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <span>Built for Kenya. Escrow payments via M-Pesa.</span>
+  <span>Copyright 2026 KaziX.</span>
+</div>
+</body>
+</html>

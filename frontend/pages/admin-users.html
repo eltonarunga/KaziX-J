@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Users - KaziX</title>
+<link rel="stylesheet" href="../assets/css/styles.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+<style>
+.user-filters{display:flex;flex-wrap:wrap;gap:0.65rem;align-items:center;margin-bottom:1rem}
+.user-filters select,.user-filters .search-input{border:1.5px solid var(--border);border-radius:2px;padding:0.55rem 0.7rem;font-family:'DM Sans',sans-serif;font-size:0.82rem;background:white;color:var(--ink)}
+.user-filters .search-input{min-width:240px}
+
+.bulk-actions{display:flex;justify-content:space-between;align-items:center;gap:0.75rem;padding:0.75rem 0.85rem;border:1px solid rgba(13,13,13,0.12);border-radius:6px;background:var(--cream);margin-bottom:0.85rem}
+.bulk-left{font-size:0.8rem;font-weight:600;color:var(--steel)}
+.bulk-right{display:flex;gap:0.5rem;flex-wrap:wrap}
+
+.table-wrap{overflow-x:auto}
+.table td,.table th{padding-right:0.9rem;white-space:nowrap}
+.table td:nth-child(2){min-width:170px;white-space:normal}
+.name-main{font-weight:700;font-size:0.84rem}
+.name-sub{font-size:0.74rem;color:var(--muted);margin-top:0.12rem}
+
+.user-status{display:inline-flex;align-items:center;padding:0.2rem 0.6rem;border-radius:999px;font-size:0.66rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase}
+.user-status.active{background:rgba(27,107,58,0.14);color:var(--green)}
+.user-status.suspended{background:rgba(192,57,43,0.14);color:var(--rust)}
+
+.action-group{display:flex;gap:0.4rem;align-items:center}
+.table-action{padding:0.3rem 0.58rem;border:1px solid var(--border);border-radius:2px;background:white;font-family:'Syne',sans-serif;font-size:0.7rem;font-weight:700;cursor:pointer;color:var(--ink);text-decoration:none}
+.table-action.flag{border-color:rgba(245,166,35,0.5);color:#A1610C}
+.table-action.suspend{border-color:rgba(192,57,43,0.35);color:var(--rust)}
+.table-action.unsuspend{border-color:rgba(27,107,58,0.35);color:var(--green)}
+
+@media(max-width:760px){
+  .user-filters .search-input{min-width:100%}
+}
+</style>
+</head>
+<body data-admin-active="users">
+<main class="main" data-admin-main>
+  <div class="admin-header">
+    <div>
+      <div class="page-title">User Management</div>
+      <div class="page-sub">Manage user status, review accounts, and run bulk moderation actions.</div>
+    </div>
+    <div class="admin-actions">
+      <button class="btn">Invite admin</button>
+      <button class="btn primary">Export all users</button>
+    </div>
+  </div>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div class="panel-title">Users</div>
+      <span class="pill">12,480 total</span>
+    </div>
+    <div class="panel-body">
+      <div class="user-filters">
+        <select aria-label="Filter by role">
+          <option>All roles</option>
+          <option>Client</option>
+          <option>Fundi</option>
+        </select>
+        <select aria-label="Filter by status">
+          <option>All statuses</option>
+          <option>Active</option>
+          <option>Suspended</option>
+        </select>
+        <select aria-label="Filter by county">
+          <option>All counties</option>
+          <option>Nairobi</option>
+          <option>Kiambu</option>
+          <option>Mombasa</option>
+          <option>Nakuru</option>
+          <option>Kisumu</option>
+        </select>
+        <input class="search-input" type="search" placeholder="Search by name or phone">
+        <button class="btn">Apply</button>
+      </div>
+
+      <div class="bulk-actions" id="bulkActions" hidden>
+        <div class="bulk-left" id="bulkCount">0 selected</div>
+        <div class="bulk-right">
+          <button class="btn danger">Suspend selected</button>
+          <button class="btn">Export CSV</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th><input id="selectAllUsers" type="checkbox" aria-label="Select all users"></th>
+              <th>Name</th>
+              <th>Role</th>
+              <th>Phone</th>
+              <th>County</th>
+              <th>Joined</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input class="user-select" type="checkbox" aria-label="Select Alex Kuria"></td>
+              <td><div class="name-main">Alex Kuria</div><div class="name-sub">Client ID: CL-2231</div></td>
+              <td>Client</td>
+              <td>+254 712 *** 678</td>
+              <td>Nairobi</td>
+              <td>Nov 10, 2024</td>
+              <td><span class="user-status active">Active</span></td>
+              <td>
+                <div class="action-group">
+                  <a class="table-action" href="client-profile.html">View profile</a>
+                  <button class="table-action suspend suspend-toggle" type="button">Suspend</button>
+                  <button class="table-action flag" type="button">Flag for review</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><input class="user-select" type="checkbox" aria-label="Select James Kamau"></td>
+              <td><div class="name-main">James Kamau</div><div class="name-sub">Fundi ID: FD-8812</div></td>
+              <td>Fundi</td>
+              <td>+254 701 *** 314</td>
+              <td>Kiambu</td>
+              <td>Jan 14, 2025</td>
+              <td><span class="user-status active">Active</span></td>
+              <td>
+                <div class="action-group">
+                  <a class="table-action" href="worker-profile.html">View profile</a>
+                  <button class="table-action suspend suspend-toggle" type="button">Suspend</button>
+                  <button class="table-action flag" type="button">Flag for review</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><input class="user-select" type="checkbox" aria-label="Select Mercy Wairimu"></td>
+              <td><div class="name-main">Mercy Wairimu</div><div class="name-sub">Client ID: CL-1740</div></td>
+              <td>Client</td>
+              <td>+254 733 *** 294</td>
+              <td>Nakuru</td>
+              <td>Sep 22, 2024</td>
+              <td><span class="user-status suspended">Suspended</span></td>
+              <td>
+                <div class="action-group">
+                  <a class="table-action" href="client-profile.html">View profile</a>
+                  <button class="table-action unsuspend suspend-toggle" type="button">Unsuspend</button>
+                  <button class="table-action flag" type="button">Flag for review</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><input class="user-select" type="checkbox" aria-label="Select Rose Akinyi"></td>
+              <td><div class="name-main">Rose Akinyi</div><div class="name-sub">Fundi ID: FD-5620</div></td>
+              <td>Fundi</td>
+              <td>+254 748 *** 051</td>
+              <td>Kisumu</td>
+              <td>Feb 02, 2025</td>
+              <td><span class="user-status active">Active</span></td>
+              <td>
+                <div class="action-group">
+                  <a class="table-action" href="worker-profile.html">View profile</a>
+                  <button class="table-action suspend suspend-toggle" type="button">Suspend</button>
+                  <button class="table-action flag" type="button">Flag for review</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><input class="user-select" type="checkbox" aria-label="Select Patricia Nyongesa"></td>
+              <td><div class="name-main">Patricia Nyongesa</div><div class="name-sub">Fundi ID: FD-7721</div></td>
+              <td>Fundi</td>
+              <td>+254 722 *** 443</td>
+              <td>Mombasa</td>
+              <td>Mar 09, 2025</td>
+              <td><span class="user-status active">Active</span></td>
+              <td>
+                <div class="action-group">
+                  <a class="table-action" href="worker-profile.html">View profile</a>
+                  <button class="table-action suspend suspend-toggle" type="button">Suspend</button>
+                  <button class="table-action flag" type="button">Flag for review</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  var selectAll = document.getElementById('selectAllUsers');
+  var bulkActions = document.getElementById('bulkActions');
+  var bulkCount = document.getElementById('bulkCount');
+  var checkboxes = Array.prototype.slice.call(document.querySelectorAll('.user-select'));
+
+  function updateBulkState() {
+    var selected = checkboxes.filter(function (checkbox) { return checkbox.checked; });
+    var count = selected.length;
+
+    bulkActions.hidden = count === 0;
+    bulkCount.textContent = count + ' selected';
+
+    if (!selectAll) return;
+    if (count === 0) {
+      selectAll.checked = false;
+      selectAll.indeterminate = false;
+      return;
+    }
+
+    if (count === checkboxes.length) {
+      selectAll.checked = true;
+      selectAll.indeterminate = false;
+      return;
+    }
+
+    selectAll.checked = false;
+    selectAll.indeterminate = true;
+  }
+
+  if (selectAll) {
+    selectAll.addEventListener('change', function () {
+      checkboxes.forEach(function (checkbox) {
+        checkbox.checked = selectAll.checked;
+      });
+      updateBulkState();
+    });
+  }
+
+  checkboxes.forEach(function (checkbox) {
+    checkbox.addEventListener('change', updateBulkState);
+  });
+
+  Array.prototype.slice.call(document.querySelectorAll('.suspend-toggle')).forEach(function (button) {
+    button.addEventListener('click', function () {
+      var row = button.closest('tr');
+      if (!row) return;
+      var status = row.querySelector('.user-status');
+      if (!status) return;
+
+      var currentlyActive = status.classList.contains('active');
+      status.className = currentlyActive ? 'user-status suspended' : 'user-status active';
+      status.textContent = currentlyActive ? 'Suspended' : 'Active';
+
+      button.textContent = currentlyActive ? 'Unsuspend' : 'Suspend';
+      button.classList.toggle('suspend', !currentlyActive);
+      button.classList.toggle('unsuspend', currentlyActive);
+    });
+  });
+
+  updateBulkState();
+})();
+</script>
+<script src="../assets/js/admin-shell.js" defer></script>
+</body>
+</html>

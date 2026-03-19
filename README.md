@@ -28,20 +28,27 @@ KaziX is a modern marketplace designed to connect skilled Kenyan workers (fundis
 
 ```text
 KaziX/
-├── index.html              # Landing Page
-├── client-dashboard.html   # Dashboard for clients to manage jobs
-├── worker-dashboard.html   # Dashboard for workers (Fundis)
-├── worker-profile.html     # Detailed public profile for workers
-├── find-workers.html       # Search and filter interface for clients
-├── post-job.html           # Job posting interface
-├── for-pros.html           # Marketing page for service providers
-├── styles.css              # Global styles and design tokens
-└── ...                     # Additional application pages (Login, Register, Payments, etc.)
+├── frontend/
+│   ├── pages/
+│   │   ├── index.html              # Landing page
+│   │   ├── client-dashboard.html   # Dashboard for clients to manage jobs
+│   │   ├── worker-dashboard.html   # Dashboard for workers (Fundis)
+│   │   └── ...                     # All frontend HTML pages
+│   └── assets/
+│       ├── css/
+│       │   ├── styles.css          # Global styles and design tokens
+│       │   └── admin.css
+│       └── js/
+│           ├── mobile-nav.js
+│           ├── admin-shell.js
+│           └── admin-disputes.js
+├── backend/                    # Backend scaffolding
+└── README.md
 ```
 
 ## 🚀 Getting Started
 
-Since this is a static frontend project, you can simply open `index.html` in any modern web browser to view the application.
+Since this is a static frontend project, you can simply open `frontend/pages/index.html` in any modern web browser to view the application.
 
 ```bash
 # Clone the repository
@@ -50,8 +57,8 @@ git clone https://github.com/your-username/kazix.git
 # Navigate to the directory
 cd kazix
 
-# Open index.html
-open index.html
+# Open the frontend landing page
+open frontend/pages/index.html
 ```
 
 ## 🇰🇪 Built for Kenya

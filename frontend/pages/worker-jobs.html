@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find Jobs — KaziX</title>
+<link rel="stylesheet" href="../assets/css/styles.css">
+
+<style>
+.jobs-layout{display:grid;grid-template-columns:240px 1fr;gap:1.5rem;align-items:start}
+.filters{position:sticky;top:80px;background:white;border:1px solid var(--border);border-radius:6px;padding:1.5rem;animation:slideUp 0.4s ease both}
+.filter-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center}
+.filter-clear{font-size:0.78rem;color:var(--rust);cursor:pointer;font-weight:500}
+.filter-section{margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border)}
+.filter-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.filter-label{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem}
+.filter-option{display:flex;align-items:center;gap:0.6rem;cursor:pointer;font-size:0.875rem;color:var(--ink);margin-bottom:0.4rem}
+.filter-option input{width:15px;height:15px;accent-color:var(--ink);cursor:pointer}
+.range-row{display:flex;align-items:center;gap:0.5rem;margin-top:0.4rem}
+.range-input{flex:1;padding:0.45rem 0.6rem;border:1px solid var(--border);border-radius:2px;font-size:0.82rem;font-family:'DM Sans',sans-serif;background:var(--cream);outline:none;color:var(--ink)}
+.range-input:focus{border-color:var(--ink)}
+.apply-filter-btn{width:100%;padding:0.7rem;background:var(--ink);color:#F5F0E8;font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;border:none;border-radius:2px;cursor:pointer;transition:background 0.2s;margin-top:0.5rem}
+.apply-filter-btn:hover{background:var(--green)}
+.results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.75rem}
+.results-count{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem}
+.sort-sel{padding:0.45rem 0.75rem;border:1px solid var(--border);border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.82rem;background:white;color:var(--ink);outline:none;cursor:pointer}
+.active-filters{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.25rem}
+.active-tag{display:inline-flex;align-items:center;gap:0.4rem;background:var(--ink);color:#F5F0E8;font-size:0.72rem;padding:0.25rem 0.65rem;border-radius:2px}
+.active-tag button{background:none;border:none;color:#F5F0E8;cursor:pointer;font-size:0.85rem;opacity:0.7;line-height:1;padding:0}
+.active-tag button:hover{opacity:1}
+.jobs-list{display:flex;flex-direction:column;gap:0.85rem}
+.job-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.4rem;transition:box-shadow 0.2s,transform 0.2s;position:relative;overflow:hidden;cursor:pointer;animation:slideUp 0.4s ease both}
+.job-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.06);transform:translateX(3px)}
+.job-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--border);transition:background 0.2s}
+.job-card:hover::before{background:var(--ink)}
+.job-card.urgent::before{background:var(--rust)}
+.jc-top{display:flex;align-items:flex-start;gap:1rem;margin-bottom:0.85rem}
+.jc-icon{width:42px;height:42px;border-radius:4px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.jc-info{flex:1;min-width:0}
+.jc-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;margin-bottom:0.2rem}
+.jc-meta{font-size:0.75rem;color:var(--muted);display:flex;gap:0.75rem;flex-wrap:wrap}
+.jc-right{display:flex;flex-direction:column;align-items:flex-end;gap:0.35rem;flex-shrink:0}
+.jc-budget{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem}
+.jc-budget-sub{font-size:0.65rem;color:var(--muted)}
+.utag{font-size:0.58rem;font-weight:700;padding:0.15rem 0.4rem;border-radius:2px;text-transform:uppercase;margin-left:0.4rem}
+.utag-urgent{background:var(--rust);color:white}
+.utag-new{background:var(--saffron);color:var(--ink)}
+.jc-desc{font-size:0.82rem;color:var(--muted);line-height:1.6;margin-bottom:0.85rem;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.jc-footer{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.jc-client{display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;color:var(--muted)}
+.jc-client-av{width:20px;height:20px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:0.65rem;border:1px solid var(--border)}
+.apply-btn{padding:0.45rem 1rem;background:var(--ink);color:#F5F0E8;font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;border:none;border-radius:2px;cursor:pointer;transition:background 0.2s}
+.apply-btn:hover{background:var(--green)}
+.jc-posted{font-size:0.72rem;color:var(--muted);margin-left:auto}
+.pagination{display:flex;align-items:center;justify-content:center;gap:0.4rem;margin-top:2rem}
+.pg-btn{width:34px;height:34px;border:1px solid var(--border);border-radius:2px;background:white;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;color:var(--ink)}
+.pg-btn.active{background:var(--ink);color:#F5F0E8;border-color:var(--ink)}
+.pg-btn:hover:not(.active):not(:disabled){background:var(--cream)}
+.pg-btn:disabled{opacity:0.35;cursor:default}
+/* APPLY MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(13,13,13,0.6);z-index:1000;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:white;border-radius:6px;padding:2rem;max-width:460px;width:92%;animation:slideUp 0.3s ease both}
+.modal-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;margin-bottom:0.35rem}
+.modal-sub{font-size:0.82rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6}
+.field-label{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:0.4rem}
+.field-input{width:100%;padding:0.8rem 1rem;border:1.5px solid var(--border);border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--cream);color:var(--ink);outline:none;margin-bottom:1rem}
+.field-input:focus{border-color:var(--ink)}
+textarea.field-input{resize:vertical;min-height:80px;line-height:1.6}
+.modal-actions{display:flex;gap:0.75rem}
+.btn-cancel{flex:1;padding:0.85rem;background:var(--cream);border:1px solid var(--border);border-radius:2px;font-family:'Syne',sans-serif;font-weight:600;font-size:0.875rem;cursor:pointer;color:var(--ink)}
+.btn-submit{flex:2;padding:0.85rem;background:var(--ink);color:#F5F0E8;border:none;border-radius:2px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;cursor:pointer;transition:background 0.2s}
+.btn-submit:hover{background:var(--green)}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:900px){.sidebar{display:none}.jobs-layout{grid-template-columns:1fr}.filters{display:none}}
+</style>
+</head>
+<body class="app">
+<nav class="topnav">
+  <a href="index.html" class="logo">Kazi<span>X</span></a>
+  <div class="topnav-right">
+    <button class="notif-btn">🔔<span class="notif-dot"></span></button>
+    <div class="user-chip"><div class="user-avatar">JK</div><span class="user-name">James Kamau</span></div>
+  </div>
+</nav>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-section">Work</div>
+    <a class="nav-item" href="worker-dashboard.html"><span class="ni-icon">📊</span>Dashboard</a>
+    <a class="nav-item active" href="worker-jobs.html"><span class="ni-icon">🔍</span>Find Jobs<span class="ni-badge">8</span></a>
+    <a class="nav-item" href="my-applications.html"><span class="ni-icon">📋</span>My Applications<span class="ni-badge">3</span></a>
+    <a class="nav-item" href="worker-hires.html"><span class="ni-icon">🤝</span>Active Contracts<span class="ni-badge">2</span></a>
+    <div class="sidebar-section">Account</div>
+    <a class="nav-item" href="messages.html"><span class="ni-icon">💬</span>Messages<span class="ni-badge">1</span></a>
+    <a class="nav-item" href="worker-earnings.html"><span class="ni-icon">💳</span>Earnings</a>
+    <a class="nav-item" href="worker-reviews.html"><span class="ni-icon">⭐</span>My Reviews</a>
+    <a class="nav-item" href="worker-profile-edit.html"><span class="ni-icon">👤</span>My Profile</a>
+    <div class="sidebar-bottom">
+      <div class="sidebar-profile"><div class="sp-avatar">🔧</div><div><div class="sp-name">James Kamau</div><div class="sp-role">Pro Account · Plumber</div></div></div>
+    </div>
+  </aside>
+  <main class="main">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;animation:slideUp 0.4s ease both">
+      <div><div class="page-title">Find Jobs</div><div class="page-sub">Open plumbing jobs near Westlands, Nairobi</div></div>
+    </div>
+    <div class="jobs-layout">
+      <aside class="filters">
+        <div class="filter-title">Filters <span class="filter-clear">Clear all</span></div>
+        <div class="filter-section">
+          <div class="filter-label">Distance</div>
+          <label class="filter-option"><input type="radio" name="dist" checked> Within 5 km</label>
+          <label class="filter-option"><input type="radio" name="dist"> Within 10 km</label>
+          <label class="filter-option"><input type="radio" name="dist"> Within 25 km</label>
+          <label class="filter-option"><input type="radio" name="dist"> Any distance</label>
+        </div>
+        <div class="filter-section">
+          <div class="filter-label">Budget (KES)</div>
+          <div class="range-row">
+            <input class="range-input" type="number" placeholder="Min">
+            <span style="font-size:0.75rem;color:var(--muted)">–</span>
+            <input class="range-input" type="number" placeholder="Max">
+          </div>
+        </div>
+        <div class="filter-section">
+          <div class="filter-label">Job Type</div>
+          <label class="filter-option"><input type="checkbox" checked> 🔴 Urgent only</label>
+          <label class="filter-option"><input type="checkbox" checked> 🆕 Posted today</label>
+        </div>
+        <div class="filter-section">
+          <div class="filter-label">Applications</div>
+          <label class="filter-option"><input type="checkbox" checked> Few applicants (0–3)</label>
+          <label class="filter-option"><input type="checkbox"> Under 8</label>
+        </div>
+        <button class="apply-filter-btn">Apply Filters</button>
+      </aside>
+      <div>
+        <div class="results-header">
+          <div class="results-count">42 plumbing jobs near Westlands</div>
+          <select class="sort-sel"><option>Nearest first</option><option>Highest budget</option><option>Newest first</option><option>Fewest applicants</option></select>
+        </div>
+        <div class="active-filters">
+          <span class="active-tag">Plumber <button onclick="this.parentElement.remove()">✕</button></span>
+          <span class="active-tag">Within 5km <button onclick="this.parentElement.remove()">✕</button></span>
+        </div>
+        <div class="jobs-list">
+          <div class="job-card urgent" style="animation-delay:0.05s">
+            <div class="jc-top">
+              <div class="jc-icon">🚿</div>
+              <div class="jc-info"><div class="jc-title">Burst pipe emergency — kitchen <span class="utag utag-urgent">Urgent</span></div><div class="jc-meta"><span>📍 Kilimani · 1.8km</span><span>12 min ago</span><span>0 applicants</span></div></div>
+              <div class="jc-right"><div class="jc-budget">KES 1,500</div><div class="jc-budget-sub">fixed price</div></div>
+            </div>
+            <div class="jc-desc">Kitchen sink pipe burst — water leaking under the cabinet. Need someone today urgently.</div>
+            <div class="jc-footer">
+              <div class="jc-client"><div class="jc-client-av">🏠</div>Private client · ★★★★★ 4.9</div>
+              <button class="apply-btn" onclick="openApply('Burst pipe — Kilimani')">Apply →</button>
+            </div>
+          </div>
+          <div class="job-card" style="animation-delay:0.1s">
+            <div class="jc-top">
+              <div class="jc-icon">🚿</div>
+              <div class="jc-info"><div class="jc-title">Install bathroom fixtures — Westlands <span class="utag utag-new">New</span></div><div class="jc-meta"><span>📍 Westlands · 0.9km</span><span>2 hrs ago</span><span>1 applicant</span></div></div>
+              <div class="jc-right"><div class="jc-budget">KES 3,500</div><div class="jc-budget-sub">fixed price</div></div>
+            </div>
+            <div class="jc-desc">Install new toilet, shower and basin fittings in a newly renovated bathroom. Materials ready on site.</div>
+            <div class="jc-footer">
+              <div class="jc-client"><div class="jc-client-av">🏡</div>Homeowner · ★★★★★ 5.0</div>
+              <button class="apply-btn" onclick="openApply('Bathroom fixtures — Westlands')">Apply →</button>
+            </div>
+          </div>
+          <div class="job-card" style="animation-delay:0.15s">
+            <div class="jc-top">
+              <div class="jc-icon">💧</div>
+              <div class="jc-info"><div class="jc-title">Water tank repair — Parklands</div><div class="jc-meta"><span>📍 Parklands · 3.1km</span><span>4 hrs ago</span><span>2 applicants</span></div></div>
+              <div class="jc-right"><div class="jc-budget">KES 2,000</div><div class="jc-budget-sub">fixed price</div></div>
+            </div>
+            <div class="jc-desc">10,000L polyethylene tank has a small crack near the outlet pipe. Need it repaired or outlet connection replaced.</div>
+            <div class="jc-footer">
+              <div class="jc-client"><div class="jc-client-av">🏠</div>Alex K. · ★★★★★ 4.8 · 15 jobs posted</div>
+              <button class="apply-btn" onclick="openApply('Water tank — Parklands')">Apply →</button>
+            </div>
+          </div>
+          <div class="job-card" style="animation-delay:0.2s">
+            <div class="jc-top">
+              <div class="jc-icon">☀️</div>
+              <div class="jc-info"><div class="jc-title">Solar water heater installation — Karen</div><div class="jc-meta"><span>📍 Karen · 8.4km</span><span>Yesterday</span><span>3 applicants</span></div></div>
+              <div class="jc-right"><div class="jc-budget">KES 8,000</div><div class="jc-budget-sub">fixed price</div></div>
+            </div>
+            <div class="jc-desc">Installation of a 200L Solahart solar water heater. Client has the unit. Need piping and full setup.</div>
+            <div class="jc-footer">
+              <div class="jc-client"><div class="jc-client-av">🏡</div>Homeowner · ★★★★★ 4.7</div>
+              <button class="apply-btn" onclick="openApply('Solar heater — Karen')">Apply →</button>
+            </div>
+          </div>
+          <div class="job-card" style="animation-delay:0.25s">
+            <div class="jc-top">
+              <div class="jc-icon">🏗️</div>
+              <div class="jc-info"><div class="jc-title">Commercial plumbing — CBD office block</div><div class="jc-meta"><span>📍 CBD · 5.1km</span><span>3 days ago</span><span>2 applicants</span></div></div>
+              <div class="jc-right"><div class="jc-budget">KES 18,000</div><div class="jc-budget-sub">fixed price</div></div>
+            </div>
+            <div class="jc-desc">3-storey office block, floors 2 and 3. Approx 3–4 days. NCA certification preferred.</div>
+            <div class="jc-footer">
+              <div class="jc-client"><div class="jc-client-av">🏢</div>FutureBuilds Ltd · ★★★★★ 4.9 · 8 jobs</div>
+              <button class="apply-btn" onclick="openApply('Commercial piping — CBD')">Apply →</button>
+            </div>
+          </div>
+        </div>
+        <div class="pagination">
+          <button class="pg-btn" disabled>←</button>
+          <button class="pg-btn active">1</button>
+          <button class="pg-btn">2</button>
+          <button class="pg-btn">3</button>
+          <button class="pg-btn">→</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<div class="modal-overlay" id="applyModal">
+  <div class="modal">
+    <div class="modal-title">Apply: <span id="applyJobName"></span></div>
+    <div class="modal-sub">Your profile and 4.9★ rating will be shared with the client.</div>
+    <label class="field-label">Your Bid (KES) *</label>
+    <input class="field-input" type="number" id="bidInput" placeholder="e.g. 1200">
+    <label class="field-label">Cover Note (optional)</label>
+    <textarea class="field-input" id="coverInput" placeholder="Tell the client why you're the best fundi for this job…"></textarea>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="document.getElementById('applyModal').classList.remove('open')">Cancel</button>
+      <button class="btn-submit" onclick="submitApply()">Submit Application →</button>
+    </div>
+  </div>
+</div>
+<script>
+var currentBtn=null;
+function openApply(title){document.getElementById('applyJobName').textContent=title;document.getElementById('applyModal').classList.add('open')}
+function submitApply(){
+  var bid=document.getElementById('bidInput').value;
+  if(!bid){alert('Please enter your bid');return}
+  document.getElementById('applyModal').classList.remove('open');
+  document.getElementById('bidInput').value='';
+  document.getElementById('coverInput').value='';
+}
+document.getElementById('applyModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})
+document.querySelectorAll('.pg-btn:not([disabled])').forEach(btn=>{btn.addEventListener('click',function(){if(this.textContent==='←'||this.textContent==='→')return;document.querySelectorAll('.pg-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')})})
+</script>
+
+<nav class="mobile-nav" aria-label="Primary">
+  <a class="mobile-nav-item" href="worker-dashboard.html"><span class="mn-icon">📊</span><span class="mn-label">Dashboard</span></a>
+  <a class="mobile-nav-item active" href="worker-jobs.html"><span class="mn-icon">🔍</span><span class="mn-label">Jobs</span></a>
+  <a class="mobile-nav-item" href="my-applications.html"><span class="mn-icon">📋</span><span class="mn-label">Applications</span></a>
+  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon">💬</span><span class="mn-label">Messages</span></a>
+  <div class="mobile-nav-more">
+    <button class="mobile-nav-item mobile-nav-more-toggle" type="button" aria-controls="mobile-drawer" aria-expanded="false" aria-label="Open navigation menu">
+      <span class="mn-icon">⋯</span><span class="mn-label">More</span>
+    </button>
+    <div class="mobile-nav-drawer" id="mobile-drawer" role="navigation" aria-label="Secondary pages" aria-hidden="true">
+      <a class="mobile-nav-drawer-item" href="worker-profile-edit.html">👤 Profile</a>
+      <a class="mobile-nav-drawer-item" href="worker-earnings.html">💳 Earnings</a>
+      <a class="mobile-nav-drawer-item" href="worker-reviews.html">⭐ Reviews</a>
+    </div>
+  </div>
+</nav>
+
+
+<script src="../assets/js/mobile-nav.js"></script>
+</body>
+</html>

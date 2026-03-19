@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account — KaziX</title>
+<link rel="stylesheet" href="../assets/css/styles.css">
+<style>
+  :root{--ink:#0D0D0D;--cream:#F5F0E8;--saffron:#F5A623;--rust:#C0392B;--green:#1B6B3A;--steel:#2C3E50;--muted:#7A7468;--card-bg:#FFFFFF;--border:rgba(13,13,13,0.1)}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden;min-height:100vh}
+  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.35}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:1.4rem 5%;background:rgba(245,240,232,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+  .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:-0.04em;color:var(--ink);text-decoration:none}
+  .logo span{color:var(--saffron)}
+  .nav-login{font-size:0.875rem;color:var(--muted);text-decoration:none;transition:color 0.2s}
+  .nav-login strong{color:var(--ink)}
+  .nav-login:hover strong{color:var(--green)}
+
+  /* LAYOUT */
+  .reg-layout{display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 73px)}
+
+  /* LEFT */
+  .reg-left{background:var(--ink);color:var(--cream);padding:5rem;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
+  .reg-left::after{content:'JIUNGE';position:absolute;right:-5%;bottom:-3%;font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(60px,12vw,180px);opacity:0.05;letter-spacing:-0.06em;line-height:0.9;pointer-events:none}
+  .reg-eyebrow{font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--saffron);margin-bottom:1.5rem}
+  .reg-left h2{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.8rem,3.5vw,2.8rem);letter-spacing:-0.04em;line-height:1.05;margin-bottom:1.25rem}
+  .reg-left h2 em{font-style:normal;color:var(--saffron)}
+  .reg-left p{color:rgba(245,240,232,0.55);font-size:0.9rem;line-height:1.7;max-width:400px;margin-bottom:2.5rem}
+  .trust-items{display:flex;flex-direction:column;gap:0.85rem}
+  .trust-item{display:flex;align-items:center;gap:0.75rem;font-size:0.85rem;color:rgba(245,240,232,0.75)}
+  .t-check{width:20px;height:20px;border-radius:50%;background:var(--green);color:white;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;flex-shrink:0}
+
+  /* RIGHT */
+  .reg-right{background:white;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:3rem 2rem;overflow-y:auto}
+  .reg-form-wrap{width:100%;max-width:460px}
+
+  /* STEP PROGRESS */
+  .reg-steps{display:flex;align-items:center;gap:0;margin-bottom:2.5rem}
+  .rs-node{display:flex;flex-direction:column;align-items:center;gap:0.3rem;flex:1;position:relative;cursor:default}
+  .rs-node:not(:last-child)::after{content:'';position:absolute;top:14px;left:calc(50% + 14px);right:calc(-50% + 14px);height:1.5px;background:var(--border);z-index:0}
+  .rs-node.done:not(:last-child)::after{background:var(--green)}
+  .rs-circle{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:0.75rem;position:relative;z-index:1;transition:all 0.3s}
+  .rs-node.active .rs-circle{background:var(--ink);border-color:var(--ink);color:var(--cream)}
+  .rs-node.done .rs-circle{background:var(--green);border-color:var(--green);color:white}
+  .rs-label{font-size:0.65rem;font-weight:500;color:var(--muted);text-align:center}
+  .rs-node.active .rs-label{color:var(--ink);font-weight:700}
+
+  /* TYPE SELECTOR */
+  .account-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+  .type-card{border:1.5px solid var(--border);border-radius:4px;padding:1.5rem;text-align:center;cursor:pointer;transition:all 0.25s;background:white}
+  .type-card:hover{border-color:var(--ink);transform:translateY(-2px)}
+  .type-card.selected{border-color:var(--ink);background:var(--ink);color:var(--cream)}
+  .type-card.selected .type-sub{color:rgba(245,240,232,0.55)}
+  .type-icon{font-size:2.4rem;margin-bottom:0.75rem;display:block}
+  .type-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:0.3rem}
+  .type-sub{font-size:0.78rem;color:var(--muted);line-height:1.4}
+
+  /* FORM FIELDS */
+  .reg-step{display:none}
+  .reg-step.active{display:block;animation:slideUp 0.4s ease both}
+  .reg-step-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;letter-spacing:-0.04em;margin-bottom:0.3rem}
+  .reg-step-sub{font-size:0.875rem;color:var(--muted);margin-bottom:2rem;line-height:1.5}
+  .field-group{margin-bottom:1.1rem}
+  .field-label{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.45rem;display:block}
+  .req{color:var(--rust)}
+  .field-input{width:100%;padding:0.82rem 1rem;border:1.5px solid var(--border);border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--cream);color:var(--ink);outline:none;transition:border-color 0.2s}
+  .field-input:focus{border-color:var(--ink);background:white}
+  .field-input::placeholder{color:var(--muted)}
+  select.field-input{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A7468' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;background-color:var(--cream)}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+  .field-hint{font-size:0.72rem;color:var(--muted);margin-top:0.3rem}
+
+  /* PHONE FIELD */
+  .phone-wrap{display:flex;border:1.5px solid var(--border);border-radius:2px;overflow:hidden;transition:border-color 0.2s}
+  .phone-wrap:focus-within{border-color:var(--ink)}
+  .phone-prefix{padding:0.82rem 1rem;background:var(--cream);font-size:0.9rem;font-weight:600;border-right:1px solid var(--border);font-family:'Syne',sans-serif;white-space:nowrap}
+  .phone-field{flex:1;padding:0.82rem 1rem;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:white;color:var(--ink)}
+  .phone-field::placeholder{color:var(--muted)}
+
+  /* OTP */
+  .otp-inputs{display:flex;gap:0.5rem;margin-bottom:0.75rem}
+  .otp-digit{width:100%;aspect-ratio:1;border:1.5px solid var(--border);border-radius:2px;text-align:center;font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;outline:none;transition:border-color 0.2s;background:var(--cream)}
+  .otp-digit:focus{border-color:var(--ink)}
+  .otp-note{font-size:0.75rem;color:var(--muted)}
+  .otp-note button{background:none;border:none;color:var(--rust);font-weight:600;cursor:pointer;font-size:0.75rem;font-family:'DM Sans',sans-serif;padding:0}
+
+  /* TRADE CHIPS */
+  .trade-chips{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.25rem}
+  .trade-chip{border:1.5px solid var(--border);border-radius:2px;padding:0.4rem 0.85rem;font-size:0.8rem;font-weight:500;cursor:pointer;transition:all 0.2s;background:white}
+  .trade-chip:hover{border-color:var(--ink)}
+  .trade-chip.selected{border-color:var(--ink);background:var(--ink);color:var(--cream)}
+
+  /* SKILL CHIPS */
+  .skill-chips{display:flex;flex-wrap:wrap;gap:0.4rem}
+  .skill-chip{border:1px solid var(--border);border-radius:2px;padding:0.3rem 0.7rem;font-size:0.75rem;cursor:pointer;transition:all 0.2s;background:white}
+  .skill-chip.selected{border-color:var(--saffron);background:rgba(245,166,35,0.1);color:var(--ink)}
+
+  /* UPLOAD AREA */
+  .upload-area{border:1.5px dashed var(--border);border-radius:4px;padding:2rem;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--cream)}
+  .upload-area:hover{border-color:var(--ink);background:white}
+  .upload-icon{font-size:2rem;margin-bottom:0.5rem}
+  .upload-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;margin-bottom:0.25rem}
+  .upload-sub{font-size:0.75rem;color:var(--muted)}
+
+  /* BUTTONS */
+  .reg-btns{display:flex;gap:0.75rem;margin-top:1.5rem}
+  .btn-back{padding:0.9rem 1.25rem;background:transparent;color:var(--ink);font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;border:1.5px solid var(--ink);border-radius:2px;cursor:pointer;transition:all 0.2s}
+  .btn-back:hover{background:var(--cream)}
+  .btn-next{flex:1;padding:0.9rem;background:var(--ink);color:var(--cream);font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;border:none;border-radius:2px;cursor:pointer;transition:background 0.2s}
+  .btn-next:hover{background:var(--green)}
+  .btn-submit{flex:1;padding:0.9rem;background:var(--saffron);color:var(--ink);font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;border:none;border-radius:2px;cursor:pointer;transition:all 0.2s}
+  .btn-submit:hover{background:var(--green);color:white}
+
+  /* TERMS */
+  .terms-check{display:flex;align-items:flex-start;gap:0.75rem;margin-top:1rem;font-size:0.8rem;color:var(--muted);line-height:1.5}
+  .terms-check input{width:16px;height:16px;accent-color:var(--ink);margin-top:1px;cursor:pointer;flex-shrink:0}
+  .terms-check a{color:var(--ink);font-weight:600;text-decoration:none}
+
+  /* SUCCESS */
+  .success-state{display:none;text-align:center;padding:2.5rem 1rem;animation:slideUp 0.5s ease both}
+  .success-state.show{display:block}
+  .success-icon{font-size:4rem;margin-bottom:1rem}
+  .success-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.75rem;letter-spacing:-0.04em;margin-bottom:0.75rem}
+  .success-sub{color:var(--muted);font-size:0.9rem;line-height:1.65;margin-bottom:2rem}
+  .btn-home{display:inline-block;padding:0.9rem 2rem;background:var(--ink);color:var(--cream);font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;border-radius:2px;text-decoration:none;transition:background 0.2s;margin:0 0.25rem 0.5rem}
+  .btn-home:hover{background:var(--green)}
+
+  .auth-footer{margin-top:1.5rem;font-size:0.72rem;color:var(--muted);text-align:center;line-height:1.5}
+  .auth-footer a{color:var(--ink);text-decoration:none}
+
+  @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  @media(max-width:900px){.reg-layout{grid-template-columns:1fr}.reg-left{display:none}.reg-right{padding:2rem 1.5rem;min-height:calc(100vh - 73px)}.field-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Kazi<span>X</span></a>
+  <a href="login.html" class="nav-login">Already have an account? <strong>Sign in →</strong></a>
+</nav>
+
+<div class="reg-layout">
+
+  <!-- LEFT PANEL -->
+  <div class="reg-left">
+    <div class="reg-eyebrow">Join for Free</div>
+    <h2>Your next job<br>is waiting on<br><em>KaziX</em></h2>
+    <p>Whether you're hiring a fundi or offering your skills — KaziX connects Kenya's best workers with clients who need them. Free to join. Instant M-Pesa payments.</p>
+    <div class="trust-items">
+      <div class="trust-item"><div class="t-check">✓</div>Free registration — no monthly fees</div>
+      <div class="trust-item"><div class="t-check">✓</div>Get your first job within hours of registering</div>
+      <div class="trust-item"><div class="t-check">✓</div>Secure M-Pesa escrow — always get paid</div>
+      <div class="trust-item"><div class="t-check">✓</div>Build your reputation with verified reviews</div>
+      <div class="trust-item"><div class="t-check">✓</div>Join 12,000+ fundis already on the platform</div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="reg-right">
+    <div class="reg-form-wrap">
+
+      <!-- STEP PROGRESS -->
+      <div class="reg-steps" id="stepProgress">
+        <div class="rs-node active" id="rsn1"><div class="rs-circle">1</div><div class="rs-label">Account type</div></div>
+        <div class="rs-node" id="rsn2"><div class="rs-circle">2</div><div class="rs-label">Your details</div></div>
+        <div class="rs-node" id="rsn3"><div class="rs-circle">3</div><div class="rs-label">Verify phone</div></div>
+        <div class="rs-node" id="rsn4"><div class="rs-circle">4</div><div class="rs-label">Profile</div></div>
+      </div>
+
+      <!-- STEP 1: ACCOUNT TYPE -->
+      <div class="reg-step active" id="rstep1">
+        <div class="reg-step-title">Join KaziX</div>
+        <div class="reg-step-sub">Choose how you'll use the platform</div>
+        <div class="account-type-grid">
+          <div class="type-card selected" id="typeClient" onclick="selectType('client')">
+            <span class="type-icon">🏠</span>
+            <div class="type-title">I need a Fundi</div>
+            <div class="type-sub">I want to hire skilled workers for jobs at home or work</div>
+          </div>
+          <div class="type-card" id="typePro" onclick="selectType('pro')">
+            <span class="type-icon">🔧</span>
+            <div class="type-title">I am a Fundi</div>
+            <div class="type-sub">I offer skilled services and want to find more clients</div>
+          </div>
+        </div>
+        <div class="reg-btns" style="flex-direction:column;gap:0.75rem">
+          <button class="btn-next" onclick="goRStep(2)" style="width:100%">Continue →</button>
+        </div>
+        <div class="auth-footer" style="margin-top:1rem">Already have an account? <a href="login.html">Sign in here</a></div>
+      </div>
+
+      <!-- STEP 2: PERSONAL DETAILS -->
+      <div class="reg-step" id="rstep2">
+        <div class="reg-step-title">Your Details</div>
+        <div class="reg-step-sub">Tell us a little about yourself</div>
+        <div class="field-group">
+          <label class="field-label">Full Name <span class="req">*</span></label>
+          <input class="field-input" type="text" placeholder="e.g. James Kamau">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Phone Number <span class="req">*</span></label>
+          <div class="phone-wrap">
+            <div class="phone-prefix">🇰🇪 +254</div>
+            <input class="phone-field" type="tel" id="regPhone" placeholder="7XX XXX XXX" maxlength="9">
+          </div>
+          <div class="field-hint">Used to log in and receive job alerts</div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Email Address (optional)</label>
+          <input class="field-input" type="email" placeholder="your@email.com">
+          <div class="field-hint">For booking receipts and notifications</div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">County <span class="req">*</span></label>
+            <select class="field-input">
+              <option value="">Select county</option>
+              <option>Nairobi</option><option>Mombasa</option><option>Kisumu</option>
+              <option>Nakuru</option><option>Eldoret</option><option>Thika</option>
+              <option>Malindi</option><option>Machakos</option><option>Garissa</option>
+              <option>Kitale</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Town / Area</label>
+            <input class="field-input" type="text" placeholder="e.g. Westlands">
+          </div>
+        </div>
+        <!-- Pro-only fields (shown when role = pro) -->
+        <div id="proFields" style="display:none">
+          <div class="field-group">
+            <label class="field-label">Your Trade <span class="req">*</span></label>
+            <div class="trade-chips">
+              <div class="trade-chip selected" onclick="selectTrade(this)">🚿 Plumber</div>
+              <div class="trade-chip" onclick="selectTrade(this)">⚡ Electrician</div>
+              <div class="trade-chip" onclick="selectTrade(this)">🧱 Mason</div>
+              <div class="trade-chip" onclick="selectTrade(this)">👗 Mama Fua</div>
+              <div class="trade-chip" onclick="selectTrade(this)">🪚 Carpenter</div>
+              <div class="trade-chip" onclick="selectTrade(this)">🎨 Painter</div>
+              <div class="trade-chip" onclick="selectTrade(this)">🏠 Roofer</div>
+              <div class="trade-chip" onclick="selectTrade(this)">🌿 Gardener</div>
+              <div class="trade-chip" onclick="selectTrade(this)">🛻 Driver/Mover</div>
+              <div class="trade-chip" onclick="selectTrade(this)">🔒 Security</div>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Rate Min (KES/hr)</label>
+              <input class="field-input" type="number" placeholder="e.g. 800">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Rate Max (KES/hr)</label>
+              <input class="field-input" type="number" placeholder="e.g. 2000">
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Years of Experience</label>
+            <select class="field-input">
+              <option>Less than 1 year</option>
+              <option>1–2 years</option>
+              <option selected>3–5 years</option>
+              <option>5–10 years</option>
+              <option>10+ years</option>
+            </select>
+          </div>
+        </div>
+        <div class="reg-btns">
+          <button class="btn-back" onclick="goRStep(1)">←</button>
+          <button class="btn-next" onclick="goRStep(3)">Continue →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: PHONE VERIFICATION -->
+      <div class="reg-step" id="rstep3">
+        <div class="reg-step-title">Verify your phone</div>
+        <div class="reg-step-sub">We've sent a 6-digit OTP to <strong id="regSentPhone">+254 7XX XXX</strong></div>
+        <div class="field-group">
+          <label class="field-label">Enter OTP Code <span class="req">*</span></label>
+          <div class="otp-inputs">
+            <input class="otp-digit" type="text" maxlength="1" oninput="regMoveNext(this,1)" onkeydown="regMovePrev(event,this)">
+            <input class="otp-digit" type="text" maxlength="1" oninput="regMoveNext(this,2)" onkeydown="regMovePrev(event,this)">
+            <input class="otp-digit" type="text" maxlength="1" oninput="regMoveNext(this,3)" onkeydown="regMovePrev(event,this)">
+            <input class="otp-digit" type="text" maxlength="1" oninput="regMoveNext(this,4)" onkeydown="regMovePrev(event,this)">
+            <input class="otp-digit" type="text" maxlength="1" oninput="regMoveNext(this,5)" onkeydown="regMovePrev(event,this)">
+            <input class="otp-digit" type="text" maxlength="1" oninput="regCheckOtp()" onkeydown="regMovePrev(event,this)">
+          </div>
+          <div class="otp-note">Didn't receive it? <button onclick="alert('OTP resent!')">Resend OTP</button></div>
+        </div>
+        <div class="reg-btns">
+          <button class="btn-back" onclick="goRStep(2)">←</button>
+          <button class="btn-next" id="regVerifyBtn" onclick="goRStep(4)" disabled>Verify Phone →</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: PROFILE SETUP -->
+      <div class="reg-step" id="rstep4">
+        <div class="reg-step-title">Complete your profile</div>
+        <div class="reg-step-sub" id="step4Sub">A complete profile gets you hired faster</div>
+
+        <!-- Pro-only profile completion -->
+        <div id="proProfile">
+          <div class="field-group">
+            <label class="field-label">Bio <span class="req">*</span></label>
+            <textarea class="field-input" rows="4" placeholder="Describe your experience, skills, and what makes you stand out as a fundi…" style="resize:vertical;line-height:1.6"></textarea>
+            <div class="field-hint">Minimum 50 characters. Workers with good bios get 3x more jobs.</div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Skills / Specialisations</label>
+            <div class="skill-chips">
+              <div class="skill-chip selected" onclick="this.classList.toggle('selected')">Pipe fitting</div>
+              <div class="skill-chip" onclick="this.classList.toggle('selected')">Drain unblocking</div>
+              <div class="skill-chip" onclick="this.classList.toggle('selected')">Water tank repair</div>
+              <div class="skill-chip" onclick="this.classList.toggle('selected')">Solar water heater</div>
+              <div class="skill-chip" onclick="this.classList.toggle('selected')">Bathroom renovation</div>
+              <div class="skill-chip" onclick="this.classList.toggle('selected')">Emergency callout</div>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Kenya National ID <span class="req">*</span></label>
+            <input class="field-input" type="text" placeholder="Enter your ID number" maxlength="8">
+            <div class="field-hint">Required for identity verification. Stored securely and never shared.</div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Upload ID Photo <span class="req">*</span></label>
+            <div class="upload-area" onclick="this.style.borderColor='var(--ink)'">
+              <div class="upload-icon">📄</div>
+              <div class="upload-title">Front of Kenya National ID</div>
+              <div class="upload-sub">Tap to upload · JPG or PNG · Max 5MB</div>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Selfie Photo <span class="req">*</span></label>
+            <div class="upload-area" onclick="this.style.borderColor='var(--ink)'">
+              <div class="upload-icon">🤳</div>
+              <div class="upload-title">Clear photo of your face</div>
+              <div class="upload-sub">Tap to take or upload · JPG or PNG · Max 5MB</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Client-only profile -->
+        <div id="clientProfile" style="display:none">
+          <div class="field-group">
+            <label class="field-label">What will you mainly use KaziX for?</label>
+            <select class="field-input">
+              <option>Home maintenance & repairs</option>
+              <option>Office / commercial work</option>
+              <option>Construction project</option>
+              <option>Regular household help</option>
+              <option>Multiple purposes</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">How did you hear about KaziX?</label>
+            <select class="field-input">
+              <option>WhatsApp / Social media</option>
+              <option>Friend / referral</option>
+              <option>Google search</option>
+              <option>Radio / TV</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div style="background:var(--cream);border-radius:4px;padding:1.25rem;margin-bottom:1.25rem">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;margin-bottom:0.5rem">🎉 You're all set!</div>
+            <div style="font-size:0.82rem;color:var(--muted);line-height:1.6">Your account is ready. Start browsing fundis or post your first job now. First job is guaranteed to receive applications within 20 minutes.</div>
+          </div>
+        </div>
+
+        <label class="terms-check">
+          <input type="checkbox" id="termsCheck" onchange="document.getElementById('submitBtn').disabled=!this.checked">
+          I agree to KaziX's <a href="terms.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a>. I confirm all information provided is accurate.
+        </label>
+
+        <div class="reg-btns">
+          <button class="btn-back" onclick="goRStep(3)">←</button>
+          <button class="btn-submit" id="submitBtn" onclick="submitReg()" disabled>Create Account 🎉</button>
+        </div>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="success-state" id="regSuccess">
+        <div class="success-icon" id="successEmoji">🎉</div>
+        <div class="success-title" id="successTitle">Account Created!</div>
+        <div class="success-sub" id="successSub">Welcome to KaziX! Your account is active. Start exploring jobs or posting your first request.</div>
+        <div>
+          <a href="find-workers.html" class="btn-home">Find a Fundi</a>
+          <a href="post-job.html" class="btn-home" style="background:var(--green)">Post a Job</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+let regRole = 'client';
+let regCurrentStep = 1;
+
+function selectType(type) {
+  regRole = type;
+  document.getElementById('typeClient').classList.toggle('selected', type === 'client');
+  document.getElementById('typePro').classList.toggle('selected', type === 'pro');
+}
+
+function goRStep(n) {
+  document.getElementById('rstep'+regCurrentStep).classList.remove('active');
+  const prevNode = document.getElementById('rsn'+regCurrentStep);
+  prevNode.classList.remove('active');
+  prevNode.classList.add('done');
+  prevNode.querySelector('.rs-circle').textContent = '✓';
+  regCurrentStep = n;
+  document.getElementById('rstep'+n).classList.add('active');
+  document.getElementById('rsn'+n).classList.add('active');
+
+  // Toggle pro/client fields based on role
+  if (n === 2) {
+    document.getElementById('proFields').style.display = regRole === 'pro' ? 'block' : 'none';
+  }
+  if (n === 4) {
+    document.getElementById('proProfile').style.display   = regRole === 'pro' ? 'block' : 'none';
+    document.getElementById('clientProfile').style.display = regRole === 'client' ? 'block' : 'none';
+    document.getElementById('step4Sub').textContent = regRole === 'pro' 
+      ? 'Verify your identity to unlock more jobs and earn the verified badge'
+      : 'Almost done — a few final details';
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function selectTrade(el) {
+  document.querySelectorAll('.trade-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function regMoveNext(el, pos) {
+  el.value = el.value.replace(/[^0-9]/g,'');
+  if (el.value && pos < 6) {
+    document.querySelectorAll('#rstep3 .otp-digit')[pos].focus();
+  }
+}
+function regMovePrev(e, el) {
+  if (e.key === 'Backspace' && !el.value) {
+    const digits = document.querySelectorAll('#rstep3 .otp-digit');
+    const idx = [...digits].indexOf(el);
+    if (idx > 0) digits[idx-1].focus();
+  }
+}
+function regCheckOtp() {
+  const code = [...document.querySelectorAll('#rstep3 .otp-digit')].map(d => d.value).join('');
+  document.getElementById('regVerifyBtn').disabled = code.length < 6;
+}
+
+function submitReg() {
+  document.getElementById('rstep4').classList.remove('active');
+  document.getElementById('stepProgress').style.display = 'none';
+  document.getElementById('regSuccess').classList.add('show');
+  if (regRole === 'pro') {
+    document.getElementById('successEmoji').textContent = '🔧';
+    document.getElementById('successTitle').textContent = 'Welcome to KaziX!';
+    document.getElementById('successSub').textContent = 'Your profile is under review. We\'ll verify your ID within 2–4 hours and notify you by SMS. You can already browse available jobs!';
+    document.getElementById('regSuccess').querySelectorAll('a')[0].href = 'find-workers.html';
+    document.getElementById('regSuccess').querySelectorAll('a')[0].textContent = 'View Available Jobs';
+    document.getElementById('regSuccess').querySelectorAll('a')[1].href = 'for-pros.html';
+    document.getElementById('regSuccess').querySelectorAll('a')[1].textContent = 'Complete Your Profile';
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>

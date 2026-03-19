@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Reviews — KaziX</title>
+<link rel="stylesheet" href="../assets/css/styles.css">
+
+<style>
+.rep-banner{background:var(--ink);color:#F5F0E8;border-radius:6px;padding:2rem 2.5rem;margin-bottom:2rem;display:grid;grid-template-columns:auto 1fr auto;gap:2.5rem;align-items:center;position:relative;overflow:hidden;animation:slideUp 0.4s ease both}
+.rep-banner::after{content:'★';position:absolute;right:1%;top:50%;transform:translateY(-50%);font-size:200px;opacity:0.05;pointer-events:none;color:var(--saffron)}
+.rep-score{font-family:'Syne',sans-serif;font-weight:800;font-size:4rem;color:var(--saffron);letter-spacing:-0.06em;line-height:1}
+.rep-stars{color:var(--saffron);font-size:1.2rem;letter-spacing:2px;display:block;margin-top:0.3rem}
+.rep-count{font-size:0.78rem;color:rgba(245,240,232,0.4)}
+.rb-row{display:flex;align-items:center;gap:0.75rem;font-size:0.78rem}
+.rb-label{min-width:20px;text-align:right;color:rgba(245,240,232,0.5)}
+.rb-track{flex:1;height:5px;background:rgba(245,240,232,0.12);border-radius:2px;overflow:hidden}
+.rb-fill{height:100%;background:var(--saffron);border-radius:2px}
+.rb-pct{min-width:28px;color:rgba(245,240,232,0.4);font-size:0.72rem}
+.rep-right{display:flex;flex-direction:column;gap:1rem;min-width:150px;text-align:right}
+.rs-val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;color:var(--saffron);letter-spacing:-0.04em}
+.rs-lbl{font-size:0.65rem;color:rgba(245,240,232,0.35);text-transform:uppercase;letter-spacing:0.06em}
+.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:2rem;animation:slideUp 0.4s 0.05s ease both}
+.tab{padding:0.75rem 1.5rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s;display:flex;align-items:center;gap:0.4rem}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--ink);border-bottom-color:var(--ink)}
+.tab .tc{font-size:0.65rem;padding:0.1rem 0.45rem;border-radius:10px;background:var(--cream);color:var(--muted)}
+.tab.active .tc{background:var(--ink);color:#F5F0E8}
+.reviews-list{display:flex;flex-direction:column;gap:1rem;animation:slideUp 0.4s 0.1s ease both}
+.rev-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.5rem}
+.rc-top{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.rc-avatar{width:44px;height:44px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;border:1px solid var(--border)}
+.rc-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:0.2rem}
+.rc-job{font-size:0.75rem;color:var(--muted)}
+.rc-right{display:flex;flex-direction:column;align-items:flex-end;gap:0.35rem}
+.rc-stars{color:var(--saffron);font-size:0.95rem;letter-spacing:1.5px}
+.rc-score{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem}
+.rc-date{font-size:0.72rem;color:var(--muted)}
+.rc-paid{font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;color:var(--green)}
+.rc-body{font-size:0.9rem;line-height:1.7;color:var(--steel);margin-bottom:1rem}
+.sub-ratings{display:flex;gap:1.5rem;flex-wrap:wrap;padding:0.75rem 1rem;background:var(--cream);border-radius:4px;margin-bottom:1rem}
+.sr-label{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;text-align:center;margin-bottom:0.2rem}
+.sr-stars{color:var(--saffron);font-size:0.7rem;text-align:center}
+.rehire-badge{display:inline-flex;align-items:center;gap:0.3rem;font-size:0.7rem;font-weight:600;color:var(--green);background:rgba(27,107,58,0.08);border:1px solid rgba(27,107,58,0.15);padding:0.2rem 0.6rem;border-radius:2px}
+.respond-btn{background:none;border:1px solid var(--border);padding:0.35rem 0.85rem;border-radius:2px;font-family:'Syne',sans-serif;font-weight:600;font-size:0.72rem;cursor:pointer;color:var(--muted);transition:all 0.2s;margin-left:0.5rem}
+.respond-btn:hover{border-color:var(--ink);color:var(--ink)}
+.respond-form{display:none;margin-top:0.75rem}
+.respond-form textarea{width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.875rem;resize:vertical;min-height:70px;outline:none;background:var(--cream);line-height:1.6}
+.respond-form textarea:focus{border-color:var(--ink)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:900px){.sidebar{display:none}.rep-banner{grid-template-columns:1fr}.sub-ratings{gap:1rem}}
+</style>
+</head>
+<body class="app">
+<nav class="topnav">
+  <a href="index.html" class="logo">Kazi<span>X</span></a>
+  <div class="topnav-right">
+    <button class="notif-btn">🔔<span class="notif-dot"></span></button>
+    <div class="user-chip"><div class="user-avatar">JK</div><span class="user-name">James Kamau</span></div>
+  </div>
+</nav>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-section">Work</div>
+    <a class="nav-item" href="worker-dashboard.html"><span class="ni-icon">📊</span>Dashboard</a>
+    <a class="nav-item" href="worker-jobs.html"><span class="ni-icon">🔍</span>Find Jobs<span class="ni-badge">8</span></a>
+    <a class="nav-item" href="my-applications.html"><span class="ni-icon">📋</span>My Applications<span class="ni-badge">3</span></a>
+    <a class="nav-item" href="worker-hires.html"><span class="ni-icon">🤝</span>Active Contracts<span class="ni-badge">2</span></a>
+    <div class="sidebar-section">Account</div>
+    <a class="nav-item" href="messages.html"><span class="ni-icon">💬</span>Messages<span class="ni-badge">1</span></a>
+    <a class="nav-item" href="worker-earnings.html"><span class="ni-icon">💳</span>Earnings</a>
+    <a class="nav-item active" href="worker-reviews.html"><span class="ni-icon">⭐</span>My Reviews</a>
+    <a class="nav-item" href="worker-profile-edit.html"><span class="ni-icon">👤</span>My Profile</a>
+    <div class="sidebar-bottom">
+      <div class="sidebar-profile"><div class="sp-avatar">🔧</div><div><div class="sp-name">James Kamau</div><div class="sp-role">Pro Account · Plumber</div></div></div>
+    </div>
+  </aside>
+  <main class="main">
+    <div style="margin-bottom:2rem;animation:slideUp 0.4s ease both">
+      <div class="page-title">My Reviews</div>
+      <div class="page-sub">Your reputation — visible to every client who views your profile</div>
+    </div>
+    <div class="rep-banner">
+      <div><div class="rep-score">4.9</div><span class="rep-stars">★★★★★</span><div class="rep-count">127 reviews as a fundi</div></div>
+      <div style="display:flex;flex-direction:column;gap:0.5rem">
+        <div class="rb-row"><span class="rb-label">5★</span><div class="rb-track"><div class="rb-fill" style="width:89%"></div></div><span class="rb-pct">89%</span></div>
+        <div class="rb-row"><span class="rb-label">4★</span><div class="rb-track"><div class="rb-fill" style="width:8%"></div></div><span class="rb-pct">8%</span></div>
+        <div class="rb-row"><span class="rb-label">3★</span><div class="rb-track"><div class="rb-fill" style="width:2%"></div></div><span class="rb-pct">2%</span></div>
+        <div class="rb-row"><span class="rb-label">2★</span><div class="rb-track"><div class="rb-fill" style="width:1%"></div></div><span class="rb-pct">1%</span></div>
+        <div class="rb-row"><span class="rb-label">1★</span><div class="rb-track"></div><span class="rb-pct">0%</span></div>
+      </div>
+      <div class="rep-right">
+        <div><div class="rs-val">127</div><div class="rs-lbl">Jobs done</div></div>
+        <div><div class="rs-val">92%</div><div class="rs-lbl">Rehire rate</div></div>
+        <div><div class="rs-val">KES 487K</div><div class="rs-lbl">Total earned</div></div>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('received',this)">Reviews Received <span class="tc">127</span></div>
+      <div class="tab" onclick="switchTab('given',this)">Reviews I've Left <span class="tc">124</span></div>
+    </div>
+    <div class="tab-content active" id="tab-received">
+      <div class="reviews-list">
+        <div class="rev-card">
+          <div class="rc-top">
+            <div class="rc-avatar">🏠</div>
+            <div style="flex:1"><div class="rc-name">Alex Kuria</div><div class="rc-job">📋 Fix burst pipe — Westlands · <span style="color:var(--green);font-weight:600">Completed</span></div></div>
+            <div class="rc-right"><div class="rc-stars">★★★★★</div><div class="rc-score">5.0</div><div class="rc-paid">KES 800</div><div class="rc-date">2 weeks ago</div></div>
+          </div>
+          <div class="rc-body">"James fixed our burst pipe within 2 hours of calling. Professional, fast, and left no mess. He even noticed a secondary issue and fixed it at no extra charge. Will definitely call again."</div>
+          <div class="sub-ratings">
+            <div><div class="sr-label">Quality</div><div class="sr-stars">★★★★★</div></div>
+            <div><div class="sr-label">Punctuality</div><div class="sr-stars">★★★★★</div></div>
+            <div><div class="sr-label">Communication</div><div class="sr-stars">★★★★★</div></div>
+            <div><div class="sr-label">Value</div><div class="sr-stars">★★★★★</div></div>
+          </div>
+          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0.5rem">
+            <span class="rehire-badge">🔁 Would hire again</span>
+            <button class="respond-btn" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">✎ Respond</button>
+            <div class="respond-form" style="width:100%">
+              <textarea placeholder="Respond professionally to this review…"></textarea>
+              <div style="display:flex;gap:0.5rem;margin-top:0.5rem">
+                <button style="padding:0.5rem 1.25rem;background:var(--ink);color:#F5F0E8;font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;border:none;border-radius:2px;cursor:pointer">Post Response</button>
+                <button style="padding:0.5rem 1rem;background:transparent;color:var(--ink);border:1px solid var(--border);border-radius:2px;font-family:'Syne',sans-serif;font-weight:600;font-size:0.78rem;cursor:pointer">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="rev-card">
+          <div class="rc-top">
+            <div class="rc-avatar">🏡</div>
+            <div style="flex:1"><div class="rc-name">Purity Njoroge</div><div class="rc-job">📋 Solar water heater — Kilimani</div></div>
+            <div class="rc-right"><div class="rc-stars">★★★★★</div><div class="rc-score">5.0</div><div class="rc-paid">KES 8,000</div><div class="rc-date">1 month ago</div></div>
+          </div>
+          <div class="rc-body">"Installed our solar water heater perfectly. Very knowledgeable and explained everything clearly. Punctual and reasonably priced."</div>
+          <div class="sub-ratings">
+            <div><div class="sr-label">Quality</div><div class="sr-stars">★★★★★</div></div>
+            <div><div class="sr-label">Punctuality</div><div class="sr-stars">★★★★★</div></div>
+            <div><div class="sr-label">Communication</div><div class="sr-stars">★★★★★</div></div>
+            <div><div class="sr-label">Value</div><div class="sr-stars">★★★★★</div></div>
+          </div>
+          <span class="rehire-badge">🔁 Would hire again</span>
+        </div>
+        <div class="rev-card">
+          <div class="rc-top">
+            <div class="rc-avatar">🏢</div>
+            <div style="flex:1"><div class="rc-name">Brian Otieno</div><div class="rc-job">📋 Drain unblocking + tap replacement — South B</div></div>
+            <div class="rc-right"><div class="rc-stars" style="font-size:0.85rem">★★★★</div><div class="rc-score">4.0</div><div class="rc-paid">KES 1,800</div><div class="rc-date">6 weeks ago</div></div>
+          </div>
+          <div class="rc-body">"Good work overall. Took slightly longer than quoted but quality was excellent."</div>
+          <div style="background:var(--cream);border-left:2px solid var(--green);padding:0.6rem 0.85rem;border-radius:0 4px 4px 0;font-size:0.82rem;margin-top:0.5rem">
+            <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--green);margin-bottom:0.25rem">Your response</div>
+            Thank you Brian! I apologise for running slightly late — will plan better for future jobs in that area.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content" id="tab-given">
+      <div style="background:rgba(27,107,58,0.06);border:1px solid rgba(27,107,58,0.2);border-radius:4px;padding:0.85rem 1.1rem;font-size:0.85rem;margin-bottom:1.5rem;color:var(--green)">ℹ️ Reviews you've left for clients — helps other fundis know who to work with.</div>
+      <div class="reviews-list">
+        <div class="rev-card">
+          <div class="rc-top">
+            <div class="rc-avatar">🏠</div>
+            <div style="flex:1"><div class="rc-name">Alex Kuria <span style="font-size:0.72rem;color:var(--muted);font-weight:400">— client</span></div><div class="rc-job">📋 Fix burst pipe — Westlands</div></div>
+            <div class="rc-right"><div class="rc-stars">★★★★★</div><div class="rc-date">2 weeks ago</div></div>
+          </div>
+          <div class="rc-body">"Alex was a great client — clear instructions, on site when needed, and released payment immediately. Would work with him again."</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script>
+function switchTab(id,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+}
+</script>
+
+<nav class="mobile-nav" aria-label="Primary">
+  <a class="mobile-nav-item" href="worker-dashboard.html"><span class="mn-icon">📊</span><span class="mn-label">Dashboard</span></a>
+  <a class="mobile-nav-item" href="worker-jobs.html"><span class="mn-icon">🔍</span><span class="mn-label">Jobs</span></a>
+  <a class="mobile-nav-item" href="my-applications.html"><span class="mn-icon">📋</span><span class="mn-label">Applications</span></a>
+  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon">💬</span><span class="mn-label">Messages</span></a>
+  <div class="mobile-nav-more active">
+    <button class="mobile-nav-item mobile-nav-more-toggle" type="button" aria-controls="mobile-drawer" aria-expanded="false" aria-label="Open navigation menu">
+      <span class="mn-icon">⋯</span><span class="mn-label">More</span>
+    </button>
+    <div class="mobile-nav-drawer" id="mobile-drawer" role="navigation" aria-label="Secondary pages" aria-hidden="true">
+      <a class="mobile-nav-drawer-item" href="worker-profile-edit.html">👤 Profile</a>
+      <a class="mobile-nav-drawer-item" href="worker-earnings.html">💳 Earnings</a>
+      <a class="mobile-nav-drawer-item active" href="worker-reviews.html">⭐ Reviews</a>
+    </div>
+  </div>
+</nav>
+
+
+<script src="../assets/js/mobile-nav.js"></script>
+</body>
+</html>

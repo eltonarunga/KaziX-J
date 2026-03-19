@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reviews — KaziX</title>
+<link rel="stylesheet" href="../assets/css/styles.css">
+<style>
+
+/* REPUTATION BANNER */
+.rep-banner{background:var(--ink);color:#F5F0E8;border-radius:6px;padding:2rem 2.5rem;margin-bottom:2rem;display:grid;grid-template-columns:auto 1fr auto;gap:2.5rem;align-items:center;position:relative;overflow:hidden;animation:up .4s ease both}
+.rep-banner::after{content:'★';position:absolute;right:1%;top:50%;transform:translateY(-50%);font-size:200px;opacity:.04;line-height:1;pointer-events:none}
+.rep-score-big{font-family:'Syne',sans-serif;font-weight:800;font-size:4rem;color:var(--saffron);letter-spacing:-.06em;line-height:1}
+.rep-stars{color:var(--saffron);font-size:1.2rem;letter-spacing:2px;display:block;margin-top:.3rem}
+.rep-total{font-size:.78rem;color:rgba(245,240,232,.45);margin-top:.2rem}
+.rep-bars{display:flex;flex-direction:column;gap:.5rem}
+.rb-row{display:flex;align-items:center;gap:.75rem;font-size:.78rem}
+.rb-label{min-width:20px;text-align:right;color:rgba(245,240,232,.5)}
+.rb-track{flex:1;height:6px;background:rgba(245,240,232,.1);border-radius:3px;overflow:hidden}
+.rb-fill{height:100%;background:var(--saffron);border-radius:3px}
+.rb-pct{min-width:28px;color:rgba(245,240,232,.5);font-size:.72rem}
+.rep-right{display:flex;flex-direction:column;gap:1rem;min-width:160px}
+.rep-stat{text-align:right}
+.rep-stat-val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--saffron);letter-spacing:-.04em}
+.rep-stat-lbl{font-size:.68rem;color:rgba(245,240,232,.4);text-transform:uppercase;letter-spacing:.06em}
+
+/* TABS */
+.rev-tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:2rem;animation:up .4s .05s ease both}
+.rtab{padding:.75rem 1.5rem;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;display:flex;align-items:center;gap:.4rem}
+.rtab:hover{color:var(--ink)}
+.rtab.active{color:var(--ink);border-bottom-color:var(--ink)}
+.rtab .tc{background:var(--cream);font-size:.65rem;padding:.1rem .45rem;border-radius:10px}
+.rtab.active .tc{background:var(--ink);color:#F5F0E8}
+
+/* REVIEW CARDS */
+.reviews-list{display:flex;flex-direction:column;gap:1rem;animation:up .4s .1s ease both}
+.rev-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.5rem;transition:box-shadow .2s}
+.rev-card:hover{box-shadow:0 6px 24px rgba(0,0,0,.07)}
+/* top row */
+.rc-top{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.rc-avatar{width:46px;height:46px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;border:1px solid var(--border)}
+.rc-meta{flex:1}
+.rc-name{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.15rem}
+.rc-trade{font-size:.72rem;color:var(--rust);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.rc-job{font-size:.75rem;color:var(--muted);margin-top:.25rem;display:flex;align-items:center;gap:.4rem}
+.rc-right{display:flex;flex-direction:column;align-items:flex-end;gap:.35rem}
+.rc-stars{color:var(--saffron);font-size:1rem;letter-spacing:1.5px}
+.rc-score{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem}
+.rc-date{font-size:.72rem;color:var(--muted)}
+.rc-amount{font-family:'Syne',sans-serif;font-weight:700;font-size:.875rem;color:var(--green)}
+/* review body */
+.rc-body{font-size:.9rem;line-height:1.7;color:var(--steel);margin-bottom:1rem}
+/* sub-ratings */
+.sub-ratings{display:flex;gap:1.5rem;flex-wrap:wrap;padding:.85rem 1rem;background:var(--cream);border-radius:4px;margin-bottom:1rem}
+.sub-rating{display:flex;flex-direction:column;align-items:center;gap:.2rem}
+.sr-label{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;text-align:center}
+.sr-stars{color:var(--saffron);font-size:.7rem}
+/* pending review */
+.pending-review-card{background:white;border:2px dashed var(--saffron);border-radius:6px;padding:1.5rem;display:flex;align-items:center;gap:1.25rem;margin-bottom:1rem;cursor:pointer;transition:all .2s}
+.pending-review-card:hover{background:rgba(245,166,35,.03);border-style:solid}
+.prc-avatar{width:46px;height:46px;border-radius:50%;background:rgba(245,166,35,.1);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.prc-info{flex:1}
+.prc-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.2rem}
+.prc-sub{font-size:.78rem;color:var(--muted)}
+.prc-btn{padding:.55rem 1.25rem;background:var(--saffron);color:var(--ink);font-family:'Syne',sans-serif;font-weight:700;font-size:.78rem;border:none;border-radius:2px;cursor:pointer;white-space:nowrap}
+
+/* REVIEW WRITE MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(13,13,13,.6);z-index:1000;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:white;border-radius:6px;padding:2rem;max-width:520px;width:90%;animation:up .3s ease both;max-height:90vh;overflow-y:auto}
+.modal-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;letter-spacing:-.03em;margin-bottom:1.5rem}
+.star-pick{display:flex;gap:.5rem;margin-bottom:1.5rem}
+.star-pick span{font-size:1.8rem;cursor:pointer;transition:transform .15s;line-height:1}
+.star-pick span:hover,.star-pick span.lit{color:var(--saffron);transform:scale(1.15)}
+.sub-rating-picks{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem}
+.srp-label{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem}
+.srp-stars{display:flex;gap:.25rem}
+.srp-star{font-size:1.2rem;cursor:pointer;transition:all .15s}
+.srp-star.lit,.srp-star:hover{color:var(--saffron)}
+.review-textarea{width:100%;padding:.85rem 1rem;border:1.5px solid var(--border);border-radius:2px;font-family:'DM Sans',sans-serif;font-size:.875rem;resize:vertical;min-height:100px;outline:none;background:var(--cream);line-height:1.6;margin-bottom:1.25rem;transition:border-color .2s}
+.review-textarea:focus{border-color:var(--ink)}
+.modal-actions{display:flex;gap:.75rem}
+.modal-submit{flex:2;padding:.85rem;background:var(--ink);color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:.875rem;border:none;border-radius:2px;cursor:pointer;transition:background .2s}
+.modal-submit:hover{background:var(--green)}
+.modal-cancel{flex:1;padding:.85rem;background:transparent;color:var(--ink);font-family:'Syne',sans-serif;font-weight:600;font-size:.875rem;border:1.5px solid var(--border);border-radius:2px;cursor:pointer}
+
+/* TABS CONTENT */
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:900px){.sidebar{display:none}.rep-banner{grid-template-columns:1fr}.sub-ratings{gap:1rem}.sub-rating-picks{grid-template-columns:1fr}}
+</style>
+</head>
+<body class="app">
+<nav class="topnav">
+  <a href="index.html" class="logo">Kazi<span>X</span></a>
+  <div class="topnav-right">
+    <button class="notif-btn">🔔<span class="notif-dot"></span></button>
+    <div class="user-chip"><div class="user-avatar">AK</div><span class="user-name">Alex Kuria</span></div>
+  </div>
+</nav>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-section">Main</div>
+    <a class="nav-item" href="client-dashboard.html"><span class="ni-icon">📊</span>Dashboard</a>
+    <a class="nav-item" href="my-jobs.html"><span class="ni-icon">📋</span>My Jobs<span class="ni-badge">3</span></a>
+    <a class="nav-item" href="job-applicants.html"><span class="ni-icon">👥</span>Applications<span class="ni-badge">7</span></a>
+    <a class="nav-item" href="my-hires.html"><span class="ni-icon">🤝</span>My Hires</a>
+    <div class="sidebar-section">Discover</div>
+    <a class="nav-item" href="find-workers.html"><span class="ni-icon">🔍</span>Find Fundis</a>
+    <a class="nav-item" href="saved-workers.html"><span class="ni-icon">❤️</span>Saved Fundis<span class="ni-badge">5</span></a>
+    <a class="nav-item" href="post-job.html"><span class="ni-icon">➕</span>Post a Job</a>
+    <div class="sidebar-section">Account</div>
+    <a class="nav-item" href="messages.html"><span class="ni-icon">💬</span>Messages<span class="ni-badge">2</span></a>
+    <a class="nav-item" href="payments.html"><span class="ni-icon">💳</span>Payments</a>
+    <a class="nav-item active" href="reviews.html"><span class="ni-icon">⭐</span>Reviews</a>
+    <a class="nav-item" href="client-profile.html"><span class="ni-icon">👤</span>My Profile</a>
+    <div class="sidebar-bottom">
+      <a class="sidebar-profile" href="client-profile.html">
+        <div class="sp-avatar">🏠</div>
+        <div><div class="sp-name">Alex Kuria</div><div class="sp-role">Client Account</div></div>
+      </a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div style="margin-bottom:2rem;animation:up .4s ease both">
+      <div class="page-title">Reviews & Feedback</div>
+      <div class="page-sub">Your work history and ratings as a client — visible to fundis you contact</div>
+    </div>
+
+    <!-- REPUTATION BANNER -->
+    <div class="rep-banner">
+      <div>
+        <div class="rep-score-big">4.8</div>
+        <span class="rep-stars">★★★★★</span>
+        <div class="rep-total">as a client · 12 reviews</div>
+      </div>
+      <div class="rep-bars">
+        <div class="rb-row"><span class="rb-label">5★</span><div class="rb-track"><div class="rb-fill" style="width:83%"></div></div><span class="rb-pct">83%</span></div>
+        <div class="rb-row"><span class="rb-label">4★</span><div class="rb-track"><div class="rb-fill" style="width:17%"></div></div><span class="rb-pct">17%</span></div>
+        <div class="rb-row"><span class="rb-label">3★</span><div class="rb-track"><div class="rb-fill" style="width:0%"></div></div><span class="rb-pct">0%</span></div>
+        <div class="rb-row"><span class="rb-label">2★</span><div class="rb-track"></div><span class="rb-pct">0%</span></div>
+        <div class="rb-row"><span class="rb-label">1★</span><div class="rb-track"></div><span class="rb-pct">0%</span></div>
+      </div>
+      <div class="rep-right">
+        <div class="rep-stat"><div class="rep-stat-val">12</div><div class="rep-stat-lbl">Jobs completed</div></div>
+        <div class="rep-stat"><div class="rep-stat-val">KES 48.2K</div><div class="rep-stat-lbl">Total spent</div></div>
+        <div class="rep-stat"><div class="rep-stat-val">80%</div><div class="rep-stat-lbl">Hire rate</div></div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="rev-tabs">
+      <div class="rtab active" onclick="switchTab('given',this)">Reviews I've Given <span class="tc">12</span></div>
+      <div class="rtab" onclick="switchTab('received',this)">Reviews I've Received <span class="tc">12</span></div>
+      <div class="rtab" onclick="switchTab('pending',this)">Pending Reviews <span class="tc">1</span></div>
+    </div>
+
+    <!-- GIVEN -->
+    <div class="tab-content active" id="tab-given">
+      <div class="reviews-list">
+
+        <div class="rev-card">
+          <div class="rc-top">
+            <div class="rc-avatar">🪚</div>
+            <div class="rc-meta">
+              <div class="rc-name">Peter Odhiambo</div>
+              <div class="rc-trade">Carpenter</div>
+              <div class="rc-job">📋 Repair wooden fence — Kilimani · <span style="color:var(--green);font-weight:600">Completed</span></div>
+            </div>
+            <div class="rc-right">
+              <div class="rc-stars">★★★★★</div>
+              <div class="rc-score">5.0</div>
+              <div class="rc-amount">KES 3,500 paid</div>
+              <div class="rc-date">3 days ago</div>
+            </div>
+          </div>
+          <div class="rc-body">"Peter showed up on time and did an excellent job on our backyard fence. He brought all his own tools and materials were exactly what was quoted. Very professional — will definitely hire again for any carpentry work."</div>
+          <div class="sub-ratings">
+            <div class="sub-rating"><div class="sr-label">Quality</div><div class="sr-stars">★★★★★</div></div>
+            <div class="sub-rating"><div class="sr-label">Punctuality</div><div class="sr-stars">★★★★★</div></div>
+            <div class="sub-rating"><div class="sr-label">Communication</div><div class="sr-stars">★★★★★</div></div>
+            <div class="sub-rating"><div class="sr-label">Value</div><div class="sr-stars">★★★★★</div></div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rc-top">
+            <div class="rc-avatar">🔧</div>
+            <div class="rc-meta">
+              <div class="rc-name">James Kamau</div>
+              <div class="rc-trade">Master Plumber</div>
+              <div class="rc-job">📋 Fix leaking pipe — kitchen · <span style="color:var(--green);font-weight:600">Completed</span></div>
+            </div>
+            <div class="rc-right">
+              <div class="rc-stars">★★★★★</div>
+              <div class="rc-score">5.0</div>
+              <div class="rc-amount">KES 1,800 paid</div>
+              <div class="rc-date">1 week ago</div>
+            </div>
+          </div>
+          <div class="rc-body">"James responded within 30 minutes and fixed the burst pipe quickly. He also spotted and fixed a secondary issue at no extra charge. Highly recommended for any plumbing emergency in Nairobi."</div>
+          <div class="sub-ratings">
+            <div class="sub-rating"><div class="sr-label">Quality</div><div class="sr-stars">★★★★★</div></div>
+            <div class="sub-rating"><div class="sr-label">Punctuality</div><div class="sr-stars">★★★★★</div></div>
+            <div class="sub-rating"><div class="sr-label">Communication</div><div class="sr-stars">★★★★★</div></div>
+            <div class="sub-rating"><div class="sr-label">Value</div><div class="sr-stars">★★★★★</div></div>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rc-top">
+            <div class="rc-avatar">⚡</div>
+            <div class="rc-meta">
+              <div class="rc-name">David Mutua</div>
+              <div class="rc-trade">Senior Electrician</div>
+              <div class="rc-job">📋 Repair electrical fault — living room</div>
+            </div>
+            <div class="rc-right">
+              <div class="rc-stars">★★★★</div>
+              <div class="rc-score">4.0</div>
+              <div class="rc-amount">KES 2,400 paid</div>
+              <div class="rc-date">2 weeks ago</div>
+            </div>
+          </div>
+          <div class="rc-body">"Good work overall — fault was identified and fixed correctly. Arrived 1 hour late without notice which affected the rating. Quality of the electrical work itself was excellent and I'd hire again."</div>
+          <div class="sub-ratings">
+            <div class="sub-rating"><div class="sr-label">Quality</div><div class="sr-stars">★★★★★</div></div>
+            <div class="sub-rating"><div class="sr-label">Punctuality</div><div class="sr-stars">★★★</div></div>
+            <div class="sub-rating"><div class="sr-label">Communication</div><div class="sr-stars">★★★★</div></div>
+            <div class="sub-rating"><div class="sr-label">Value</div><div class="sr-stars">★★★★★</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RECEIVED -->
+    <div class="tab-content" id="tab-received">
+      <div style="background:rgba(27,107,58,.07);border:1px solid rgba(27,107,58,.2);border-radius:6px;padding:1rem 1.25rem;font-size:.85rem;margin-bottom:1.5rem;color:var(--green)">
+        ℹ️ These are reviews fundis have left about you as a client. They are visible on your public profile.
+      </div>
+      <div class="reviews-list">
+
+        <div class="rev-card">
+          <div class="rc-top">
+            <div class="rc-avatar">🪚</div>
+            <div class="rc-meta">
+              <div class="rc-name">Peter Odhiambo</div>
+              <div class="rc-trade">Carpenter · about Alex Kuria</div>
+              <div class="rc-job">📋 Repair wooden fence — Kilimani</div>
+            </div>
+            <div class="rc-right">
+              <div class="rc-stars">★★★★★</div>
+              <div class="rc-score">5.0</div>
+              <div class="rc-date">3 days ago</div>
+            </div>
+          </div>
+          <div class="rc-body">"Alex was a great client — clear instructions, was available on site, and released payment immediately after the job was done. Would love to work with him again."</div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rc-top">
+            <div class="rc-avatar">🔧</div>
+            <div class="rc-meta">
+              <div class="rc-name">James Kamau</div>
+              <div class="rc-trade">Plumber · about Alex Kuria</div>
+              <div class="rc-job">📋 Fix leaking pipe — kitchen</div>
+            </div>
+            <div class="rc-right">
+              <div class="rc-stars">★★★★★</div>
+              <div class="rc-score">5.0</div>
+              <div class="rc-date">1 week ago</div>
+            </div>
+          </div>
+          <div class="rc-body">"Mzuri sana — Alex alitoa maelekezo mazuri na alikuwa tayari kulipa haraka. Kazi ilikuwa wazi na bei ilikubaliana. Napenda kufanya kazi na wateja kama yeye."</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PENDING -->
+    <div class="tab-content" id="tab-pending">
+      <div class="pending-review-card" onclick="openReviewModal('Mary Akinyi','🎨','Painter','Paint bedroom + living room')">
+        <div class="prc-avatar">🎨</div>
+        <div class="prc-info">
+          <div class="prc-title">Leave a review for Mary Akinyi</div>
+          <div class="prc-sub">Paint bedroom + living room · Completed · Your review helps other clients make better decisions</div>
+        </div>
+        <button class="prc-btn">⭐ Write Review</button>
+      </div>
+      <div style="text-align:center;padding:2rem;color:var(--muted);font-size:.875rem">No more pending reviews</div>
+    </div>
+
+  </main>
+</div>
+
+<!-- REVIEW MODAL -->
+<div class="modal-overlay" id="reviewModal">
+  <div class="modal">
+    <div class="modal-title">Rate <span id="revieweeName">Mary Akinyi</span> <span id="revieweeEmoji">🎨</span></div>
+    <div style="font-size:.78rem;color:var(--muted);margin-bottom:1.25rem" id="reviewJobName">Paint bedroom + living room</div>
+
+    <div style="font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem">Overall Rating</div>
+    <div class="star-pick" id="mainStars">
+      <span onclick="setMainStar(1)">☆</span><span onclick="setMainStar(2)">☆</span>
+      <span onclick="setMainStar(3)">☆</span><span onclick="setMainStar(4)">☆</span><span onclick="setMainStar(5)">☆</span>
+    </div>
+
+    <div class="sub-rating-picks">
+      <div><div class="srp-label">Quality of Work</div><div class="srp-stars" id="sq"><span class="srp-star" onclick="setStar('sq',1)">☆</span><span class="srp-star" onclick="setStar('sq',2)">☆</span><span class="srp-star" onclick="setStar('sq',3)">☆</span><span class="srp-star" onclick="setStar('sq',4)">☆</span><span class="srp-star" onclick="setStar('sq',5)">☆</span></div></div>
+      <div><div class="srp-label">Punctuality</div><div class="srp-stars" id="sp"><span class="srp-star" onclick="setStar('sp',1)">☆</span><span class="srp-star" onclick="setStar('sp',2)">☆</span><span class="srp-star" onclick="setStar('sp',3)">☆</span><span class="srp-star" onclick="setStar('sp',4)">☆</span><span class="srp-star" onclick="setStar('sp',5)">☆</span></div></div>
+      <div><div class="srp-label">Communication</div><div class="srp-stars" id="sc"><span class="srp-star" onclick="setStar('sc',1)">☆</span><span class="srp-star" onclick="setStar('sc',2)">☆</span><span class="srp-star" onclick="setStar('sc',3)">☆</span><span class="srp-star" onclick="setStar('sc',4)">☆</span><span class="srp-star" onclick="setStar('sc',5)">☆</span></div></div>
+      <div><div class="srp-label">Value for Money</div><div class="srp-stars" id="sv"><span class="srp-star" onclick="setStar('sv',1)">☆</span><span class="srp-star" onclick="setStar('sv',2)">☆</span><span class="srp-star" onclick="setStar('sv',3)">☆</span><span class="srp-star" onclick="setStar('sv',4)">☆</span><span class="srp-star" onclick="setStar('sv',5)">☆</span></div></div>
+    </div>
+
+    <textarea class="review-textarea" placeholder="Describe your experience with this fundi. What did they do well? Any areas for improvement? Your honest review helps the community."></textarea>
+
+    <label style="display:flex;align-items:center;gap:.6rem;font-size:.8rem;color:var(--muted);margin-bottom:1.25rem;cursor:pointer">
+      <input type="checkbox" checked style="accent-color:var(--ink)"> Would you hire this fundi again?
+    </label>
+
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeReviewModal()">Cancel</button>
+      <button class="modal-submit" onclick="submitReview()">Submit Review ★</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(id, el) {
+  document.querySelectorAll('.rtab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
+}
+function setMainStar(n) {
+  const stars = document.querySelectorAll('#mainStars span');
+  stars.forEach((s, i) => { s.textContent = i < n ? '★' : '☆'; s.classList.toggle('lit', i < n); });
+}
+function setStar(id, n) {
+  const stars = document.querySelectorAll('#' + id + ' .srp-star');
+  stars.forEach((s, i) => { s.textContent = i < n ? '★' : '☆'; s.classList.toggle('lit', i < n); });
+}
+function openReviewModal(name, emoji, trade, job) {
+  document.getElementById('revieweeName').textContent = name;
+  document.getElementById('revieweeEmoji').textContent = emoji;
+  document.getElementById('reviewJobName').textContent = job;
+  document.getElementById('reviewModal').classList.add('open');
+}
+function closeReviewModal() { document.getElementById('reviewModal').classList.remove('open'); }
+function submitReview() {
+  closeReviewModal();
+  document.getElementById('tab-pending').innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted);font-size:.875rem">✅ All reviews submitted — none pending</div>';
+  document.querySelector('.rtab:last-child .tc').textContent = '0';
+  alert('✅ Review submitted! Thank you — your feedback helps the KaziX community.');
+}
+</script>
+
+<nav class="mobile-nav" aria-label="Primary">
+  <a class="mobile-nav-item" href="client-dashboard.html"><span class="mn-icon">📊</span><span class="mn-label">Dashboard</span></a>
+  <a class="mobile-nav-item" href="my-jobs.html"><span class="mn-icon">📋</span><span class="mn-label">Jobs</span></a>
+  <a class="mobile-nav-item" href="find-workers.html"><span class="mn-icon">🔍</span><span class="mn-label">Find</span></a>
+  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon">💬</span><span class="mn-label">Messages</span></a>
+  <div class="mobile-nav-more active">
+    <button class="mobile-nav-item mobile-nav-more-toggle" type="button" aria-controls="mobile-drawer" aria-expanded="false" aria-label="Open navigation menu">
+      <span class="mn-icon">⋯</span><span class="mn-label">More</span>
+    </button>
+    <div class="mobile-nav-drawer" id="mobile-drawer" role="navigation" aria-label="Secondary pages" aria-hidden="true">
+      <a class="mobile-nav-drawer-item" href="client-profile.html">👤 Profile</a>
+      <a class="mobile-nav-drawer-item" href="notifications.html">🔔 Notifications</a>
+      <a class="mobile-nav-drawer-item" href="payments.html">💳 Payments</a>
+      <a class="mobile-nav-drawer-item active" href="reviews.html">⭐ Reviews</a>
+      <a class="mobile-nav-drawer-item" href="saved-workers.html">❤️ Saved Fundis</a>
+    </div>
+  </div>
+</nav>
+
+
+<script src="../assets/js/mobile-nav.js"></script>
+</body>
+</html>

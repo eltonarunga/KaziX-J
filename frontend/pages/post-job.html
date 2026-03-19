@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Post a Job — KaziX</title>
+<link rel="stylesheet" href="../assets/css/styles.css">
+<style>
+  :root{--ink:#0D0D0D;--cream:#F5F0E8;--saffron:#F5A623;--rust:#C0392B;--green:#1B6B3A;--steel:#2C3E50;--muted:#7A7468;--card-bg:#FFFFFF;--border:rgba(13,13,13,0.1)}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.35}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:1.4rem 5%;position:sticky;top:0;background:rgba(245,240,232,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:100}
+  .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:-0.04em;color:var(--ink);text-decoration:none}
+  .logo span{color:var(--saffron)}
+  .nav-links{display:flex;gap:2rem;list-style:none}
+  .nav-links a{font-size:0.875rem;font-weight:500;color:var(--muted);text-decoration:none;transition:color 0.2s}
+  .nav-links a:hover,.nav-links a.active{color:var(--ink)}
+  .nav-cta{background:var(--ink);color:var(--cream)!important;padding:0.55rem 1.2rem;border-radius:2px;font-weight:500}
+  .nav-cta:hover{background:var(--green)!important}
+
+  /* PAGE HEADER */
+  .page-header{background:var(--ink);color:var(--cream);padding:3rem 5%;position:relative;overflow:hidden;text-align:center}
+  .page-header::after{content:'POST';position:absolute;right:-1%;top:50%;transform:translateY(-50%);font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(60px,14vw,200px);opacity:0.04;pointer-events:none;letter-spacing:-0.06em}
+  .section-eyebrow{font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--saffron);margin-bottom:0.75rem}
+  .page-header h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.8rem,4vw,3rem);letter-spacing:-0.04em;margin-bottom:0.5rem}
+  .page-header p{color:rgba(245,240,232,0.55);font-size:0.95rem;max-width:480px;margin:0 auto}
+
+  /* STEP PROGRESS */
+  .steps-progress{display:flex;align-items:center;justify-content:center;gap:0;padding:2.5rem 5%;max-width:700px;margin:0 auto}
+  .step-node{display:flex;flex-direction:column;align-items:center;gap:0.4rem;flex:1;position:relative}
+  .step-node:not(:last-child)::after{content:'';position:absolute;top:18px;left:calc(50% + 18px);right:calc(-50% + 18px);height:1.5px;background:var(--border);z-index:0}
+  .step-node:not(:last-child).done::after{background:var(--ink)}
+  .step-circle{width:36px;height:36px;border-radius:50%;border:2px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;position:relative;z-index:1;transition:all 0.3s}
+  .step-node.active .step-circle{background:var(--ink);border-color:var(--ink);color:var(--cream)}
+  .step-node.done .step-circle{background:var(--green);border-color:var(--green);color:white}
+  .step-text{font-size:0.72rem;font-weight:500;color:var(--muted);text-align:center}
+  .step-node.active .step-text{color:var(--ink);font-weight:700}
+
+  /* FORM LAYOUT */
+  .form-layout{display:grid;grid-template-columns:1fr 320px;gap:2rem;padding:0 5% 4rem;max-width:1100px;margin:0 auto}
+
+  /* FORM CARD */
+  .form-card{background:white;border:1px solid var(--border);border-radius:4px;padding:2rem;animation:slideUp 0.5s ease both}
+  .form-section-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:-0.02em;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+  .form-step{display:none}.form-step.active{display:block}
+  .field-group{margin-bottom:1.25rem}
+  .field-label{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;display:block}
+  .field-required{color:var(--rust)}
+  .field-input{width:100%;padding:0.85rem 1rem;border:1.5px solid var(--border);border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:white;color:var(--ink);outline:none;transition:border-color 0.2s}
+  .field-input:focus{border-color:var(--ink)}
+  .field-input::placeholder{color:var(--muted)}
+  textarea.field-input{resize:vertical;min-height:120px;line-height:1.6}
+  select.field-input{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A7468' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center}
+  .field-hint{font-size:0.75rem;color:var(--muted);margin-top:0.35rem}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+
+  /* TRADE PICKER */
+  .trade-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:0.75rem;margin-bottom:1.25rem}
+  .trade-option{border:1.5px solid var(--border);border-radius:4px;padding:1rem;text-align:center;cursor:pointer;transition:all 0.2s;background:white}
+  .trade-option:hover{border-color:var(--ink);transform:translateY(-2px)}
+  .trade-option.selected{border-color:var(--ink);background:var(--ink);color:var(--cream)}
+  .trade-option .t-icon{font-size:1.8rem;display:block;margin-bottom:0.4rem}
+  .trade-option .t-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem}
+
+  /* BUDGET SLIDER */
+  .budget-display{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem}
+  .budget-value{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:var(--ink)}
+  .budget-sub{font-size:0.75rem;color:var(--muted)}
+  input[type=range]{width:100%;accent-color:var(--ink);height:4px}
+
+  /* URGENCY TOGGLE */
+  .urgency-row{display:flex;gap:1rem}
+  .urgency-option{flex:1;border:1.5px solid var(--border);border-radius:2px;padding:0.85rem;text-align:center;cursor:pointer;transition:all 0.2s;font-size:0.875rem;font-weight:500}
+  .urgency-option:hover{border-color:var(--ink)}
+  .urgency-option.selected{border-color:var(--rust);background:var(--rust);color:white}
+  .urgency-option.selected.normal{border-color:var(--ink);background:var(--ink);color:var(--cream)}
+
+  /* FORM BUTTONS */
+  .form-btns{display:flex;gap:1rem;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+  .btn-back{flex:1;padding:0.9rem;background:transparent;color:var(--ink);font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;border:1.5px solid var(--ink);border-radius:2px;cursor:pointer;transition:all 0.2s}
+  .btn-back:hover{background:var(--cream)}
+  .btn-next{flex:2;padding:0.9rem;background:var(--ink);color:var(--cream);font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;border:none;border-radius:2px;cursor:pointer;transition:background 0.2s}
+  .btn-next:hover{background:var(--green)}
+  .btn-submit{flex:2;padding:0.9rem;background:var(--saffron);color:var(--ink);font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;border:none;border-radius:2px;cursor:pointer;transition:all 0.2s}
+  .btn-submit:hover{background:var(--green);color:white}
+
+  /* SIDEBAR TIPS */
+  .tips-card{background:var(--ink);color:var(--cream);border-radius:4px;padding:1.75rem;position:sticky;top:100px;animation:slideUp 0.5s 0.1s ease both}
+  .tips-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:var(--saffron);margin-bottom:1.25rem}
+  .tip-item{display:flex;gap:0.75rem;margin-bottom:1rem;font-size:0.85rem;line-height:1.6}
+  .tip-num{width:22px;height:22px;border-radius:50%;background:rgba(245,240,232,0.1);color:var(--saffron);font-family:'Syne',sans-serif;font-weight:700;font-size:0.72rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .tip-text{color:rgba(245,240,232,0.7)}
+  .tip-text strong{color:var(--cream)}
+  .how-it-works-mini{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(245,240,232,0.1)}
+  .hiw-step{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.85rem;font-size:0.82rem}
+  .hiw-icon{width:28px;height:28px;border-radius:50%;background:rgba(245,166,35,0.15);color:var(--saffron);display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0}
+  .hiw-text{color:rgba(245,240,232,0.7)}
+
+  /* SUCCESS STATE */
+  .success-state{display:none;text-align:center;padding:3rem 2rem}
+  .success-state.show{display:block}
+  .success-icon{font-size:4rem;margin-bottom:1rem}
+  .success-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;letter-spacing:-0.04em;margin-bottom:0.75rem}
+  .success-sub{color:var(--muted);margin-bottom:2rem;line-height:1.6}
+  .success-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+
+  /* FOOTER */
+  footer{background:var(--ink);color:var(--cream);padding:3rem 5% 2rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem}
+  .footer-brand .logo{display:block;margin-bottom:0.75rem}
+  .footer-brand p{font-size:0.85rem;color:rgba(245,240,232,0.5);line-height:1.7;max-width:280px}
+  .footer-col h4{font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(245,240,232,0.4);margin-bottom:1rem}
+  .footer-col ul{list-style:none}.footer-col ul li{margin-bottom:0.6rem}
+  .footer-col ul a{color:rgba(245,240,232,0.7);text-decoration:none;font-size:0.875rem;transition:color 0.2s}
+  .footer-col ul a:hover{color:var(--saffron)}
+  .footer-bottom{background:var(--ink);border-top:1px solid rgba(245,240,232,0.08);padding:1.25rem 5%;display:flex;justify-content:space-between;align-items:center;font-size:0.78rem;color:rgba(245,240,232,0.35)}
+  .footer-bottom a{color:var(--saffron);text-decoration:none}
+
+  @keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  @media(max-width:900px){.form-layout{grid-template-columns:1fr}.tips-card{position:static}.field-row{grid-template-columns:1fr}footer{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Kazi<span>X</span></a>
+  <ul class="nav-links">
+    <li><a href="find-workers.html">Find Workers</a></li>
+    <li><a href="post-job.html" class="active">Post a Job</a></li>
+    <li><a href="for-pros.html">For Pros</a></li>
+    <li><a href="login.html" class="nav-cta">Get Started</a></li>
+  </ul>
+</nav>
+
+<div class="page-header">
+  <div class="section-eyebrow">Quick & Easy</div>
+  <h1>Post Your Job</h1>
+  <p>Describe what you need — qualified fundis will apply within minutes</p>
+</div>
+
+<!-- STEP PROGRESS -->
+<div class="steps-progress">
+  <div class="step-node active" id="snode1">
+    <div class="step-circle">1</div>
+    <div class="step-text">Job Details</div>
+  </div>
+  <div class="step-node" id="snode2">
+    <div class="step-circle">2</div>
+    <div class="step-text">Location</div>
+  </div>
+  <div class="step-node" id="snode3">
+    <div class="step-circle">3</div>
+    <div class="step-text">Budget</div>
+  </div>
+  <div class="step-node" id="snode4">
+    <div class="step-circle">4</div>
+    <div class="step-text">Review</div>
+  </div>
+</div>
+
+<!-- FORM LAYOUT -->
+<div class="form-layout">
+  <div class="form-card">
+
+    <!-- STEP 1: JOB DETAILS -->
+    <div class="form-step active" id="step1">
+      <div class="form-section-title">What do you need done?</div>
+
+      <div class="field-group">
+        <label class="field-label">Select Trade <span class="field-required">*</span></label>
+        <div class="trade-grid">
+          <div class="trade-option" onclick="selectTrade(this)"><span class="t-icon">🚿</span><div class="t-name">Plumber</div></div>
+          <div class="trade-option selected" onclick="selectTrade(this)"><span class="t-icon">⚡</span><div class="t-name">Electrician</div></div>
+          <div class="trade-option" onclick="selectTrade(this)"><span class="t-icon">🧱</span><div class="t-name">Mason</div></div>
+          <div class="trade-option" onclick="selectTrade(this)"><span class="t-icon">👗</span><div class="t-name">Mama Fua</div></div>
+          <div class="trade-option" onclick="selectTrade(this)"><span class="t-icon">🪚</span><div class="t-name">Carpenter</div></div>
+          <div class="trade-option" onclick="selectTrade(this)"><span class="t-icon">🎨</span><div class="t-name">Painter</div></div>
+          <div class="trade-option" onclick="selectTrade(this)"><span class="t-icon">🏠</span><div class="t-name">Roofer</div></div>
+          <div class="trade-option" onclick="selectTrade(this)"><span class="t-icon">🌿</span><div class="t-name">Gardener</div></div>
+          <div class="trade-option" onclick="selectTrade(this)"><span class="t-icon">🛻</span><div class="t-name">Driver/Mover</div></div>
+          <div class="trade-option" onclick="selectTrade(this)"><span class="t-icon">🔒</span><div class="t-name">Security</div></div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Job Title <span class="field-required">*</span></label>
+        <input class="field-input" type="text" placeholder="e.g. Fix electrical fault in living room" value="Install CCTV cameras in my house">
+        <div class="field-hint">Be specific — clear titles attract better fundis</div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Job Description <span class="field-required">*</span></label>
+        <textarea class="field-input" placeholder="Describe the job in detail: what needs to be done, any specific requirements, materials needed…">I need 4 CCTV cameras installed around my compound — 2 at the gate, 1 at the front door, 1 at the back. Cables to be hidden where possible. Include setup of the recording unit (NVR).</textarea>
+        <div class="field-hint">Minimum 30 characters. More detail = faster match</div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Urgency</label>
+        <div class="urgency-row">
+          <div class="urgency-option normal selected" onclick="selectUrgency(this,'normal')">🗓️ Flexible timing</div>
+          <div class="urgency-option" onclick="selectUrgency(this,'urgent')">🔴 Urgent — ASAP</div>
+        </div>
+      </div>
+
+      <div class="form-btns" style="border-top:none;margin-top:0.5rem;padding-top:0">
+        <button class="btn-next" onclick="goStep(2)">Continue → Location</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: LOCATION -->
+    <div class="form-step" id="step2">
+      <div class="form-section-title">Where is the job?</div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">County <span class="field-required">*</span></label>
+          <select class="field-input">
+            <option selected>Nairobi</option>
+            <option>Mombasa</option>
+            <option>Kisumu</option>
+            <option>Nakuru</option>
+            <option>Eldoret</option>
+            <option>Thika</option>
+            <option>Malindi</option>
+            <option>Machakos</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Town / Area <span class="field-required">*</span></label>
+          <input class="field-input" type="text" placeholder="e.g. Westlands" value="Kilimani">
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Street / Building Name</label>
+        <input class="field-input" type="text" placeholder="e.g. Kilimani Road, near Yaya Centre">
+        <div class="field-hint">This is only shared with your hired fundi</div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Preferred Date <span class="field-required">*</span></label>
+        <input class="field-input" type="date">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Preferred Time</label>
+        <select class="field-input">
+          <option>Morning (7am – 12pm)</option>
+          <option>Afternoon (12pm – 5pm)</option>
+          <option>Evening (5pm – 8pm)</option>
+          <option>Flexible / Anytime</option>
+        </select>
+      </div>
+
+      <div class="form-btns">
+        <button class="btn-back" onclick="goStep(1)">← Back</button>
+        <button class="btn-next" onclick="goStep(3)">Continue → Budget</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: BUDGET -->
+    <div class="form-step" id="step3">
+      <div class="form-section-title">Set your budget</div>
+
+      <div class="field-group">
+        <div class="budget-display">
+          <div>
+            <div class="budget-value">KES <span id="budgetVal">2,500</span></div>
+            <div class="budget-sub">Estimated total</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em">Typical for this job</div>
+            <div style="font-size:0.82rem;font-weight:500;color:var(--green)">KES 1,500 – 5,000</div>
+          </div>
+        </div>
+        <input type="range" min="500" max="50000" step="500" value="2500" oninput="document.getElementById('budgetVal').textContent=parseInt(this.value).toLocaleString()">
+        <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--muted);margin-top:0.25rem"><span>KES 500</span><span>KES 50,000+</span></div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Minimum (KES)</label>
+          <input class="field-input" type="number" placeholder="1,000" value="1500">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Maximum (KES)</label>
+          <input class="field-input" type="number" placeholder="5,000" value="5000">
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Payment Type</label>
+        <select class="field-input">
+          <option>Fixed price for the job</option>
+          <option>Hourly rate</option>
+          <option>Daily rate</option>
+          <option>Negotiable</option>
+        </select>
+      </div>
+
+      <div style="background:var(--cream);border-radius:4px;padding:1rem 1.25rem;font-size:0.82rem;color:var(--muted);line-height:1.6;margin-top:0.5rem">
+        💳 <strong style="color:var(--ink)">M-Pesa Escrow:</strong> Your payment is held securely until you confirm the job is done. KaziX takes a 10% platform fee from the worker's side — you pay exactly your agreed amount.
+      </div>
+
+      <div class="form-btns">
+        <button class="btn-back" onclick="goStep(2)">← Back</button>
+        <button class="btn-next" onclick="goStep(4)">Continue → Review</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: REVIEW -->
+    <div class="form-step" id="step4">
+      <div class="form-section-title">Review your job post</div>
+
+      <div style="border:1.5px solid var(--ink);border-radius:4px;padding:1.5rem;margin-bottom:1.5rem">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border)">
+          <div style="font-size:2rem">⚡</div>
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem">Install CCTV cameras in my house</div>
+            <div style="font-size:0.78rem;color:var(--rust);font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Electrician</div>
+          </div>
+          <div style="margin-left:auto;background:var(--saffron);color:var(--ink);font-size:0.68rem;font-weight:700;padding:0.2rem 0.5rem;border-radius:2px;text-transform:uppercase;letter-spacing:0.06em">Open</div>
+        </div>
+        <div style="font-size:0.85rem;line-height:1.65;color:var(--steel);margin-bottom:1.25rem">I need 4 CCTV cameras installed around my compound — 2 at the gate, 1 at the front door, 1 at the back. Cables to be hidden where possible…</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem">
+          <div><div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);font-weight:700">Location</div><div style="font-size:0.875rem;margin-top:0.2rem">📍 Kilimani, Nairobi</div></div>
+          <div><div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);font-weight:700">Budget</div><div style="font-size:0.875rem;margin-top:0.2rem;font-weight:700">KES 1,500 – 5,000</div></div>
+          <div><div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);font-weight:700">Timing</div><div style="font-size:0.875rem;margin-top:0.2rem">🗓️ Flexible</div></div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Your Name <span class="field-required">*</span></label>
+        <input class="field-input" type="text" placeholder="Full name">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Phone Number <span class="field-required">*</span></label>
+        <input class="field-input" type="tel" placeholder="+254 7XX XXX XXX">
+        <div class="field-hint">Workers will contact you on this number</div>
+      </div>
+
+      <div class="form-btns">
+        <button class="btn-back" onclick="goStep(3)">← Back</button>
+        <button class="btn-submit" onclick="submitJob()">🚀 Post Job Now</button>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-state" id="successState">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Job Posted Successfully!</div>
+      <div class="success-sub">Your job has been posted. Nearby electricians in Kilimani are being notified right now.<br><br>You'll receive SMS alerts as fundis apply. Average response time is <strong>under 20 minutes</strong>.</div>
+      <div class="success-actions">
+        <a href="find-workers.html" style="background:var(--ink);color:var(--cream);padding:0.9rem 2rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;border-radius:2px;text-decoration:none;display:inline-block">Browse Workers</a>
+        <a href="index.html" style="background:transparent;color:var(--ink);padding:0.9rem 2rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;border:1.5px solid var(--ink);border-radius:2px;text-decoration:none;display:inline-block">Back to Home</a>
+      </div>
+    </div>
+
+  </div><!-- /form-card -->
+
+  <!-- TIPS SIDEBAR -->
+  <aside>
+    <div class="tips-card">
+      <div class="tips-title">Tips for a great job post</div>
+      <div class="tip-item"><div class="tip-num">1</div><div class="tip-text"><strong>Be specific</strong> — describe exactly what needs doing. Vague posts get fewer applications.</div></div>
+      <div class="tip-item"><div class="tip-num">2</div><div class="tip-text"><strong>Add photos</strong> — a picture of the problem helps fundis quote accurately.</div></div>
+      <div class="tip-item"><div class="tip-num">3</div><div class="tip-text"><strong>Set a realistic budget</strong> — check our price guide to attract quality workers.</div></div>
+      <div class="tip-item"><div class="tip-num">4</div><div class="tip-text"><strong>Specify materials</strong> — note if you'll supply materials or want the fundi to source them.</div></div>
+
+      <div class="how-it-works-mini">
+        <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(245,240,232,0.4);margin-bottom:1rem">What happens next</div>
+        <div class="hiw-step"><div class="hiw-icon">📢</div><div class="hiw-text">Your job is posted and nearby fundis are notified by SMS</div></div>
+        <div class="hiw-step"><div class="hiw-icon">📩</div><div class="hiw-text">Fundis apply — review profiles, ratings, and rates</div></div>
+        <div class="hiw-step"><div class="hiw-icon">✅</div><div class="hiw-text">Hire your preferred fundi and pay securely via M-Pesa</div></div>
+        <div class="hiw-step"><div class="hiw-icon">⭐</div><div class="hiw-text">Job done — release payment and leave a review</div></div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<footer>
+  <div class="footer-brand">
+    <a href="index.html" class="logo">Kazi<span>X</span></a>
+    <p>Kenya's premier marketplace for skilled workers. Verified fundis, real reviews, M-Pesa payments.</p>
+  </div>
+  <div class="footer-col"><h4>Platform</h4><ul><li><a href="find-workers.html">Find Workers</a></li><li><a href="post-job.html">Post a Job</a></li><li><a href="for-pros.html">For Pros</a></li></ul></div>
+  <div class="footer-col"><h4>Company</h4><ul><li><a href="about.html">About Us</a></li><li><a href="#">Blog</a></li><li><a href="careers.html">Careers</a></li></ul></div>
+  <div class="footer-col"><h4>Support</h4><ul><li><a href="#">Help Centre</a></li><li><a href="#">Safety</a></li><li><a href="terms.html">Terms</a></li></ul></div>
+</footer>
+<div class="footer-bottom">
+  <span>© 2025 KaziX Ltd. All rights reserved.</span>
+  <span>Built for Kenya 🇰🇪 · <a href="#">Powered by M-Pesa</a></span>
+</div>
+
+<script>
+let currentStep = 1;
+function goStep(n) {
+  document.getElementById('step'+currentStep).classList.remove('active');
+  document.getElementById('snode'+currentStep).classList.remove('active');
+  document.getElementById('snode'+currentStep).classList.add('done');
+  currentStep = n;
+  document.getElementById('step'+n).classList.add('active');
+  document.getElementById('snode'+n).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function selectTrade(el) {
+  document.querySelectorAll('.trade-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function selectUrgency(el,type) {
+  document.querySelectorAll('.urgency-option').forEach(o => o.classList.remove('selected','normal'));
+  el.classList.add('selected');
+  if(type==='normal') el.classList.add('normal');
+}
+function submitJob() {
+  document.getElementById('step4').classList.remove('active');
+  document.querySelectorAll('.step-node').forEach(n => { n.classList.remove('active'); n.classList.add('done'); });
+  document.getElementById('successState').classList.add('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
