@@ -1,0 +1,63 @@
+from functools import lru_cache
+from typing import Literal
+
+from pydantic import field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+        extra="ignore",
+    )
+
+    # ── App ──────────────────────────────────────────────────
+    app_env: Literal["development", "production", "testing"] = "development"
+    app_secret_key: str
+    app_host: str = "0.0.0.0"
+    app_port: int = 8000
+    allowed_origins: str = "http://localhost:3000"
+
+    @property
+    def cors_origins(self) -> list[str]:
+        return [o.strip() for o in self.allowed_origins.split(",")]
+
+    @property
+    def is_production(self) -> bool:
+        return self.app_env == "production"
+
+    # ── Supabase ─────────────────────────────────────────────
+    supabase_url: str
+    supabase_anon_key: str
+    supabase_service_role_key: str
+    supabase_jwt_secret: str
+
+    # ── M-Pesa ───────────────────────────────────────────────
+    mpesa_consumer_key: str = ""
+    mpesa_consumer_secret: str = ""
+    mpesa_shortcode: str = "174379"
+    mpesa_passkey: str = ""
+    mpesa_callback_url: str = "https://api.kazix.co.ke/v1/mpesa/callback"
+    mpesa_env: Literal["sandbox", "production"] = "sandbox"
+
+    @property
+    def mpesa_base_url(self) -> str:
+        if self.mpesa_env == "production":
+            return "https://api.safaricom.co.ke"
+        return "https://sandbox.safaricom.co.ke"
+
+    # ── Africa's Talking ─────────────────────────────────────
+    at_api_key: str = ""
+    at_username: str = "sandbox"
+    at_sender_id: str = "KaziX"
+
+    # ── Logging ──────────────────────────────────────────────
+    log_level: str = "INFO"
+
+
+@lru_cache
+def get_settings() -> Settings:
+    """Cached settings singleton — import this everywhere."""
+    return Settings()
