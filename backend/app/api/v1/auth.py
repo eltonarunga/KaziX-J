@@ -5,21 +5,32 @@ Phone OTP authentication flow (Tasks 4 & 5).
 
 POST /v1/auth/send-otp     → sends 6-digit OTP via Supabase phone auth
 POST /v1/auth/verify-otp   → verifies OTP, creates profile if new user
+POST /v1/auth/oauth/start  → returns Supabase OAuth authorize URL
+POST /v1/auth/oauth/exchange → exchanges OAuth code for Supabase session
 POST /v1/auth/profile      → completes registration (step 4 form data)
 GET  /v1/auth/session      → returns current user + profile in one call
+GET  /v1/auth/bootstrap    → returns profile completion state for OAuth/OTP sessions
 """
 
+import secrets
+import time
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field, field_validator
+from supabase import create_client
 
 from app.api.deps import CurrentUser
+from app.core.config import get_settings
 from app.core.logging import get_logger
 from app.core.supabase import get_admin_client, get_anon_client
 
 logger = get_logger(__name__)
 router = APIRouter()
+settings = get_settings()
+
+_OAUTH_STATE_TTL_SECONDS = 600
+_OAUTH_STATE_STORE: dict[str, dict[str, str | float]] = {}
 
 
 # ── Schemas ──────────────────────────────────────────────────
@@ -67,6 +78,77 @@ class SessionResponse(BaseModel):
     phone: str
     full_name: str
     is_verified: bool
+
+
+class OAuthStartRequest(BaseModel):
+    provider: Literal["google", "apple", "github"]
+    redirect_to: str = Field(..., min_length=1)
+    scopes: str | None = None
+
+
+class OAuthStartResponse(BaseModel):
+    provider: str
+    url: str
+    state: str
+
+
+class OAuthExchangeRequest(BaseModel):
+    code: str = Field(..., min_length=1)
+    state: str = Field(..., min_length=8)
+    redirect_to: str | None = None
+
+
+class BootstrapResponse(BaseModel):
+    is_new_user: bool
+    redirect_to: str
+    role: str
+    profile: dict | None
+
+
+def _resolve_profile_state(admin, user_id: str) -> tuple[dict | None, bool, str]:
+    """
+    Shared profile state resolver for OTP/OAuth flows.
+    """
+    existing = (
+        admin.table("profiles")
+        .select("id, role, full_name, phone, is_verified")
+        .eq("id", user_id)
+        .maybe_single()
+        .execute()
+    )
+    profile = existing.data if existing else None
+    is_new_user = profile is None or profile.get("full_name") == "User"
+    role = profile.get("role") if profile else "client"
+    redirect_to = "complete-registration" if is_new_user else f"{role}-dashboard"
+    return profile, is_new_user, redirect_to
+
+
+def _cleanup_oauth_state(now_ts: float) -> None:
+    expired = [
+        state
+        for state, payload in _OAUTH_STATE_STORE.items()
+        if now_ts - float(payload.get("created_at", 0)) > _OAUTH_STATE_TTL_SECONDS
+    ]
+    for state in expired:
+        _OAUTH_STATE_STORE.pop(state, None)
+
+
+def _put_oauth_state(state: str, code_verifier: str) -> None:
+    now_ts = time.time()
+    _cleanup_oauth_state(now_ts)
+    _OAUTH_STATE_STORE[state] = {
+        "code_verifier": code_verifier,
+        "created_at": now_ts,
+    }
+
+
+def _pop_oauth_code_verifier(state: str) -> str | None:
+    now_ts = time.time()
+    _cleanup_oauth_state(now_ts)
+    payload = _OAUTH_STATE_STORE.pop(state, None)
+    if not payload:
+        return None
+    return str(payload.get("code_verifier") or "")
 
 
 # ── Routes ───────────────────────────────────────────────────
@@ -124,31 +206,12 @@ async def verify_otp(body: VerifyOTPRequest):
     user_id = response.user.id
     admin = get_admin_client()
 
-    # Check if a profiles row already exists
     try:
-        existing = (
-            admin.table("profiles")
-            .select("id, role, full_name")
-            .eq("id", user_id)
-            .maybe_single()
-            .execute()
-        )
+        _, is_new_user, redirect_to = _resolve_profile_state(admin, user_id)
     except Exception as exc:
         logger.error("Profile check failed", user_id=user_id, error=str(exc))
-        # We still return the session even if profile check fails, 
-        # but mark as new user to be safe
-        existing = None
-
-    # A profile exists but full_name is still the placeholder 'User'
-    # means the user never completed registration
-    profile = existing.data if existing else None
-    is_new_user = (
-        profile is None
-        or profile.get("full_name") == "User"
-    )
-
-    role = profile.get("role") if profile else "client"
-    redirect_to = "complete-registration" if is_new_user else role + "-dashboard"
+        is_new_user = True
+        redirect_to = "complete-registration"
 
     return {
         "access_token":  response.session.access_token,
@@ -157,6 +220,97 @@ async def verify_otp(body: VerifyOTPRequest):
         "expires_in":    response.session.expires_in,
         "is_new_user":   is_new_user,
         "redirect_to":   redirect_to,
+    }
+
+
+@router.post("/oauth/start", response_model=OAuthStartResponse, status_code=200)
+async def start_oauth(body: OAuthStartRequest):
+    """
+    Returns a Supabase OAuth authorization URL for the selected provider.
+    Frontend should redirect the browser to the returned URL.
+    """
+    # Build an isolated auth client per request so we can safely capture
+    # this login's PKCE code verifier without cross-user collisions.
+    client = create_client(settings.supabase_url, settings.supabase_anon_key)
+    state = secrets.token_urlsafe(24)
+
+    options = {"redirect_to": body.redirect_to, "query_params": {"state": state}}
+    if body.scopes:
+        options["scopes"] = body.scopes
+
+    try:
+        response = client.auth.sign_in_with_oauth(
+            {"provider": body.provider, "options": options}
+        )
+
+        storage = getattr(client.auth, "_storage", None)
+        code_verifier = getattr(storage, "storage", {}).get(
+            "supabase.auth.token-code-verifier"
+        )
+        if not code_verifier:
+            raise RuntimeError("Missing PKCE code verifier for OAuth start")
+
+        _put_oauth_state(state, str(code_verifier))
+        return OAuthStartResponse(provider=response.provider, url=response.url, state=state)
+    except Exception as exc:
+        logger.error("OAuth start failed", provider=body.provider, error=str(exc))
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Failed to initialize OAuth login.",
+        )
+
+
+@router.post("/oauth/exchange", status_code=200)
+async def exchange_oauth_code(body: OAuthExchangeRequest):
+    """
+    Exchanges Supabase OAuth callback code for a session using the stored PKCE verifier.
+    """
+    code_verifier = _pop_oauth_code_verifier(body.state)
+    if not code_verifier:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="OAuth state is invalid or expired. Please start login again.",
+        )
+
+    client = create_client(settings.supabase_url, settings.supabase_anon_key)
+    exchange_payload = {
+        "auth_code": body.code,
+        "code_verifier": code_verifier,
+    }
+    if body.redirect_to:
+        exchange_payload["redirect_to"] = body.redirect_to
+
+    try:
+        response = client.auth.exchange_code_for_session(exchange_payload)
+    except Exception as exc:
+        logger.error("OAuth exchange failed", state=body.state[:8], error=str(exc))
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Failed to complete OAuth login.",
+        )
+
+    if not response.session or not response.user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="OAuth login did not return a session.",
+        )
+
+    user_id = response.user.id
+    admin = get_admin_client()
+    try:
+        _, is_new_user, redirect_to = _resolve_profile_state(admin, user_id)
+    except Exception as exc:
+        logger.error("OAuth profile check failed", user_id=user_id, error=str(exc))
+        is_new_user = True
+        redirect_to = "complete-registration"
+
+    return {
+        "access_token": response.session.access_token,
+        "refresh_token": response.session.refresh_token,
+        "token_type": "bearer",
+        "expires_in": response.session.expires_in,
+        "is_new_user": is_new_user,
+        "redirect_to": redirect_to,
     }
 
 
@@ -254,3 +408,24 @@ async def get_session(user: CurrentUser):
     except Exception as exc:
         logger.error("Session fetch failed", user_id=user.user_id, error=str(exc))
         raise HTTPException(status_code=500, detail="Failed to fetch session data.")
+
+
+@router.get("/bootstrap", response_model=BootstrapResponse, status_code=200)
+async def bootstrap_auth(user: CurrentUser):
+    """
+    Returns profile completion state for any authenticated Supabase session
+    (OTP or OAuth), allowing frontend to route users after login.
+    """
+    admin = get_admin_client()
+    try:
+        profile, is_new_user, redirect_to = _resolve_profile_state(admin, user.user_id)
+        role = profile.get("role") if profile else "client"
+        return BootstrapResponse(
+            is_new_user=is_new_user,
+            redirect_to=redirect_to,
+            role=role,
+            profile=profile,
+        )
+    except Exception as exc:
+        logger.error("Auth bootstrap failed", user_id=user.user_id, error=str(exc))
+        raise HTTPException(status_code=500, detail="Failed to bootstrap auth state.")

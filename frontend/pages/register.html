@@ -198,7 +198,7 @@
         <div class="reg-step-sub">Tell us a little about yourself</div>
         <div class="field-group">
           <label class="field-label">Full Name <span class="req">*</span></label>
-          <input class="field-input" type="text" placeholder="e.g. James Kamau">
+          <input class="field-input" type="text" id="regFullName" placeholder="e.g. James Kamau">
         </div>
         <div class="field-group">
           <label class="field-label">Phone Number <span class="req">*</span></label>
@@ -210,13 +210,13 @@
         </div>
         <div class="field-group">
           <label class="field-label">Email Address (optional)</label>
-          <input class="field-input" type="email" placeholder="your@email.com">
+          <input class="field-input" type="email" id="regEmail" placeholder="your@email.com">
           <div class="field-hint">For booking receipts and notifications</div>
         </div>
         <div class="field-row">
           <div class="field-group">
             <label class="field-label">County <span class="req">*</span></label>
-            <select class="field-input">
+            <select class="field-input" id="regCounty">
               <option value="">Select county</option>
               <option>Nairobi</option><option>Mombasa</option><option>Kisumu</option>
               <option>Nakuru</option><option>Eldoret</option><option>Thika</option>
@@ -226,7 +226,7 @@
           </div>
           <div class="field-group">
             <label class="field-label">Town / Area</label>
-            <input class="field-input" type="text" placeholder="e.g. Westlands">
+            <input class="field-input" type="text" id="regArea" placeholder="e.g. Westlands">
           </div>
         </div>
         <!-- Pro-only fields (shown when role = pro) -->
@@ -234,31 +234,31 @@
           <div class="field-group">
             <label class="field-label">Your Trade <span class="req">*</span></label>
             <div class="trade-chips">
-              <div class="trade-chip selected" onclick="selectTrade(this)">🚿 Plumber</div>
-              <div class="trade-chip" onclick="selectTrade(this)">⚡ Electrician</div>
-              <div class="trade-chip" onclick="selectTrade(this)">🧱 Mason</div>
-              <div class="trade-chip" onclick="selectTrade(this)">👗 Mama Fua</div>
-              <div class="trade-chip" onclick="selectTrade(this)">🪚 Carpenter</div>
-              <div class="trade-chip" onclick="selectTrade(this)">🎨 Painter</div>
-              <div class="trade-chip" onclick="selectTrade(this)">🏠 Roofer</div>
-              <div class="trade-chip" onclick="selectTrade(this)">🌿 Gardener</div>
-              <div class="trade-chip" onclick="selectTrade(this)">🛻 Driver/Mover</div>
-              <div class="trade-chip" onclick="selectTrade(this)">🔒 Security</div>
+              <div class="trade-chip selected" data-trade="plumber" onclick="selectTrade(this)">🚿 Plumber</div>
+              <div class="trade-chip" data-trade="electrician" onclick="selectTrade(this)">⚡ Electrician</div>
+              <div class="trade-chip" data-trade="mason" onclick="selectTrade(this)">🧱 Mason</div>
+              <div class="trade-chip" data-trade="mama_fua" onclick="selectTrade(this)">👗 Mama Fua</div>
+              <div class="trade-chip" data-trade="carpenter" onclick="selectTrade(this)">🪚 Carpenter</div>
+              <div class="trade-chip" data-trade="painter" onclick="selectTrade(this)">🎨 Painter</div>
+              <div class="trade-chip" data-trade="roofer" onclick="selectTrade(this)">🏠 Roofer</div>
+              <div class="trade-chip" data-trade="gardener" onclick="selectTrade(this)">🌿 Gardener</div>
+              <div class="trade-chip" data-trade="driver_mover" onclick="selectTrade(this)">🛻 Driver/Mover</div>
+              <div class="trade-chip" data-trade="security" onclick="selectTrade(this)">🔒 Security</div>
             </div>
           </div>
           <div class="field-row">
             <div class="field-group">
               <label class="field-label">Rate Min (KES/hr)</label>
-              <input class="field-input" type="number" placeholder="e.g. 800">
+              <input class="field-input" type="number" id="regRateMin" placeholder="e.g. 800">
             </div>
             <div class="field-group">
               <label class="field-label">Rate Max (KES/hr)</label>
-              <input class="field-input" type="number" placeholder="e.g. 2000">
+              <input class="field-input" type="number" id="regRateMax" placeholder="e.g. 2000">
             </div>
           </div>
           <div class="field-group">
             <label class="field-label">Years of Experience</label>
-            <select class="field-input">
+            <select class="field-input" id="regExperience">
               <option>Less than 1 year</option>
               <option>1–2 years</option>
               <option selected>3–5 years</option>
@@ -269,7 +269,7 @@
         </div>
         <div class="reg-btns">
           <button class="btn-back" onclick="goRStep(1)">←</button>
-          <button class="btn-next" onclick="goRStep(3)">Continue →</button>
+          <button class="btn-next" id="regSendOtpBtn" onclick="sendRegOtp()">Continue →</button>
         </div>
       </div>
 
@@ -287,11 +287,11 @@
             <input class="otp-digit" type="text" maxlength="1" oninput="regMoveNext(this,5)" onkeydown="regMovePrev(event,this)">
             <input class="otp-digit" type="text" maxlength="1" oninput="regCheckOtp()" onkeydown="regMovePrev(event,this)">
           </div>
-          <div class="otp-note">Didn't receive it? <button onclick="alert('OTP resent!')">Resend OTP</button></div>
+          <div class="otp-note">Didn't receive it? <button id="regResendBtn" onclick="resendRegOtp()" disabled>Resend OTP (<span id="regCountdown">60</span>s)</button></div>
         </div>
         <div class="reg-btns">
           <button class="btn-back" onclick="goRStep(2)">←</button>
-          <button class="btn-next" id="regVerifyBtn" onclick="goRStep(4)" disabled>Verify Phone →</button>
+          <button class="btn-next" id="regVerifyBtn" onclick="verifyRegOtp()" disabled>Verify Phone →</button>
         </div>
       </div>
 
@@ -304,7 +304,7 @@
         <div id="proProfile">
           <div class="field-group">
             <label class="field-label">Bio <span class="req">*</span></label>
-            <textarea class="field-input" rows="4" placeholder="Describe your experience, skills, and what makes you stand out as a fundi…" style="resize:vertical;line-height:1.6"></textarea>
+            <textarea class="field-input" id="regBio" rows="4" placeholder="Describe your experience, skills, and what makes you stand out as a fundi…" style="resize:vertical;line-height:1.6"></textarea>
             <div class="field-hint">Minimum 50 characters. Workers with good bios get 3x more jobs.</div>
           </div>
           <div class="field-group">
@@ -320,7 +320,7 @@
           </div>
           <div class="field-group">
             <label class="field-label">Kenya National ID <span class="req">*</span></label>
-            <input class="field-input" type="text" placeholder="Enter your ID number" maxlength="8">
+            <input class="field-input" type="text" id="regNationalId" placeholder="Enter your ID number" maxlength="8">
             <div class="field-hint">Required for identity verification. Stored securely and never shared.</div>
           </div>
           <div class="field-group">
@@ -396,8 +396,12 @@
 </div>
 
 <script>
+const API_BASE = (window.KAZIX_API_BASE || 'http://localhost:8000').replace(/\/$/, '');
+
 let regRole = 'client';
 let regCurrentStep = 1;
+let regAuthPayload = null;
+let regCountdownTimer = null;
 
 function selectType(type) {
   regRole = type;
@@ -406,16 +410,23 @@ function selectType(type) {
 }
 
 function goRStep(n) {
-  document.getElementById('rstep'+regCurrentStep).classList.remove('active');
-  const prevNode = document.getElementById('rsn'+regCurrentStep);
-  prevNode.classList.remove('active');
-  prevNode.classList.add('done');
-  prevNode.querySelector('.rs-circle').textContent = '✓';
-  regCurrentStep = n;
-  document.getElementById('rstep'+n).classList.add('active');
-  document.getElementById('rsn'+n).classList.add('active');
+  for (let i = 1; i <= 4; i++) {
+    const step = document.getElementById('rstep' + i);
+    const node = document.getElementById('rsn' + i);
+    const circle = node.querySelector('.rs-circle');
+    step.classList.toggle('active', i === n);
+    node.classList.remove('active', 'done');
+    circle.textContent = String(i);
+    if (i < n) {
+      node.classList.add('done');
+      circle.textContent = '✓';
+    } else if (i === n) {
+      node.classList.add('active');
+    }
+  }
 
-  // Toggle pro/client fields based on role
+  regCurrentStep = n;
+
   if (n === 2) {
     document.getElementById('proFields').style.display = regRole === 'pro' ? 'block' : 'none';
   }
@@ -434,11 +445,139 @@ function selectTrade(el) {
   el.classList.add('selected');
 }
 
+function mapRedirectToPage(redirectTo) {
+  const map = {
+    'complete-registration': 'register.html',
+    'client-dashboard': 'client-dashboard.html',
+    'fundi-dashboard': 'worker-dashboard.html',
+    'admin-dashboard': 'admin-dashboard.html',
+  };
+  return map[redirectTo] || 'index.html';
+}
+
+function persistSession(payload) {
+  if (!payload?.access_token) return;
+  localStorage.setItem('kazix_access_token', payload.access_token);
+  if (payload.refresh_token) localStorage.setItem('kazix_refresh_token', payload.refresh_token);
+  if (payload.expires_in) localStorage.setItem('kazix_expires_in', String(payload.expires_in));
+  localStorage.setItem('kazix_token_type', payload.token_type || 'bearer');
+}
+
+function fullPhone() {
+  return `+254${document.getElementById('regPhone').value.replace(/\s/g, '')}`;
+}
+
+function selectedTrade() {
+  const chip = document.querySelector('.trade-chip.selected');
+  return chip ? chip.dataset.trade : null;
+}
+
+function parsePositiveInt(value) {
+  if (value === '' || value === null || value === undefined) return null;
+  const n = parseInt(value, 10);
+  return Number.isFinite(n) && n >= 0 ? n : null;
+}
+
+function parseExperienceYears(value) {
+  if (!value) return null;
+  if (value.includes('Less than')) return 0;
+  if (value.startsWith('1')) return 2;
+  if (value.startsWith('3')) return 5;
+  if (value.startsWith('5')) return 10;
+  if (value.startsWith('10')) return 12;
+  return null;
+}
+
+function validateStep2() {
+  const fullName = document.getElementById('regFullName').value.trim();
+  const phone9 = document.getElementById('regPhone').value.replace(/\s/g, '');
+  const county = document.getElementById('regCounty').value;
+
+  if (fullName.length < 2) return 'Please enter your full name.';
+  if (!/^[0-9]{9}$/.test(phone9)) return 'Enter a valid Kenyan phone number (9 digits after +254).';
+  if (!county) return 'Please select your county.';
+  if (regRole === 'pro' && !selectedTrade()) return 'Please select your trade.';
+  return null;
+}
+
+function startRegCountdown() {
+  let secs = 60;
+  const countdown = document.getElementById('regCountdown');
+  const resendBtn = document.getElementById('regResendBtn');
+  resendBtn.disabled = true;
+  resendBtn.innerHTML = 'Resend OTP (<span id="regCountdown">60</span>s)';
+  clearInterval(regCountdownTimer);
+  regCountdownTimer = setInterval(() => {
+    secs -= 1;
+    const live = document.getElementById('regCountdown');
+    if (live) live.textContent = String(secs);
+    if (secs <= 0) {
+      clearInterval(regCountdownTimer);
+      resendBtn.disabled = false;
+      resendBtn.textContent = 'Resend OTP';
+    }
+  }, 1000);
+}
+
+async function sendRegOtp() {
+  const error = validateStep2();
+  if (error) {
+    alert(error);
+    return;
+  }
+
+  const btn = document.getElementById('regSendOtpBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending OTP…';
+
+  try {
+    const resp = await fetch(`${API_BASE}/v1/auth/send-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: fullPhone() }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || 'Failed to send OTP');
+
+    document.getElementById('regSentPhone').textContent = fullPhone();
+    goRStep(3);
+    document.querySelectorAll('#rstep3 .otp-digit')[0].focus();
+    startRegCountdown();
+  } catch (err) {
+    alert(err.message || 'Could not send OTP.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Continue →';
+  }
+}
+
+async function resendRegOtp() {
+  const resendBtn = document.getElementById('regResendBtn');
+  resendBtn.disabled = true;
+  try {
+    const resp = await fetch(`${API_BASE}/v1/auth/send-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: fullPhone() }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || 'Failed to resend OTP');
+    document.querySelectorAll('#rstep3 .otp-digit').forEach((d) => { d.value = ''; });
+    document.getElementById('regVerifyBtn').disabled = true;
+    document.querySelectorAll('#rstep3 .otp-digit')[0].focus();
+    startRegCountdown();
+  } catch (err) {
+    alert(err.message || 'Could not resend OTP.');
+    resendBtn.disabled = false;
+  }
+}
+
 function regMoveNext(el, pos) {
   el.value = el.value.replace(/[^0-9]/g,'');
   if (el.value && pos < 6) {
     document.querySelectorAll('#rstep3 .otp-digit')[pos].focus();
   }
+  regCheckOtp();
 }
 function regMovePrev(e, el) {
   if (e.key === 'Backspace' && !el.value) {
@@ -452,7 +591,103 @@ function regCheckOtp() {
   document.getElementById('regVerifyBtn').disabled = code.length < 6;
 }
 
-function submitReg() {
+async function verifyRegOtp() {
+  const code = [...document.querySelectorAll('#rstep3 .otp-digit')].map(d => d.value).join('');
+  if (code.length !== 6) return;
+
+  const btn = document.getElementById('regVerifyBtn');
+  btn.disabled = true;
+  btn.textContent = 'Verifying…';
+
+  try {
+    const resp = await fetch(`${API_BASE}/v1/auth/verify-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: fullPhone(), token: code }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || 'Invalid or expired OTP');
+
+    regAuthPayload = data;
+    persistSession(data);
+
+    if (!data.is_new_user) {
+      const next = mapRedirectToPage(data.redirect_to);
+      alert('This phone number already has an account. Redirecting to your dashboard.');
+      window.location.href = next;
+      return;
+    }
+
+    goRStep(4);
+  } catch (err) {
+    alert(err.message || 'OTP verification failed.');
+    btn.disabled = false;
+    btn.textContent = 'Verify Phone →';
+  }
+}
+
+async function submitReg() {
+  const accessToken = regAuthPayload?.access_token || localStorage.getItem('kazix_access_token');
+  if (!accessToken) {
+    alert('Please verify your phone first.');
+    goRStep(3);
+    return;
+  }
+
+  const fullName = document.getElementById('regFullName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const county = document.getElementById('regCounty').value || null;
+  const area = document.getElementById('regArea').value.trim() || null;
+  const phone = fullPhone();
+
+  const payload = {
+    full_name: fullName,
+    phone,
+    email: email || null,
+    county,
+    area,
+    role: regRole === 'pro' ? 'fundi' : 'client',
+    mpesa_number: phone,
+    preferred_language: 'en',
+  };
+
+  if (payload.role === 'fundi') {
+    const trade = selectedTrade();
+    if (!trade) {
+      alert('Please select your trade.');
+      return;
+    }
+    payload.trade = trade;
+    payload.rate_min = parsePositiveInt(document.getElementById('regRateMin').value);
+    payload.rate_max = parsePositiveInt(document.getElementById('regRateMax').value);
+    payload.experience_years = parseExperienceYears(document.getElementById('regExperience').value);
+    payload.bio = document.getElementById('regBio').value.trim() || null;
+  }
+
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Creating…';
+
+  try {
+    const resp = await fetch(`${API_BASE}/v1/auth/profile`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(payload),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || 'Failed to create profile');
+
+    localStorage.setItem('kazix_role', payload.role);
+  } catch (err) {
+    alert(err.message || 'Could not complete registration.');
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Create Account 🎉';
+    return;
+  }
+
   document.getElementById('rstep4').classList.remove('active');
   document.getElementById('stepProgress').style.display = 'none';
   document.getElementById('regSuccess').classList.add('show');
@@ -467,6 +702,10 @@ function submitReg() {
   }
   window.scrollTo({top:0,behavior:'smooth'});
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  goRStep(1);
+});
 </script>
 </body>
 </html>

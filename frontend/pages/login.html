@@ -76,6 +76,10 @@
   /* DIVIDER */
   .divider{display:flex;align-items:center;gap:1rem;margin:1.5rem 0;color:var(--muted);font-size:0.78rem}
   .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+  .oauth-actions{display:flex;flex-direction:column;gap:0.6rem;margin-bottom:0.75rem}
+  .oauth-btn{width:100%;padding:0.78rem 1rem;border:1.5px solid var(--border);border-radius:2px;background:white;color:var(--ink);font-family:'Syne',sans-serif;font-weight:700;font-size:0.84rem;cursor:pointer;transition:all 0.2s}
+  .oauth-btn:hover{border-color:var(--ink);background:var(--cream)}
+  .oauth-btn:disabled{opacity:0.65;cursor:not-allowed}
 
   /* ROLE TOGGLE */
   .role-toggle{display:flex;border:1.5px solid var(--border);border-radius:2px;overflow:hidden;margin-bottom:2rem}
@@ -141,6 +145,10 @@
         </div>
         <button class="auth-btn" id="sendOtpBtn" onclick="sendOTP()" disabled>Send OTP →</button>
         <div class="divider">or</div>
+        <div class="oauth-actions">
+          <button class="oauth-btn" id="oauthGoogleBtn" onclick="startOAuth('google')">Continue with Google</button>
+          <button class="oauth-btn" id="oauthGithubBtn" onclick="startOAuth('github')">Continue with GitHub</button>
+        </div>
         <a href="register.html" class="auth-btn-secondary">Create new account</a>
       </div>
 
@@ -172,7 +180,14 @@
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const API_BASE = (window.KAZIX_API_BASE || 'http://localhost:8000').replace(/\/$/, '');
+// Anon key is safe to use in browser apps.
+const SUPABASE_URL = 'https://tziamornnxxsfofzyvpj.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6aWFtb3Jubnh4c2ZvZnp5dnBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MDU1NTgsImV4cCI6MjA5MDE4MTU1OH0.94MiabtrEbeKMSORpk8_g40lndJX7Er9M0GFNUea4bU';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 let countdownTimer;
 let currentRole = 'client';
 
@@ -184,17 +199,64 @@ function setRole(el, role) {
 
 function validatePhone() {
   const phone = document.getElementById('phoneInput').value.replace(/\s/g,'');
-  const btn = document.getElementById('sendOtpBtn');
-  btn.disabled = phone.length < 9;
+  document.getElementById('sendOtpBtn').disabled = phone.length < 9;
 }
 
-function sendOTP() {
-  const phone = document.getElementById('phoneInput').value.replace(/\s/g,'');
-  document.getElementById('sentPhone').textContent = phone;
+function mapRedirectToPage(redirectTo) {
+  const map = {
+    'complete-registration': 'register.html',
+    'client-dashboard': 'client-dashboard.html',
+    'fundi-dashboard': 'worker-dashboard.html',
+    'admin-dashboard': 'admin-dashboard.html',
+  };
+  return map[redirectTo] || 'index.html';
+}
+
+function persistSession(payload) {
+  if (!payload?.access_token) return;
+  localStorage.setItem('kazix_access_token', payload.access_token);
+  if (payload.refresh_token) localStorage.setItem('kazix_refresh_token', payload.refresh_token);
+  if (payload.expires_in) localStorage.setItem('kazix_expires_in', String(payload.expires_in));
+  if (payload.token_type) localStorage.setItem('kazix_token_type', payload.token_type);
+}
+
+function finishAuth(payload) {
+  persistSession(payload);
+  const next = mapRedirectToPage(payload.redirect_to);
+  window.location.href = next;
+}
+
+function showOTPPanel(phoneNineDigits) {
+  document.getElementById('sentPhone').textContent = phoneNineDigits;
   document.getElementById('phoneStep').style.display = 'none';
   document.getElementById('otpStep').classList.add('show');
   document.querySelectorAll('.otp-digit')[0].focus();
   startCountdown();
+}
+
+async function sendOTP() {
+  const phone = document.getElementById('phoneInput').value.replace(/\s/g,'');
+  if (phone.length !== 9) return;
+
+  const btn = document.getElementById('sendOtpBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending OTP…';
+
+  try {
+    const resp = await fetch(`${API_BASE}/v1/auth/send-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: `+254${phone}` }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || 'Failed to send OTP');
+    showOTPPanel(phone);
+  } catch (err) {
+    alert(err.message || 'Could not send OTP.');
+  } finally {
+    btn.textContent = 'Send OTP →';
+    validatePhone();
+  }
 }
 
 function startCountdown() {
@@ -212,11 +274,11 @@ function startCountdown() {
   }, 1000);
 }
 
-function resendOTP() {
+async function resendOTP() {
   document.querySelectorAll('.otp-digit').forEach(d => d.value = '');
   document.querySelectorAll('.otp-digit')[0].focus();
   document.getElementById('resendBtn').innerHTML = 'Resend (<span id="countdown">60</span>s)';
-  startCountdown();
+  await sendOTP();
 }
 
 function changePhone() {
@@ -242,16 +304,95 @@ function movePrev(e, el) {
   }
 }
 
-function verifyOTP() {
+async function verifyOTP() {
   const code = [...document.querySelectorAll('.otp-digit')].map(d => d.value).join('');
-  if (code.length === 6) {
-    document.getElementById('verifyBtn').textContent = 'Signing in…';
-    document.getElementById('verifyBtn').disabled = true;
-    setTimeout(() => {
-      window.location.href = 'index.html';
-    }, 1200);
+  const phone = document.getElementById('phoneInput').value.replace(/\s/g,'');
+  if (code.length !== 6 || phone.length !== 9) return;
+
+  const btn = document.getElementById('verifyBtn');
+  btn.textContent = 'Signing in…';
+  btn.disabled = true;
+
+  try {
+    const resp = await fetch(`${API_BASE}/v1/auth/verify-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: `+254${phone}`, token: code }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || 'Invalid OTP');
+    finishAuth(data);
+  } catch (err) {
+    alert(err.message || 'OTP verification failed.');
+    btn.textContent = 'Verify & Sign In';
+    btn.disabled = false;
   }
 }
+
+async function startOAuth(provider) {
+  const btn = document.getElementById(
+    provider === 'google' ? 'oauthGoogleBtn' : 'oauthGithubBtn'
+  );
+  if (btn) btn.disabled = true;
+
+  try {
+    const redirectTo = `${window.location.origin}${window.location.pathname}`;
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo },
+    });
+    if (error) throw error;
+  } catch (err) {
+    if (btn) btn.disabled = false;
+    alert(err.message || 'Could not start OAuth login.');
+  }
+}
+
+async function handleOAuthCallback() {
+  const params = new URLSearchParams(window.location.search);
+  const hasOAuthParams = params.has('code') || params.has('error') || params.has('error_description');
+  if (params.has('error_description')) {
+    alert(params.get('error_description'));
+    return;
+  }
+
+  const { data, error } = await supabaseClient.auth.getSession();
+  if (error) {
+    if (hasOAuthParams) alert(error.message || 'OAuth callback failed.');
+    return;
+  }
+  if (!data?.session) return;
+
+  try {
+    const resp = await fetch(`${API_BASE}/v1/auth/bootstrap`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${data.session.access_token}`,
+      },
+    });
+    const bootstrap = await resp.json();
+    if (!resp.ok) throw new Error(bootstrap.detail || 'OAuth bootstrap failed');
+
+    const payload = {
+      access_token: data.session.access_token,
+      refresh_token: data.session.refresh_token,
+      token_type: 'bearer',
+      expires_in: Math.max(0, Math.floor((new Date(data.session.expires_at * 1000) - new Date()) / 1000)),
+      is_new_user: bootstrap.is_new_user,
+      redirect_to: bootstrap.redirect_to,
+    };
+
+    const cleanUrl = `${window.location.origin}${window.location.pathname}`;
+    window.history.replaceState({}, '', cleanUrl);
+    finishAuth(payload);
+  } catch (err) {
+    alert(err.message || 'OAuth callback failed.');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  await handleOAuthCallback();
+});
 </script>
 </body>
 </html>

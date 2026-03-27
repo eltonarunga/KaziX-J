@@ -30,3 +30,27 @@ yarn-debug.log*
 yarn-error.log*
 logs/
 *.log
+
+# Python caches and tooling
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.hypothesis/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+.ipynb_checkpoints/
+
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+backend/venv/
