@@ -3,7 +3,7 @@ app/api/v1/auth.py
 ──────────────────
 Phone OTP authentication flow (Tasks 4 & 5).
 
-POST /v1/auth/send-otp     → sends 6-digit OTP via Supabase phone auth
+POST /v1/auth/send-otp     → sends 6-digit OTP via Supabase phone OR email auth
 POST /v1/auth/verify-otp   → verifies OTP, creates profile if new user
 POST /v1/auth/oauth/start  → returns Supabase OAuth authorize URL
 POST /v1/auth/oauth/exchange → exchanges OAuth code for Supabase session
@@ -17,7 +17,8 @@ import time
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel, Field, field_validator
+from gotrue.errors import AuthApiError, AuthRetryableError
+from pydantic import BaseModel, Field, field_validator, model_validator
 from supabase import create_client
 
 from app.api.deps import CurrentUser
@@ -36,12 +37,26 @@ _OAUTH_STATE_STORE: dict[str, dict[str, str | float]] = {}
 # ── Schemas ──────────────────────────────────────────────────
 
 class SendOTPRequest(BaseModel):
-    phone: str = Field(..., pattern=r"^\+254[0-9]{9}$", examples=["+254712345678"])
+    phone: str | None = Field(default=None, pattern=r"^\+254[0-9]{9}$", examples=["+254712345678"])
+    email: str | None = Field(default=None, pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+    @model_validator(mode="after")
+    def validate_destination(self):
+        if bool(self.phone) == bool(self.email):
+            raise ValueError("Provide exactly one destination: phone or email.")
+        return self
 
 
 class VerifyOTPRequest(BaseModel):
-    phone: str = Field(..., pattern=r"^\+254[0-9]{9}$")
+    phone: str | None = Field(default=None, pattern=r"^\+254[0-9]{9}$")
+    email: str | None = Field(default=None, pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
     token: str = Field(..., min_length=6, max_length=6, pattern=r"^\d{6}$")
+
+    @model_validator(mode="after")
+    def validate_destination(self):
+        if bool(self.phone) == bool(self.email):
+            raise ValueError("Provide exactly one destination: phone or email.")
+        return self
 
 
 class CreateProfileRequest(BaseModel):
@@ -123,6 +138,17 @@ def _resolve_profile_state(admin, user_id: str) -> tuple[dict | None, bool, str]
     return profile, is_new_user, redirect_to
 
 
+def _mask_email(email: str) -> str:
+    local, _, domain = email.partition("@")
+    if not domain:
+        return "***"
+    if len(local) <= 2:
+        masked_local = local[0] + "*" * max(0, len(local) - 1)
+    else:
+        masked_local = local[:2] + "*" * (len(local) - 2)
+    return f"{masked_local}@{domain}"
+
+
 def _cleanup_oauth_state(now_ts: float) -> None:
     expired = [
         state
@@ -156,23 +182,69 @@ def _pop_oauth_code_verifier(state: str) -> str | None:
 @router.post("/send-otp", response_model=OTPResponse, status_code=200)
 async def send_otp(body: SendOTPRequest):
     """
-    Send a 6-digit OTP to the given phone number.
-    Supabase phone auth handles both sign-up and sign-in with the same call.
-    SMS delivery is via Africa's Talking (configured in Supabase dashboard).
+    Send a 6-digit OTP to phone or email.
+    Phone OTP uses SMS provider configured in Supabase.
+    Email OTP uses Supabase email provider.
     """
     client = get_anon_client()
     try:
-        # Supabase signInWithOtp — works for new and existing users
-        # Note: signInWithOtp returns an AuthResponse which contains user/session
-        # but for OTP send, we mostly care if it didn't raise an exception.
-        client.auth.sign_in_with_otp({"phone": body.phone})
-        logger.info("OTP dispatched", phone=body.phone[-4:])  # log last 4 digits only
-        return OTPResponse(success=True, message="OTP sent successfully")
-    except Exception as exc:
-        logger.error("OTP dispatch failed", phone=body.phone[-4:], error=str(exc))
+        if body.phone:
+            # Supabase signInWithOtp — works for new and existing users
+            # Note: signInWithOtp returns an AuthResponse which contains user/session
+            # but for OTP send, we mostly care if it didn't raise an exception.
+            client.auth.sign_in_with_otp({"phone": body.phone})
+            logger.info("OTP dispatched", channel="phone", phone=body.phone[-4:])  # log last 4 digits only
+            return OTPResponse(success=True, message="OTP sent successfully")
+
+        # Email passwordless OTP (used for new-user signup verification)
+        email = str(body.email)
+        client.auth.sign_in_with_otp(
+            {
+                "email": email,
+                "options": {"should_create_user": True},
+            }
+        )
+        logger.info("OTP dispatched", channel="email", email=_mask_email(email))
+        return OTPResponse(success=True, message="Verification code sent successfully")
+    except AuthApiError as exc:
+        logger.warning(
+            "OTP dispatch rejected by Supabase",
+            destination=body.phone[-4:] if body.phone else _mask_email(str(body.email)),
+            status=getattr(exc, "status", None),
+            code=getattr(exc, "code", None),
+            error=str(exc),
+        )
+        api_status = getattr(exc, "status", None)
+        status_code = api_status if isinstance(api_status, int) and 400 <= api_status <= 599 else status.HTTP_400_BAD_REQUEST
+        detail = "Failed to send OTP. Please try again."
+        if settings.app_env == "development":
+            detail = f"Failed to send OTP: {str(exc)}"
+        raise HTTPException(status_code=status_code, detail=detail)
+    except AuthRetryableError as exc:
+        logger.error(
+            "OTP dispatch retryable failure",
+            destination=body.phone[-4:] if body.phone else _mask_email(str(body.email)),
+            error=str(exc),
+        )
+        detail = "Failed to send OTP. Please try again."
+        if settings.app_env == "development":
+            detail = f"Failed to send OTP: {str(exc)}"
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Failed to send OTP. Please try again.",
+            detail=detail,
+        )
+    except Exception as exc:
+        logger.error(
+            "OTP dispatch failed",
+            destination=body.phone[-4:] if body.phone else _mask_email(str(body.email)),
+            error=str(exc),
+        )
+        detail = "Failed to send OTP. Please try again."
+        if settings.app_env == "development":
+            detail = f"Failed to send OTP: {str(exc)}"
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=detail,
         )
 
 
@@ -184,17 +256,47 @@ async def verify_otp(body: VerifyOTPRequest):
     Frontend uses is_new_user to decide whether to show the profile completion form.
     """
     client = get_anon_client()
+    response = None
     try:
-        response = client.auth.verify_otp({
-            "phone": body.phone,
-            "token": body.token,
-            "type": "sms",
-        })
+        if body.phone:
+            response = client.auth.verify_otp(
+                {
+                    "phone": body.phone,
+                    "token": body.token,
+                    "type": "sms",
+                }
+            )
+        else:
+            email = str(body.email)
+            email_types = ("email", "signup", "magiclink")
+            last_error = None
+            for email_type in email_types:
+                try:
+                    response = client.auth.verify_otp(
+                        {
+                            "email": email,
+                            "token": body.token,
+                            "type": email_type,
+                        }
+                    )
+                    break
+                except Exception as exc:
+                    last_error = exc
+
+            if response is None:
+                raise last_error or RuntimeError("Email OTP verification failed")
     except Exception as exc:
-        logger.warning("OTP verification failed", phone=body.phone[-4:], error=str(exc))
+        logger.warning(
+            "OTP verification failed",
+            destination=body.phone[-4:] if body.phone else _mask_email(str(body.email)),
+            error=str(exc),
+        )
+        detail = "Invalid or expired OTP."
+        if settings.app_env == "development":
+            detail = f"Invalid or expired OTP: {str(exc)}"
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired OTP.",
+            detail=detail,
         )
 
     if not response.session:

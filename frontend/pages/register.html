@@ -206,12 +206,12 @@
             <div class="phone-prefix">🇰🇪 +254</div>
             <input class="phone-field" type="tel" id="regPhone" placeholder="7XX XXX XXX" maxlength="9">
           </div>
-          <div class="field-hint">Used to log in and receive job alerts</div>
+          <div class="field-hint">Used for contact, job alerts, and M-Pesa payments</div>
         </div>
         <div class="field-group">
-          <label class="field-label">Email Address (optional)</label>
+          <label class="field-label">Email Address <span class="req">*</span></label>
           <input class="field-input" type="email" id="regEmail" placeholder="your@email.com">
-          <div class="field-hint">For booking receipts and notifications</div>
+          <div class="field-hint">Used to verify your account and send booking receipts</div>
         </div>
         <div class="field-row">
           <div class="field-group">
@@ -273,12 +273,12 @@
         </div>
       </div>
 
-      <!-- STEP 3: PHONE VERIFICATION -->
+      <!-- STEP 3: EMAIL VERIFICATION -->
       <div class="reg-step" id="rstep3">
-        <div class="reg-step-title">Verify your phone</div>
-        <div class="reg-step-sub">We've sent a 6-digit OTP to <strong id="regSentPhone">+254 7XX XXX</strong></div>
+        <div class="reg-step-title">Verify your email</div>
+        <div class="reg-step-sub">We've sent a 6-digit code to <strong id="regSentEmail">your@email.com</strong></div>
         <div class="field-group">
-          <label class="field-label">Enter OTP Code <span class="req">*</span></label>
+          <label class="field-label">Enter verification code <span class="req">*</span></label>
           <div class="otp-inputs">
             <input class="otp-digit" type="text" maxlength="1" oninput="regMoveNext(this,1)" onkeydown="regMovePrev(event,this)">
             <input class="otp-digit" type="text" maxlength="1" oninput="regMoveNext(this,2)" onkeydown="regMovePrev(event,this)">
@@ -287,11 +287,11 @@
             <input class="otp-digit" type="text" maxlength="1" oninput="regMoveNext(this,5)" onkeydown="regMovePrev(event,this)">
             <input class="otp-digit" type="text" maxlength="1" oninput="regCheckOtp()" onkeydown="regMovePrev(event,this)">
           </div>
-          <div class="otp-note">Didn't receive it? <button id="regResendBtn" onclick="resendRegOtp()" disabled>Resend OTP (<span id="regCountdown">60</span>s)</button></div>
+          <div class="otp-note">Didn't receive it? <button id="regResendBtn" onclick="resendRegOtp()" disabled>Resend code (<span id="regCountdown">60</span>s)</button></div>
         </div>
         <div class="reg-btns">
           <button class="btn-back" onclick="goRStep(2)">←</button>
-          <button class="btn-next" id="regVerifyBtn" onclick="verifyRegOtp()" disabled>Verify Phone →</button>
+          <button class="btn-next" id="regVerifyBtn" onclick="verifyRegOtp()" disabled>Verify Email →</button>
         </div>
       </div>
 
@@ -403,6 +403,14 @@ let regCurrentStep = 1;
 let regAuthPayload = null;
 let regCountdownTimer = null;
 
+function toDisplayError(err, fallback) {
+  const message = err?.message?.trim();
+  if (message === 'Failed to fetch') {
+    return `Cannot reach API at ${API_BASE}. Start the backend on port 8000 and ensure ALLOWED_ORIGINS includes ${window.location.origin}.`;
+  }
+  return message || fallback;
+}
+
 function selectType(type) {
   regRole = type;
   document.getElementById('typeClient').classList.toggle('selected', type === 'client');
@@ -491,10 +499,13 @@ function parseExperienceYears(value) {
 function validateStep2() {
   const fullName = document.getElementById('regFullName').value.trim();
   const phone9 = document.getElementById('regPhone').value.replace(/\s/g, '');
+  const email = document.getElementById('regEmail').value.trim();
   const county = document.getElementById('regCounty').value;
 
   if (fullName.length < 2) return 'Please enter your full name.';
   if (!/^[0-9]{9}$/.test(phone9)) return 'Enter a valid Kenyan phone number (9 digits after +254).';
+  if (!email) return 'Please enter your email address.';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return 'Enter a valid email address.';
   if (!county) return 'Please select your county.';
   if (regRole === 'pro' && !selectedTrade()) return 'Please select your trade.';
   return null;
@@ -502,10 +513,9 @@ function validateStep2() {
 
 function startRegCountdown() {
   let secs = 60;
-  const countdown = document.getElementById('regCountdown');
   const resendBtn = document.getElementById('regResendBtn');
   resendBtn.disabled = true;
-  resendBtn.innerHTML = 'Resend OTP (<span id="regCountdown">60</span>s)';
+  resendBtn.innerHTML = 'Resend code (<span id="regCountdown">60</span>s)';
   clearInterval(regCountdownTimer);
   regCountdownTimer = setInterval(() => {
     secs -= 1;
@@ -514,7 +524,7 @@ function startRegCountdown() {
     if (secs <= 0) {
       clearInterval(regCountdownTimer);
       resendBtn.disabled = false;
-      resendBtn.textContent = 'Resend OTP';
+      resendBtn.textContent = 'Resend code';
     }
   }, 1000);
 }
@@ -526,25 +536,26 @@ async function sendRegOtp() {
     return;
   }
 
+  const email = document.getElementById('regEmail').value.trim();
   const btn = document.getElementById('regSendOtpBtn');
   btn.disabled = true;
-  btn.textContent = 'Sending OTP…';
+  btn.textContent = 'Sending code…';
 
   try {
     const resp = await fetch(`${API_BASE}/v1/auth/send-otp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone: fullPhone() }),
+      body: JSON.stringify({ email }),
     });
     const data = await resp.json();
-    if (!resp.ok) throw new Error(data.detail || 'Failed to send OTP');
+    if (!resp.ok) throw new Error(data.detail || 'Failed to send code');
 
-    document.getElementById('regSentPhone').textContent = fullPhone();
+    document.getElementById('regSentEmail').textContent = email;
     goRStep(3);
     document.querySelectorAll('#rstep3 .otp-digit')[0].focus();
     startRegCountdown();
   } catch (err) {
-    alert(err.message || 'Could not send OTP.');
+    alert(toDisplayError(err, 'Could not send verification code.'));
   } finally {
     btn.disabled = false;
     btn.textContent = 'Continue →';
@@ -554,20 +565,21 @@ async function sendRegOtp() {
 async function resendRegOtp() {
   const resendBtn = document.getElementById('regResendBtn');
   resendBtn.disabled = true;
+  const email = document.getElementById('regEmail').value.trim();
   try {
     const resp = await fetch(`${API_BASE}/v1/auth/send-otp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone: fullPhone() }),
+      body: JSON.stringify({ email }),
     });
     const data = await resp.json();
-    if (!resp.ok) throw new Error(data.detail || 'Failed to resend OTP');
+    if (!resp.ok) throw new Error(data.detail || 'Failed to resend code');
     document.querySelectorAll('#rstep3 .otp-digit').forEach((d) => { d.value = ''; });
     document.getElementById('regVerifyBtn').disabled = true;
     document.querySelectorAll('#rstep3 .otp-digit')[0].focus();
     startRegCountdown();
   } catch (err) {
-    alert(err.message || 'Could not resend OTP.');
+    alert(toDisplayError(err, 'Could not resend verification code.'));
     resendBtn.disabled = false;
   }
 }
@@ -593,43 +605,44 @@ function regCheckOtp() {
 
 async function verifyRegOtp() {
   const code = [...document.querySelectorAll('#rstep3 .otp-digit')].map(d => d.value).join('');
+  const email = document.getElementById('regEmail').value.trim();
   if (code.length !== 6) return;
 
   const btn = document.getElementById('regVerifyBtn');
   btn.disabled = true;
-  btn.textContent = 'Verifying…';
+  btn.textContent = 'Verifying email…';
 
   try {
     const resp = await fetch(`${API_BASE}/v1/auth/verify-otp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone: fullPhone(), token: code }),
+      body: JSON.stringify({ email, token: code }),
     });
     const data = await resp.json();
-    if (!resp.ok) throw new Error(data.detail || 'Invalid or expired OTP');
+    if (!resp.ok) throw new Error(data.detail || 'Invalid or expired verification code');
 
     regAuthPayload = data;
     persistSession(data);
 
     if (!data.is_new_user) {
       const next = mapRedirectToPage(data.redirect_to);
-      alert('This phone number already has an account. Redirecting to your dashboard.');
+      alert('This account already exists. Redirecting to your dashboard.');
       window.location.href = next;
       return;
     }
 
     goRStep(4);
   } catch (err) {
-    alert(err.message || 'OTP verification failed.');
+    alert(toDisplayError(err, 'Email verification failed.'));
     btn.disabled = false;
-    btn.textContent = 'Verify Phone →';
+    btn.textContent = 'Verify Email →';
   }
 }
 
 async function submitReg() {
   const accessToken = regAuthPayload?.access_token || localStorage.getItem('kazix_access_token');
   if (!accessToken) {
-    alert('Please verify your phone first.');
+    alert('Please verify your email first.');
     goRStep(3);
     return;
   }
@@ -682,7 +695,7 @@ async function submitReg() {
 
     localStorage.setItem('kazix_role', payload.role);
   } catch (err) {
-    alert(err.message || 'Could not complete registration.');
+    alert(toDisplayError(err, 'Could not complete registration.'));
     submitBtn.disabled = false;
     submitBtn.textContent = 'Create Account 🎉';
     return;

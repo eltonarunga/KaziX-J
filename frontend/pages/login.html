@@ -191,6 +191,14 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 let countdownTimer;
 let currentRole = 'client';
 
+function toDisplayError(err, fallback) {
+  const message = err?.message?.trim();
+  if (message === 'Failed to fetch') {
+    return `Cannot reach API at ${API_BASE}. Start the backend on port 8000 and ensure ALLOWED_ORIGINS includes ${window.location.origin}.`;
+  }
+  return message || fallback;
+}
+
 function setRole(el, role) {
   currentRole = role;
   document.querySelectorAll('.role-option').forEach(o => o.classList.remove('active'));
@@ -252,7 +260,7 @@ async function sendOTP() {
     if (!resp.ok) throw new Error(data.detail || 'Failed to send OTP');
     showOTPPanel(phone);
   } catch (err) {
-    alert(err.message || 'Could not send OTP.');
+    alert(toDisplayError(err, 'Could not send OTP.'));
   } finally {
     btn.textContent = 'Send OTP →';
     validatePhone();
@@ -323,7 +331,7 @@ async function verifyOTP() {
     if (!resp.ok) throw new Error(data.detail || 'Invalid OTP');
     finishAuth(data);
   } catch (err) {
-    alert(err.message || 'OTP verification failed.');
+    alert(toDisplayError(err, 'OTP verification failed.'));
     btn.textContent = 'Verify & Sign In';
     btn.disabled = false;
   }
@@ -344,7 +352,7 @@ async function startOAuth(provider) {
     if (error) throw error;
   } catch (err) {
     if (btn) btn.disabled = false;
-    alert(err.message || 'Could not start OAuth login.');
+    alert(toDisplayError(err, 'Could not start OAuth login.'));
   }
 }
 
@@ -358,7 +366,7 @@ async function handleOAuthCallback() {
 
   const { data, error } = await supabaseClient.auth.getSession();
   if (error) {
-    if (hasOAuthParams) alert(error.message || 'OAuth callback failed.');
+    if (hasOAuthParams) alert(toDisplayError(error, 'OAuth callback failed.'));
     return;
   }
   if (!data?.session) return;
@@ -386,7 +394,7 @@ async function handleOAuthCallback() {
     window.history.replaceState({}, '', cleanUrl);
     finishAuth(payload);
   } catch (err) {
-    alert(err.message || 'OAuth callback failed.');
+    alert(toDisplayError(err, 'OAuth callback failed.'));
   }
 }
 
