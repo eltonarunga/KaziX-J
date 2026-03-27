@@ -29,6 +29,19 @@ const server = http.createServer((req, res) => {
     urlPath = '/pages/index.html';
   }
 
+  // Serve favicon
+  if (urlPath === '/favicon.ico' || urlPath === '/favicon.svg') {
+    const faviconPath = path.join(FRONTEND_DIR, 'favicon.svg');
+    if (fs.existsSync(faviconPath)) {
+      res.writeHead(200, { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'max-age=86400' });
+      res.end(fs.readFileSync(faviconPath));
+    } else {
+      res.writeHead(204);
+      res.end();
+    }
+    return;
+  }
+
   let filePath = path.join(FRONTEND_DIR, urlPath);
 
   if (!filePath.startsWith(FRONTEND_DIR)) {
