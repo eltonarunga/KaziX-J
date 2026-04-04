@@ -53,9 +53,14 @@
   .filter-option input[type=checkbox]{width:16px;height:16px;accent-color:var(--ink);cursor:pointer}
   .filter-option input[type=radio]{width:16px;height:16px;accent-color:var(--ink);cursor:pointer}
   .filter-count{margin-left:auto;font-size:0.72rem;color:var(--muted);background:var(--cream);padding:0.15rem 0.45rem;border-radius:2px}
-  .range-row{display:flex;align-items:center;gap:0.75rem;margin-top:0.5rem}
-  .range-input{flex:1;padding:0.45rem 0.75rem;border:1px solid var(--border);border-radius:2px;font-size:0.82rem;font-family:'DM Sans',sans-serif;background:var(--cream);outline:none;color:var(--ink)}
-  .range-sep{font-size:0.75rem;color:var(--muted)}
+  /* RANGE SLIDER */
+  .range-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;font-size:0.82rem;font-weight:600;}
+  .slider-container{position:relative;width:100%;height:6px;background:var(--cream);border-radius:3px;margin:1.5rem 0 1rem;}
+  .slider-track{position:absolute;height:100%;top:0;bottom:0;background:var(--saffron);border-radius:3px;left:0%;right:50%;}
+  .range-slider{position:absolute;width:100%;top:-6px;height:0;-webkit-appearance:none;pointer-events:none;background:transparent;z-index:3;outline:none;}
+  .range-slider::-webkit-slider-thumb{-webkit-appearance:none;pointer-events:auto;width:18px;height:18px;background:var(--ink);border:2px solid white;border-radius:50%;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.15);transition:transform 0.1s;}
+  .range-slider::-webkit-slider-thumb:hover{transform:scale(1.15);background:var(--saffron);}
+  .range-slider::-moz-range-thumb{pointer-events:auto;width:18px;height:18px;background:var(--ink);border:2px solid white;border-radius:50%;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.15);}
   .rating-stars{display:flex;flex-direction:column;gap:0.5rem}
   .rating-row{display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.82rem}
   .stars{color:var(--saffron);font-size:0.85rem;letter-spacing:1px}
@@ -205,11 +210,14 @@
     </div>
 
     <div class="filter-section">
-      <div class="filter-label">Rate (KES / hr)</div>
-      <div class="range-row">
-        <input class="range-input" type="number" placeholder="Min" value="0">
-        <span class="range-sep">–</span>
-        <input class="range-input" type="number" placeholder="Max" value="5000">
+      <div class="filter-label" style="display:flex;justify-content:space-between;align-items:center;">
+        Rate (KES / hr)
+        <span class="range-values" style="font-size:0.75rem;font-weight:700;color:var(--ink);font-family:'DM Sans',sans-serif;text-transform:none;letter-spacing:0;">0 - 5,000</span>
+      </div>
+      <div class="slider-container">
+        <div class="slider-track"></div>
+        <input type="range" min="0" max="10000" step="100" value="0" class="range-slider range-min">
+        <input type="range" min="0" max="10000" step="100" value="5000" class="range-slider range-max">
       </div>
     </div>
 
@@ -251,6 +259,7 @@
       <div class="sort-row">
         <span class="sort-label">Sort by</span>
         <select class="sort-select">
+          <option>All workers</option>
           <option>Nearest first</option>
           <option>Highest rated</option>
           <option>Most jobs done</option>
@@ -497,10 +506,10 @@
     }
 
     // 2. Get Rate
-    const minRateInput = document.querySelectorAll('.range-input')[0];
-    const maxRateInput = document.querySelectorAll('.range-input')[1];
-    const minRate = minRateInput && minRateInput.value ? parseFloat(minRateInput.value) : 0;
-    const maxRate = maxRateInput && maxRateInput.value ? parseFloat(maxRateInput.value) : Infinity;
+    const minRateInput = document.querySelector('.range-min');
+    const maxRateInput = document.querySelector('.range-max');
+    const minRate = minRateInput ? parseFloat(minRateInput.value) : 0;
+    const maxRate = maxRateInput ? parseFloat(maxRateInput.value) : Infinity;
 
     // 3. Get Rating
     const ratingRadios = document.querySelectorAll('input[name="rating"]');
@@ -581,14 +590,45 @@
     if (cntText) cntText.textContent = visibleCount;
   }
 
+  // Slider Logic
+  const rangeMin = document.querySelector('.range-min');
+  const rangeMax = document.querySelector('.range-max');
+  const sliderTrack = document.querySelector('.slider-track');
+  const rangeValues = document.querySelector('.range-values');
+  
+  if (rangeMin && rangeMax && sliderTrack && rangeValues) {
+    const updateSlider = (e) => {
+      let minVal = parseInt(rangeMin.value);
+      let maxVal = parseInt(rangeMax.value);
+      if (maxVal - minVal < 500) {
+        if (e && e.target.className.includes('range-min')) {
+          rangeMin.value = maxVal - 500;
+          minVal = parseInt(rangeMin.value);
+        } else {
+          rangeMax.value = minVal + 500;
+          maxVal = parseInt(rangeMax.value);
+        }
+      }
+      sliderTrack.style.left = (minVal / rangeMin.max) * 100 + '%';
+      sliderTrack.style.right = 100 - (maxVal / rangeMax.max) * 100 + '%';
+      rangeValues.textContent = minVal.toLocaleString() + ' - ' + maxVal.toLocaleString();
+    };
+    rangeMin.addEventListener('input', updateSlider);
+    rangeMax.addEventListener('input', updateSlider);
+    // Initial update
+    updateSlider({target: rangeMin});
+  }
+
   // Clear all filters
   const clearBtn = document.querySelector('.filter-clear');
   if (clearBtn) {
     clearBtn.addEventListener('click', () => {
       document.querySelectorAll('.filter-section input[type="checkbox"]').forEach(i => i.checked = false);
-      const rangeInputs = document.querySelectorAll('.range-input');
-      if (rangeInputs[0]) rangeInputs[0].value = '';
-      if (rangeInputs[1]) rangeInputs[1].value = '';
+      if (rangeMin && rangeMax) {
+        rangeMin.value = 0;
+        rangeMax.value = 5000;
+        rangeMin.dispatchEvent(new Event('input'));
+      }
       const ratingInput = document.querySelector('input[name="rating"]');
       if (ratingInput) ratingInput.checked = true;
       const locInput = document.querySelector('input[name="loc"]');
