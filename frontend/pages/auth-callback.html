@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<title>Signing you in… — KaziX</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;background:#F5F0E8;color:#0D0D0D;min-height:100vh;display:flex;align-items:center;justify-content:center}
+  .card{background:white;border-radius:8px;padding:3rem 2.5rem;text-align:center;max-width:420px;width:90%;box-shadow:0 4px 40px rgba(0,0,0,0.06)}
+  .icon{font-size:3rem;margin-bottom:1rem}
+  h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;letter-spacing:-0.04em;margin-bottom:0.5rem}
+  p{font-size:0.9rem;color:#7A7468;line-height:1.6}
+  .spinner{width:40px;height:40px;border:3px solid #E0DDD6;border-top-color:#0D0D0D;border-radius:50%;animation:spin 0.7s linear infinite;margin:1.5rem auto 0}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .error{color:#C0392B;font-weight:600;margin-top:1rem;font-size:0.85rem}
+  .btn{display:inline-block;margin-top:1.5rem;padding:0.75rem 1.75rem;background:#0D0D0D;color:#F5F0E8;font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;border-radius:2px;text-decoration:none}
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap');
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="icon" id="icon">✉️</div>
+  <h1 id="title">Signing you in…</h1>
+  <p id="sub">Please wait while we confirm your identity.</p>
+  <div class="spinner" id="spinner"></div>
+  <div class="error" id="errMsg" style="display:none"></div>
+  <a href="register.html" class="btn" id="retryBtn" style="display:none">Back to Registration</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL  = 'https://tziamornnxxsfofzyvpj.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6aWFtb3Jubnh4c2ZvZnp5dnBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MDU1NTgsImV4cCI6MjA5MDE4MTU1OH0.94MiabtrEbeKMSORpk8_g40lndJX7Er9M0GFNUea4bU';
+
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+function showError(msg) {
+  document.getElementById('spinner').style.display = 'none';
+  document.getElementById('icon').textContent = '❌';
+  document.getElementById('title').textContent  = 'Something went wrong';
+  document.getElementById('sub').textContent    = msg;
+  document.getElementById('errMsg').style.display = 'none';
+  document.getElementById('retryBtn').style.display = 'inline-block';
+}
+
+async function handleCallback() {
+  // ── 1. Check for error params in the URL hash first ──────────────────────
+  const hash = window.location.hash.substring(1);
+  const hashParams = new URLSearchParams(hash);
+  const urlError     = hashParams.get('error');
+  const urlErrorCode = hashParams.get('error_code');
+  const urlErrorDesc = hashParams.get('error_description');
+
+  if (urlError) {
+    document.getElementById('spinner').style.display = 'none';
+    if (urlErrorCode === 'otp_expired') {
+      document.getElementById('icon').textContent  = '⏰';
+      document.getElementById('title').textContent = 'Link expired';
+      document.getElementById('sub').textContent   =
+        'Magic links expire after a short time. Go back and request a fresh one — it only takes a second.';
+      document.getElementById('retryBtn').textContent  = 'Request a new link';
+      document.getElementById('retryBtn').style.display = 'inline-block';
+    } else {
+      showError(
+        urlErrorDesc
+          ? decodeURIComponent(urlErrorDesc.replace(/\+/g, ' '))
+          : 'The email link is invalid. Please request a new one.'
+      );
+    }
+    return;
+  }
+
+  // ── 2. No error — try to exchange the code / read the session ─────────────
+  try {
+    const { data, error } = await supabaseClient.auth.getSession();
+    if (error) throw error;
+
+    let session = data?.session;
+
+    if (!session) {
+      await new Promise((resolve, reject) => {
+        const { data: { subscription } } = supabaseClient.auth.onAuthStateChange((event, s) => {
+          if (s) { session = s; resolve(); subscription.unsubscribe(); }
+        });
+        setTimeout(() => reject(new Error('No session received — the link may have already been used.')), 10000);
+      });
+    }
+
+    if (!session) throw new Error('No session returned. The link may be invalid or already used.');
+
+    localStorage.setItem('kazix_access_token',  session.access_token);
+    localStorage.setItem('kazix_refresh_token', session.refresh_token);
+    localStorage.setItem('kazix_expires_in',    String(session.expires_in));
+    localStorage.setItem('kazix_token_type',    'bearer');
+    localStorage.setItem('kazix_magic_link_complete', '1');
+
+    document.getElementById('icon').textContent  = '✅';
+    document.getElementById('title').textContent = 'Email confirmed!';
+    document.getElementById('sub').textContent   = 'Redirecting you back to finish your profile…';
+    document.getElementById('spinner').style.display = 'none';
+
+    setTimeout(() => { window.location.href = 'register.html?step=4'; }, 800);
+
+  } catch (err) {
+    console.error('Auth callback error:', err);
+    showError(err.message || 'Unable to confirm your email. Please try again.');
+  }
+}
+
+handleCallback();
+</script>
+</body>
+</html>

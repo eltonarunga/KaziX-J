@@ -6,6 +6,7 @@
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <title>Create Account — KaziX</title>
 <link rel="stylesheet" href="../assets/css/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
   :root{--ink:#0D0D0D;--cream:#F5F0E8;--saffron:#F5A623;--rust:#C0392B;--green:#1B6B3A;--steel:#2C3E50;--muted:#7A7468;--card-bg:#FFFFFF;--border:rgba(13,13,13,0.1)}
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -273,25 +274,19 @@
         </div>
       </div>
 
-      <!-- STEP 3: EMAIL VERIFICATION -->
+      <!-- STEP 3: MAGIC LINK WAITING -->
       <div class="reg-step" id="rstep3">
-        <div class="reg-step-title">Verify your email</div>
-        <div class="reg-step-sub">We've sent a 6-digit code to <strong id="regSentEmail">your@email.com</strong></div>
-        <div class="field-group">
-          <label class="field-label">Enter verification code <span class="req">*</span></label>
-          <div class="otp-inputs">
-            <input class="otp-digit" type="text" maxlength="1" oninput="regMoveNext(this,1)" onkeydown="regMovePrev(event,this)">
-            <input class="otp-digit" type="text" maxlength="1" oninput="regMoveNext(this,2)" onkeydown="regMovePrev(event,this)">
-            <input class="otp-digit" type="text" maxlength="1" oninput="regMoveNext(this,3)" onkeydown="regMovePrev(event,this)">
-            <input class="otp-digit" type="text" maxlength="1" oninput="regMoveNext(this,4)" onkeydown="regMovePrev(event,this)">
-            <input class="otp-digit" type="text" maxlength="1" oninput="regMoveNext(this,5)" onkeydown="regMovePrev(event,this)">
-            <input class="otp-digit" type="text" maxlength="1" oninput="regCheckOtp()" onkeydown="regMovePrev(event,this)">
-          </div>
-          <div class="otp-note">Didn't receive it? <button id="regResendBtn" onclick="resendRegOtp()" disabled>Resend code (<span id="regCountdown">60</span>s)</button></div>
+        <div class="reg-step-title">Check your inbox</div>
+        <div class="reg-step-sub">We sent a magic link to <strong id="regSentEmail">your@email.com</strong></div>
+        <div style="background:var(--cream);border-radius:6px;padding:2rem;text-align:center;margin-bottom:1.5rem">
+          <div style="font-size:3rem;margin-bottom:0.75rem">✉️</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:0.5rem">Open your email and click the link</div>
+          <div style="font-size:0.82rem;color:var(--muted);line-height:1.65">Click the <strong>"Confirm your email"</strong> button in the message we just sent. This tab will automatically continue once confirmed.</div>
         </div>
+        <div id="magicLinkStatus" style="font-size:0.8rem;color:var(--muted);text-align:center;margin-bottom:1rem">Waiting for confirmation…</div>
+        <div class="otp-note" style="text-align:center;margin-bottom:1rem">Didn't receive it? <button id="regResendBtn" onclick="resendRegOtp()" disabled style="background:none;border:none;color:#C0392B;font-weight:600;cursor:pointer;font-size:0.75rem;font-family:'DM Sans',sans-serif;padding:0">Resend link (<span id="regCountdown">60</span>s)</button></div>
         <div class="reg-btns">
-          <button class="btn-back" onclick="goRStep(2)">←</button>
-          <button class="btn-next" id="regVerifyBtn" onclick="verifyRegOtp()" disabled>Verify Email →</button>
+          <button class="btn-back" onclick="cancelMagicLink()">← Back</button>
         </div>
       </div>
 
@@ -398,10 +393,15 @@
 <script>
 const API_BASE = (window.KAZIX_API_BASE || 'http://localhost:8000').replace(/\/$/, '');
 
+const SUPABASE_URL  = 'https://tziamornnxxsfofzyvpj.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6aWFtb3Jubnh4c2ZvZnp5dnBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MDU1NTgsImV4cCI6MjA5MDE4MTU1OH0.94MiabtrEbeKMSORpk8_g40lndJX7Er9M0GFNUea4bU';
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
 let regRole = 'client';
 let regCurrentStep = 1;
 let regAuthPayload = null;
 let regCountdownTimer = null;
+let magicLinkPollTimer = null;
 
 function toDisplayError(err, fallback) {
   const message = err?.message?.trim();
@@ -529,35 +529,67 @@ function startRegCountdown() {
   }, 1000);
 }
 
+// Save registration form data to localStorage before magic link redirect
+function saveRegFormData() {
+  localStorage.setItem('kazix_reg_role',      regRole);
+  localStorage.setItem('kazix_reg_fullname',  document.getElementById('regFullName').value.trim());
+  localStorage.setItem('kazix_reg_phone',     document.getElementById('regPhone').value.replace(/\s/g, ''));
+  localStorage.setItem('kazix_reg_email',     document.getElementById('regEmail').value.trim());
+  localStorage.setItem('kazix_reg_county',    document.getElementById('regCounty').value);
+  localStorage.setItem('kazix_reg_area',      document.getElementById('regArea').value.trim());
+  if (regRole === 'pro') {
+    const chip = document.querySelector('.trade-chip.selected');
+    localStorage.setItem('kazix_reg_trade',         chip ? chip.dataset.trade : '');
+    localStorage.setItem('kazix_reg_rate_min',       document.getElementById('regRateMin').value);
+    localStorage.setItem('kazix_reg_rate_max',       document.getElementById('regRateMax').value);
+    localStorage.setItem('kazix_reg_experience',     document.getElementById('regExperience').value);
+  }
+}
+
+function restoreRegFormData() {
+  const role = localStorage.getItem('kazix_reg_role');
+  if (role) { regRole = role; selectType(role === 'fundi' ? 'pro' : role); }
+  const fn   = localStorage.getItem('kazix_reg_fullname');
+  const ph   = localStorage.getItem('kazix_reg_phone');
+  const em   = localStorage.getItem('kazix_reg_email');
+  const co   = localStorage.getItem('kazix_reg_county');
+  const ar   = localStorage.getItem('kazix_reg_area');
+  if (fn) document.getElementById('regFullName').value = fn;
+  if (ph) document.getElementById('regPhone').value    = ph;
+  if (em) document.getElementById('regEmail').value    = em;
+  if (co) document.getElementById('regCounty').value   = co;
+  if (ar) document.getElementById('regArea').value     = ar;
+}
+
 async function sendRegOtp() {
   const error = validateStep2();
-  if (error) {
-    alert(error);
-    return;
-  }
+  if (error) { alert(error); return; }
 
   const email = document.getElementById('regEmail').value.trim();
-  const btn = document.getElementById('regSendOtpBtn');
-  btn.disabled = true;
-  btn.textContent = 'Sending code…';
+  const btn   = document.getElementById('regSendOtpBtn');
+  btn.disabled  = true;
+  btn.textContent = 'Sending link…';
 
   try {
-    const resp = await fetch(`${API_BASE}/v1/auth/send-otp`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
+    const callbackUrl = `${window.location.origin}/pages/auth-callback.html`;
+    const { error: sbErr } = await supabaseClient.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: true,
+        emailRedirectTo: callbackUrl,
+      },
     });
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.detail || 'Failed to send code');
+    if (sbErr) throw sbErr;
 
+    saveRegFormData();
     document.getElementById('regSentEmail').textContent = email;
     goRStep(3);
-    document.querySelectorAll('#rstep3 .otp-digit')[0].focus();
     startRegCountdown();
+    startMagicLinkPoll();
   } catch (err) {
-    alert(toDisplayError(err, 'Could not send verification code.'));
+    alert(err.message || 'Could not send verification link.');
   } finally {
-    btn.disabled = false;
+    btn.disabled    = false;
     btn.textContent = 'Continue →';
   }
 }
@@ -567,76 +599,47 @@ async function resendRegOtp() {
   resendBtn.disabled = true;
   const email = document.getElementById('regEmail').value.trim();
   try {
-    const resp = await fetch(`${API_BASE}/v1/auth/send-otp`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
+    const callbackUrl = `${window.location.origin}/pages/auth-callback.html`;
+    const { error: sbErr } = await supabaseClient.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: true, emailRedirectTo: callbackUrl },
     });
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.detail || 'Failed to resend code');
-    document.querySelectorAll('#rstep3 .otp-digit').forEach((d) => { d.value = ''; });
-    document.getElementById('regVerifyBtn').disabled = true;
-    document.querySelectorAll('#rstep3 .otp-digit')[0].focus();
+    if (sbErr) throw sbErr;
     startRegCountdown();
   } catch (err) {
-    alert(toDisplayError(err, 'Could not resend verification code.'));
+    alert(err.message || 'Could not resend verification link.');
     resendBtn.disabled = false;
   }
 }
 
-function regMoveNext(el, pos) {
-  el.value = el.value.replace(/[^0-9]/g,'');
-  if (el.value && pos < 6) {
-    document.querySelectorAll('#rstep3 .otp-digit')[pos].focus();
-  }
-  regCheckOtp();
-}
-function regMovePrev(e, el) {
-  if (e.key === 'Backspace' && !el.value) {
-    const digits = document.querySelectorAll('#rstep3 .otp-digit');
-    const idx = [...digits].indexOf(el);
-    if (idx > 0) digits[idx-1].focus();
-  }
-}
-function regCheckOtp() {
-  const code = [...document.querySelectorAll('#rstep3 .otp-digit')].map(d => d.value).join('');
-  document.getElementById('regVerifyBtn').disabled = code.length < 6;
+function cancelMagicLink() {
+  clearInterval(magicLinkPollTimer);
+  goRStep(2);
 }
 
-async function verifyRegOtp() {
-  const code = [...document.querySelectorAll('#rstep3 .otp-digit')].map(d => d.value).join('');
-  const email = document.getElementById('regEmail').value.trim();
-  if (code.length !== 6) return;
-
-  const btn = document.getElementById('regVerifyBtn');
-  btn.disabled = true;
-  btn.textContent = 'Verifying email…';
-
-  try {
-    const resp = await fetch(`${API_BASE}/v1/auth/verify-otp`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, token: code }),
-    });
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.detail || 'Invalid or expired verification code');
-
-    regAuthPayload = data;
-    persistSession(data);
-
-    if (!data.is_new_user) {
-      const next = mapRedirectToPage(data.redirect_to);
-      alert('This account already exists. Redirecting to your dashboard.');
-      window.location.href = next;
-      return;
+// Poll localStorage for magic link completion signal set by auth-callback.html
+function startMagicLinkPoll() {
+  clearInterval(magicLinkPollTimer);
+  magicLinkPollTimer = setInterval(() => {
+    if (localStorage.getItem('kazix_magic_link_complete') === '1') {
+      clearInterval(magicLinkPollTimer);
+      localStorage.removeItem('kazix_magic_link_complete');
+      document.getElementById('magicLinkStatus').textContent = '✅ Email confirmed! Loading your profile…';
+      document.getElementById('magicLinkStatus').style.color = '#1B6B3A';
+      setTimeout(() => advanceToStep4(), 600);
     }
+  }, 1000);
+}
 
-    goRStep(4);
-  } catch (err) {
-    alert(toDisplayError(err, 'Email verification failed.'));
-    btn.disabled = false;
-    btn.textContent = 'Verify Email →';
-  }
+function advanceToStep4() {
+  restoreRegFormData();
+  // Retrieve the session stored by auth-callback
+  regAuthPayload = {
+    access_token:  localStorage.getItem('kazix_access_token'),
+    refresh_token: localStorage.getItem('kazix_refresh_token'),
+    token_type:    localStorage.getItem('kazix_token_type') || 'bearer',
+  };
+  goRStep(4);
 }
 
 async function submitReg() {
@@ -717,7 +720,19 @@ async function submitReg() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  goRStep(1);
+  // If returning from magic link callback, auto-advance to step 4
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('step') === '4' && localStorage.getItem('kazix_access_token')) {
+    restoreRegFormData();
+    regAuthPayload = {
+      access_token:  localStorage.getItem('kazix_access_token'),
+      refresh_token: localStorage.getItem('kazix_refresh_token'),
+      token_type:    'bearer',
+    };
+    goRStep(4);
+  } else {
+    goRStep(1);
+  }
 });
 </script>
 </body>
