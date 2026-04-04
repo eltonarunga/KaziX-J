@@ -58,7 +58,11 @@ body.app{display:flex;flex-direction:column}
   flex-shrink:0;
 }
 
-.topnav .logo{color:#F5F0E8}
+.topnav .logo,
+footer .logo,
+.footer .logo {
+  color: #F5F0E8 !important;
+}
 
 .topnav-right{display:flex;align-items:center;gap:1.25rem}
 

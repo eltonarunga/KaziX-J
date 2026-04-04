@@ -475,6 +475,127 @@
       this.classList.add('active');
     });
   });
+
+  // Filtering Logic
+  const applyBtn = document.querySelector('.apply-btn');
+  if (applyBtn) {
+    applyBtn.addEventListener('click', applyFilters);
+  }
+
+  function applyFilters() {
+    // 1. Get Trades
+    const filterSections = Array.from(document.querySelectorAll('.filter-section'));
+    const tradeSection = filterSections.find(s => s.querySelector('.filter-label')?.textContent.includes('Trade'));
+    const activeTrades = [];
+    if (tradeSection) {
+      const checkedInputs = tradeSection.querySelectorAll('input:checked');
+      checkedInputs.forEach(chk => {
+        let labelText = chk.parentNode.textContent;
+        let pText = labelText.replace(/[^\w\s\/-]/g, '').replace(/\d+$/, '').trim().toLowerCase();
+        if (pText) activeTrades.push(pText);
+      });
+    }
+
+    // 2. Get Rate
+    const minRateInput = document.querySelectorAll('.range-input')[0];
+    const maxRateInput = document.querySelectorAll('.range-input')[1];
+    const minRate = minRateInput && minRateInput.value ? parseFloat(minRateInput.value) : 0;
+    const maxRate = maxRateInput && maxRateInput.value ? parseFloat(maxRateInput.value) : Infinity;
+
+    // 3. Get Rating
+    const ratingRadios = document.querySelectorAll('input[name="rating"]');
+    let minRating = 0;
+    if (ratingRadios.length >= 4) {
+      if (ratingRadios[1].checked) minRating = 5;
+      if (ratingRadios[2].checked) minRating = 4;
+      if (ratingRadios[3].checked) minRating = 3;
+    }
+
+    // 4. Verification
+    const verifSection = filterSections.find(s => s.querySelector('.filter-label')?.textContent.includes('Verification'));
+    let requireVerified = false;
+    if (verifSection) {
+      const verifInputs = verifSection.querySelectorAll('input');
+      if (verifInputs.length > 0) {
+        requireVerified = verifInputs[0].checked;
+      }
+    }
+
+    // 5. Filter Cards
+    const cards = document.querySelectorAll('.pro-card');
+    let visibleCount = 0;
+    cards.forEach(card => {
+      let show = true;
+
+      // Check trade
+      const trade = card.querySelector('.pro-trade')?.textContent.toLowerCase() || '';
+      if (activeTrades.length > 0) {
+        if (!activeTrades.some(t => trade.includes(t))) show = false;
+      }
+
+      // Check rate
+      const rateText = card.querySelector('.pro-rate')?.textContent || '';
+      const rateMatch = rateText.match(/[\d,]+/);
+      if (rateMatch) {
+         const rate = parseFloat(rateMatch[0].replace(/,/g, ''));
+         if (rate < minRate || rate > maxRate) show = false;
+      }
+
+      // Check rating
+      const scoreMatch = card.querySelector('.score')?.textContent || '';
+      if (scoreMatch) {
+         const score = parseFloat(scoreMatch);
+         if (score < minRating) show = false;
+      }
+
+      // Check verification
+      if (requireVerified) {
+         const hasBadge = !!card.querySelector('.verified-badge');
+         if (!hasBadge) show = false;
+      }
+
+      card.style.display = show ? '' : 'none';
+      if(show) visibleCount++;
+    });
+
+    // Handle Empty State
+    let emptyMsg = document.getElementById('noResultsMsg');
+    if (visibleCount === 0) {
+      if (!emptyMsg) {
+         emptyMsg = document.createElement('div');
+         emptyMsg.id = 'noResultsMsg';
+         emptyMsg.style.padding = '3rem';
+         emptyMsg.style.textAlign = 'center';
+         emptyMsg.style.color = 'var(--muted)';
+         emptyMsg.style.gridColumn = '1 / -1';
+         emptyMsg.innerHTML = '<h3>No workers found matching your criteria.</h3><p style="margin-top:0.5rem; font-size:0.9rem;">Try adjusting your filters or clearing them to see more results.</p>';
+         document.getElementById('workersGrid').appendChild(emptyMsg);
+      }
+      emptyMsg.style.display = 'block';
+    } else if (emptyMsg) {
+      emptyMsg.style.display = 'none';
+    }
+
+    // Update Result Count
+    const cntText = document.querySelector('.results-count span');
+    if (cntText) cntText.textContent = visibleCount;
+  }
+
+  // Clear all filters
+  const clearBtn = document.querySelector('.filter-clear');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-section input[type="checkbox"]').forEach(i => i.checked = false);
+      const rangeInputs = document.querySelectorAll('.range-input');
+      if (rangeInputs[0]) rangeInputs[0].value = '';
+      if (rangeInputs[1]) rangeInputs[1].value = '';
+      const ratingInput = document.querySelector('input[name="rating"]');
+      if (ratingInput) ratingInput.checked = true;
+      const locInput = document.querySelector('input[name="loc"]');
+      if (locInput) locInput.checked = true;
+      applyFilters();
+    });
+  }
 </script>
 </body>
 </html>
