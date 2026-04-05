@@ -20,6 +20,8 @@ desktop.ini
 # IDE-specific files
 .vscode/
 .idea/
+.codex
+.replit
 *.swp
 *.swo
 *.swn

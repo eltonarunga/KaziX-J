@@ -182,7 +182,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const API_BASE = (window.KAZIX_API_BASE || 'http://localhost:8000').replace(/\/$/, '');
+const API_BASE = (window.KAZIX_API_BASE || window.location.origin).replace(/\/$/, '');
 // Anon key is safe to use in browser apps.
 const SUPABASE_URL = 'https://tziamornnxxsfofzyvpj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6aWFtb3Jubnh4c2ZvZnp5dnBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MDU1NTgsImV4cCI6MjA5MDE4MTU1OH0.94MiabtrEbeKMSORpk8_g40lndJX7Er9M0GFNUea4bU';
@@ -194,7 +194,7 @@ let currentRole = 'client';
 function toDisplayError(err, fallback) {
   const message = err?.message?.trim();
   if (message === 'Failed to fetch') {
-    return `Cannot reach API at ${API_BASE}. Start the backend on port 8000 and ensure ALLOWED_ORIGINS includes ${window.location.origin}.`;
+    return `Cannot reach API at ${API_BASE}. Start the FastAPI app and, if you are using a separate frontend origin, ensure ALLOWED_ORIGINS includes ${window.location.origin}.`;
   }
   return message || fallback;
 }

@@ -42,24 +42,31 @@ KaziX/
 │           ├── mobile-nav.js
 │           ├── admin-shell.js
 │           └── admin-disputes.js
-├── backend/                    # Backend scaffolding
+├── backend/                    # FastAPI app and API
 └── README.md
 ```
 
 ## 🚀 Getting Started
 
-Since this is a static frontend project, you can simply open `frontend/pages/index.html` in any modern web browser to view the application.
+KaziX now runs from a single FastAPI backend that serves both the API and the frontend pages.
 
 ```bash
 # Clone the repository
 git clone https://github.com/your-username/kazix.git
 
 # Navigate to the directory
-cd kazix
+cd kazix/backend
 
-# Open the frontend landing page
-open frontend/pages/index.html
+# Install dependencies if needed
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# Start the full site + API
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
+
+Open `http://localhost:8000/` for the website and `http://localhost:8000/docs` for API docs in development.
 
 ## 🇰🇪 Built for Kenya
 KaziX is designed with the local context in mind, focusing on mobile-first accessibility and deep integration with M-Pesa workflows.

@@ -15,6 +15,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 
 from app.core.config import get_settings
 from app.core.logging import configure_logging, get_logger
+from app.web import mount_frontend
 
 logger = get_logger(__name__)
 settings = get_settings()
@@ -76,6 +77,9 @@ def create_app() -> FastAPI:
     @app.get("/health", tags=["ops"])
     async def health():
         return {"status": "ok", "env": settings.app_env}
+
+    # ── Frontend pages/assets ───────────────────────────────
+    mount_frontend(app)
 
     return app
 
