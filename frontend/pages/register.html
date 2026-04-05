@@ -6,7 +6,7 @@
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <title>Create Account — KaziX</title>
 <link rel="stylesheet" href="../assets/css/styles.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../env.js"></script>
 <style>
   :root{--ink:#0D0D0D;--cream:#F5F0E8;--saffron:#F5A623;--rust:#C0392B;--green:#1B6B3A;--steel:#2C3E50;--muted:#7A7468;--card-bg:#FFFFFF;--border:rgba(13,13,13,0.1)}
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -167,7 +167,7 @@
       <div class="reg-steps" id="stepProgress">
         <div class="rs-node active" id="rsn1"><div class="rs-circle">1</div><div class="rs-label">Account type</div></div>
         <div class="rs-node" id="rsn2"><div class="rs-circle">2</div><div class="rs-label">Your details</div></div>
-        <div class="rs-node" id="rsn3"><div class="rs-circle">3</div><div class="rs-label">Verify phone</div></div>
+        <div class="rs-node" id="rsn3"><div class="rs-circle">3</div><div class="rs-label">Verify email</div></div>
         <div class="rs-node" id="rsn4"><div class="rs-circle">4</div><div class="rs-label">Profile</div></div>
       </div>
 
@@ -391,11 +391,27 @@
 </div>
 
 <script>
-const API_BASE = (window.KAZIX_API_BASE || window.location.origin).replace(/\/$/, '');
+function redirectDevOriginToLocalhost() {
+  if (window.location.hostname !== '0.0.0.0') return false;
+  const url = new URL(window.location.href);
+  url.hostname = 'localhost';
+  window.location.replace(url.toString());
+  return true;
+}
 
-const SUPABASE_URL  = 'https://tziamornnxxsfofzyvpj.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6aWFtb3Jubnh4c2ZvZnp5dnBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MDU1NTgsImV4cCI6MjA5MDE4MTU1OH0.94MiabtrEbeKMSORpk8_g40lndJX7Er9M0GFNUea4bU';
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+function getCanonicalLocalCallbackUrl() {
+  const url = new URL(window.location.href);
+  if (url.hostname === '0.0.0.0') {
+    url.hostname = 'localhost';
+  }
+  url.pathname = '/pages/auth-callback.html';
+  url.search = '';
+  url.hash = '';
+  return url.toString();
+}
+
+const isCanonicalRedirectPending = redirectDevOriginToLocalhost();
+const API_BASE = (window.KAZIX_API_BASE || window.location.origin).replace(/\/$/, '');
 
 let regRole = 'client';
 let regCurrentStep = 1;
@@ -515,7 +531,7 @@ function startRegCountdown() {
   let secs = 60;
   const resendBtn = document.getElementById('regResendBtn');
   resendBtn.disabled = true;
-  resendBtn.innerHTML = 'Resend code (<span id="regCountdown">60</span>s)';
+  resendBtn.innerHTML = 'Resend link (<span id="regCountdown">60</span>s)';
   clearInterval(regCountdownTimer);
   regCountdownTimer = setInterval(() => {
     secs -= 1;
@@ -524,7 +540,7 @@ function startRegCountdown() {
     if (secs <= 0) {
       clearInterval(regCountdownTimer);
       resendBtn.disabled = false;
-      resendBtn.textContent = 'Resend code';
+      resendBtn.textContent = 'Resend link';
     }
   }, 1000);
 }
@@ -571,15 +587,17 @@ async function sendRegOtp() {
   btn.textContent = 'Sending link…';
 
   try {
-    const callbackUrl = `${window.location.origin}/pages/auth-callback.html`;
-    const { error: sbErr } = await supabaseClient.auth.signInWithOtp({
-      email,
-      options: {
-        shouldCreateUser: true,
-        emailRedirectTo: callbackUrl,
-      },
+    const callbackUrl = getMagicLinkCallbackUrl();
+
+    // Send exactly one passwordless email for signup so we do not trip
+    // Supabase auth rate limits or wait on a second best-effort request.
+    const resp = await fetch(`${API_BASE}/v1/auth/send-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, email_redirect_to: callbackUrl }),
     });
-    if (sbErr) throw sbErr;
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || 'Failed to send verification link');
 
     saveRegFormData();
     document.getElementById('regSentEmail').textContent = email;
@@ -587,7 +605,9 @@ async function sendRegOtp() {
     startRegCountdown();
     startMagicLinkPoll();
   } catch (err) {
-    alert(err.message || 'Could not send verification link.');
+    console.error('sendRegOtp error:', err);
+    const message = err?.message || (typeof err === 'string' ? err : 'Could not send verification link.');
+    alert(message);
   } finally {
     btn.disabled    = false;
     btn.textContent = 'Continue →';
@@ -599,15 +619,21 @@ async function resendRegOtp() {
   resendBtn.disabled = true;
   const email = document.getElementById('regEmail').value.trim();
   try {
-    const callbackUrl = `${window.location.origin}/pages/auth-callback.html`;
-    const { error: sbErr } = await supabaseClient.auth.signInWithOtp({
-      email,
-      options: { shouldCreateUser: true, emailRedirectTo: callbackUrl },
+    const callbackUrl = getMagicLinkCallbackUrl();
+
+    const resp = await fetch(`${API_BASE}/v1/auth/send-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, email_redirect_to: callbackUrl }),
     });
-    if (sbErr) throw sbErr;
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || 'Failed to resend verification link');
+
     startRegCountdown();
   } catch (err) {
-    alert(err.message || 'Could not resend verification link.');
+    console.error('resendRegOtp error:', err);
+    const message = err?.message || (typeof err === 'string' ? err : 'Could not resend verification link.');
+    alert(message || 'Could not resend verification link.');
     resendBtn.disabled = false;
   }
 }
@@ -615,6 +641,31 @@ async function resendRegOtp() {
 function cancelMagicLink() {
   clearInterval(magicLinkPollTimer);
   goRStep(2);
+}
+
+function getMagicLinkCallbackUrl() {
+  const fallback = getCanonicalLocalCallbackUrl();
+  const configured = window.SUPABASE_REDIRECT_URL || window.KAZIX_CONFIG?.SUPABASE_REDIRECT_URL;
+  if (!configured) return fallback;
+
+  try {
+    const url = new URL(configured);
+    if (url.pathname !== '/pages/auth-callback.html') {
+      console.warn('SUPABASE_REDIRECT_URL should target /pages/auth-callback.html. Falling back to current origin.', configured);
+      return fallback;
+    }
+    if (
+      ['localhost', '127.0.0.1', '0.0.0.0'].includes(window.location.hostname)
+      && url.origin !== new URL(fallback).origin
+    ) {
+      console.warn('SUPABASE_REDIRECT_URL origin differs from the active local origin. Using current local callback instead.', configured, fallback);
+      return fallback;
+    }
+    return configured;
+  } catch (error) {
+    console.warn('Invalid SUPABASE_REDIRECT_URL; falling back to current origin.', configured, error);
+    return fallback;
+  }
 }
 
 // Poll localStorage for magic link completion signal set by auth-callback.html
@@ -720,6 +771,7 @@ async function submitReg() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  if (isCanonicalRedirectPending) return;
   // If returning from magic link callback, auto-advance to step 4
   const params = new URLSearchParams(window.location.search);
   if (params.get('step') === '4' && localStorage.getItem('kazix_access_token')) {

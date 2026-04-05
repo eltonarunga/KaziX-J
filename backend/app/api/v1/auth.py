@@ -3,7 +3,7 @@ app/api/v1/auth.py
 ──────────────────
 Phone OTP authentication flow (Tasks 4 & 5).
 
-POST /v1/auth/send-otp     → sends 6-digit OTP via Supabase phone OR email auth
+POST /v1/auth/send-otp     → sends phone OTP or email sign-in link/code via Supabase
 POST /v1/auth/verify-otp   → verifies OTP, creates profile if new user
 POST /v1/auth/oauth/start  → returns Supabase OAuth authorize URL
 POST /v1/auth/oauth/exchange → exchanges OAuth code for Supabase session
@@ -19,12 +19,12 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException, status
 from gotrue.errors import AuthApiError, AuthRetryableError
 from pydantic import BaseModel, Field, field_validator, model_validator
-from supabase import create_client
 
-from app.api.deps import CurrentUser
+from app.api.deps import CurrentSession, CurrentUser
 from app.core.config import get_settings
 from app.core.logging import get_logger
 from app.core.supabase import get_admin_client, get_anon_client
+from supabase import create_client
 
 logger = get_logger(__name__)
 router = APIRouter()
@@ -39,11 +39,14 @@ _OAUTH_STATE_STORE: dict[str, dict[str, str | float]] = {}
 class SendOTPRequest(BaseModel):
     phone: str | None = Field(default=None, pattern=r"^\+254[0-9]{9}$", examples=["+254712345678"])
     email: str | None = Field(default=None, pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+    email_redirect_to: str | None = Field(default=None, min_length=1)
 
     @model_validator(mode="after")
     def validate_destination(self):
         if bool(self.phone) == bool(self.email):
             raise ValueError("Provide exactly one destination: phone or email.")
+        if self.phone and self.email_redirect_to:
+            raise ValueError("email_redirect_to is only supported for email sign-in.")
         return self
 
 
@@ -182,9 +185,10 @@ def _pop_oauth_code_verifier(state: str) -> str | None:
 @router.post("/send-otp", response_model=OTPResponse, status_code=200)
 async def send_otp(body: SendOTPRequest):
     """
-    Send a 6-digit OTP to phone or email.
+    Send a 6-digit OTP to phone or initiate passwordless email auth.
     Phone OTP uses SMS provider configured in Supabase.
-    Email OTP uses Supabase email provider.
+    Email sends a magic link when email_redirect_to is provided.
+    Otherwise, the email template decides whether users receive a code or link.
     """
     client = get_anon_client()
     try:
@@ -196,16 +200,23 @@ async def send_otp(body: SendOTPRequest):
             logger.info("OTP dispatched", channel="phone", phone=body.phone[-4:])  # log last 4 digits only
             return OTPResponse(success=True, message="OTP sent successfully")
 
-        # Email passwordless OTP (used for new-user signup verification)
+        # Supabase email passwordless auth can send either a magic link or
+        # a one-time code depending on template configuration.
         email = str(body.email)
+        options = {"should_create_user": True}
+        if body.email_redirect_to:
+            options["email_redirect_to"] = body.email_redirect_to
+
         client.auth.sign_in_with_otp(
             {
                 "email": email,
-                "options": {"should_create_user": True},
+                "options": options,
             }
         )
-        logger.info("OTP dispatched", channel="email", email=_mask_email(email))
-        return OTPResponse(success=True, message="Verification code sent successfully")
+        delivery = "magic_link" if body.email_redirect_to else "otp"
+        logger.info("OTP dispatched", channel="email", delivery=delivery, email=_mask_email(email))
+        message = "Magic link sent successfully" if body.email_redirect_to else "Verification code sent successfully"
+        return OTPResponse(success=True, message=message)
     except AuthApiError as exc:
         logger.warning(
             "OTP dispatch rejected by Supabase",
@@ -417,7 +428,7 @@ async def exchange_oauth_code(body: OAuthExchangeRequest):
 
 
 @router.post("/profile", status_code=201)
-async def create_profile(body: CreateProfileRequest, user: CurrentUser):
+async def create_profile(body: CreateProfileRequest, user: CurrentSession):
     """
     Complete profile creation after OTP verification (register.html step 4).
     Idempotent — returns existing profile if one already exists.
@@ -513,7 +524,7 @@ async def get_session(user: CurrentUser):
 
 
 @router.get("/bootstrap", response_model=BootstrapResponse, status_code=200)
-async def bootstrap_auth(user: CurrentUser):
+async def bootstrap_auth(user: CurrentSession):
     """
     Returns profile completion state for any authenticated Supabase session
     (OTP or OAuth), allowing frontend to route users after login.

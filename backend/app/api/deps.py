@@ -12,8 +12,8 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 
 from app.core.config import get_settings
-from app.core.supabase import get_admin_client
 from app.core.logging import get_logger
+from app.core.supabase import get_admin_client
 
 logger = get_logger(__name__)
 settings = get_settings()
@@ -30,15 +30,15 @@ class AuthenticatedUser:
         self.phone = phone
 
 
-async def get_current_user(
-    credentials: Annotated[HTTPAuthorizationCredentials, Depends(_bearer)],
-) -> AuthenticatedUser:
-    """
-    Validates the Supabase-issued JWT from the Authorization header.
-    Returns a lightweight AuthenticatedUser object.
+class AuthenticatedSession:
+    """Carries the decoded JWT payload for any authenticated Supabase session."""
 
-    Raises 401 on missing/invalid token, 403 if account is suspended.
-    """
+    def __init__(self, user_id: str):
+        self.user_id = user_id
+
+
+def _decode_user_id(credentials: HTTPAuthorizationCredentials) -> str:
+    """Validate the bearer token and return the authenticated user id."""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -56,9 +56,35 @@ async def get_current_user(
         user_id: str = payload.get("sub")
         if not user_id:
             raise credentials_exception
+        return user_id
     except JWTError as exc:
         logger.warning("JWT validation failed", error=str(exc))
         raise credentials_exception
+
+
+async def get_authenticated_session(
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(_bearer)],
+) -> AuthenticatedSession:
+    """
+    Validates the Supabase-issued JWT from the Authorization header.
+    Returns the authenticated user id even before a profile exists.
+    """
+    return AuthenticatedSession(user_id=_decode_user_id(credentials))
+
+
+async def get_current_user(
+    session: Annotated[AuthenticatedSession, Depends(get_authenticated_session)],
+) -> AuthenticatedUser:
+    """
+    Resolves a full profile-backed AuthenticatedUser for routes that require one.
+
+    Raises 401 on missing/invalid token or missing profile, 403 if suspended.
+    """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
 
     # Fetch the profile to get role and suspension status
     client = get_admin_client()
@@ -66,7 +92,7 @@ async def get_current_user(
         result = (
             client.table("profiles")
             .select("id, role, phone, is_suspended")
-            .eq("id", user_id)
+            .eq("id", session.user_id)
             .single()
             .execute()
         )
@@ -86,6 +112,8 @@ async def get_current_user(
             role=profile["role"],
             phone=profile["phone"],
         )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("Database error in get_current_user", error=str(e))
         raise credentials_exception
@@ -116,7 +144,8 @@ def require_role(*roles: str):
 
 
 # Convenience aliases
-CurrentUser  = Annotated[AuthenticatedUser, Depends(get_current_user)]
-AdminUser    = Annotated[AuthenticatedUser, Depends(require_role("admin"))]
-FundiUser    = Annotated[AuthenticatedUser, Depends(require_role("fundi", "admin"))]
-ClientUser   = Annotated[AuthenticatedUser, Depends(require_role("client", "admin"))]
+CurrentSession = Annotated[AuthenticatedSession, Depends(get_authenticated_session)]
+CurrentUser    = Annotated[AuthenticatedUser, Depends(get_current_user)]
+AdminUser      = Annotated[AuthenticatedUser, Depends(require_role("admin"))]
+FundiUser      = Annotated[AuthenticatedUser, Depends(require_role("fundi", "admin"))]
+ClientUser     = Annotated[AuthenticatedUser, Depends(require_role("client", "admin"))]

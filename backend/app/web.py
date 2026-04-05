@@ -14,6 +14,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 FRONTEND_DIR = REPO_ROOT / "frontend"
 PAGES_DIR = FRONTEND_DIR / "pages"
 ASSETS_DIR = FRONTEND_DIR / "assets"
+ENV_JS_PATH = FRONTEND_DIR / "env.js"
 FAVICON_PATH = FRONTEND_DIR / "favicon.svg"
 
 
@@ -39,6 +40,13 @@ def mount_frontend(app: FastAPI) -> None:
             return Response(status_code=204)
         return FileResponse(FAVICON_PATH, media_type="image/svg+xml")
 
+    @app.get("/env.js", include_in_schema=False)
+    async def frontend_env() -> Response:
+        if not ENV_JS_PATH.exists():
+            logger.warning("Frontend env.js not found", path=str(ENV_JS_PATH))
+            return Response(status_code=404)
+        return FileResponse(ENV_JS_PATH, media_type="text/javascript; charset=utf-8")
+
     if PAGES_DIR.exists():
         app.mount("/pages", StaticFiles(directory=PAGES_DIR), name="frontend-pages")
     else:
@@ -48,4 +56,3 @@ def mount_frontend(app: FastAPI) -> None:
         app.mount("/assets", StaticFiles(directory=ASSETS_DIR), name="frontend-assets")
     else:
         logger.warning("Frontend assets directory not found", path=str(ASSETS_DIR))
-

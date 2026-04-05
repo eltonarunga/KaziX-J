@@ -181,11 +181,14 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../env.js"></script>
 <script>
 const API_BASE = (window.KAZIX_API_BASE || window.location.origin).replace(/\/$/, '');
-// Anon key is safe to use in browser apps.
-const SUPABASE_URL = 'https://tziamornnxxsfofzyvpj.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6aWFtb3Jubnh4c2ZvZnp5dnBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MDU1NTgsImV4cCI6MjA5MDE4MTU1OH0.94MiabtrEbeKMSORpk8_g40lndJX7Er9M0GFNUea4bU';
+const SUPABASE_URL = window.SUPABASE_URL || window.KAZIX_CONFIG?.SUPABASE_URL;
+const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || window.KAZIX_CONFIG?.SUPABASE_ANON_KEY;
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  throw new Error('Missing Supabase configuration. Generate frontend/env.js from frontend/.env and include it before page scripts.');
+}
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let countdownTimer;

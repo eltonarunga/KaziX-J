@@ -25,3 +25,11 @@ def test_frontend_assets_are_served_from_fastapi() -> None:
 
     assert response.status_code == 200
     assert ":root" in response.text
+
+
+def test_frontend_env_js_is_served_from_fastapi() -> None:
+    with TestClient(app) as client:
+        response = client.get("/env.js")
+
+    assert response.status_code == 200
+    assert "window.KAZIX_CONFIG" in response.text

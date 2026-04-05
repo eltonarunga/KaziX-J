@@ -1,0 +1,53 @@
+const fs = require('fs');
+const path = require('path');
+
+const root = path.resolve(__dirname);
+const envPath = path.join(root, '.env');
+const outPath = path.join(root, 'env.js');
+
+if (!fs.existsSync(envPath)) {
+  throw new Error('frontend/.env not found. Create it with SUPABASE_URL and SUPABASE_ANON_KEY.');
+}
+
+const lines = fs.readFileSync(envPath, 'utf8').split(/\r?\n/);
+const vars = {};
+for (const rawLine of lines) {
+  const line = rawLine.trim();
+  if (!line || line.startsWith('#')) continue;
+  const idx = line.indexOf('=');
+  if (idx === -1) continue;
+  const key = line.slice(0, idx).trim();
+  let value = line.slice(idx + 1).trim();
+  if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+    value = value.slice(1, -1);
+  }
+  vars[key] = value;
+}
+
+const supabaseUrl = vars.VITE_SUPABASE_URL || vars.SUPABASE_URL;
+const supabaseAnonKey = vars.VITE_SUPABASE_ANON_KEY || vars.SUPABASE_ANON_KEY;
+const supabaseRedirectUrl = vars.SUPABASE_REDIRECT_URL || null;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY (or SUPABASE_URL/SUPABASE_ANON_KEY) in frontend/.env.');
+}
+
+const config = {
+  SUPABASE_URL: supabaseUrl,
+  SUPABASE_ANON_KEY: supabaseAnonKey,
+  ...(supabaseRedirectUrl ? { SUPABASE_REDIRECT_URL: supabaseRedirectUrl } : {}),
+};
+
+const content = `// Generated from frontend/.env. Do not edit directly.
+(function () {
+  const config = ${JSON.stringify(config, null, 2)};
+
+  window.KAZIX_CONFIG = config;
+  window.SUPABASE_URL = window.SUPABASE_URL || config.SUPABASE_URL;
+  window.SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || config.SUPABASE_ANON_KEY;
+  window.SUPABASE_REDIRECT_URL = window.SUPABASE_REDIRECT_URL || config.SUPABASE_REDIRECT_URL;
+})();
+`;
+
+fs.writeFileSync(outPath, content, 'utf8');
+console.log(`Wrote ${path.relative(process.cwd(), outPath)} from ${path.relative(process.cwd(), envPath)}`);
