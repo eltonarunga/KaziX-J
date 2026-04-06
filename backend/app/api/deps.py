@@ -9,11 +9,12 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from gotrue.errors import AuthApiError, AuthRetryableError
 from jose import JWTError, jwt
 
 from app.core.config import get_settings
 from app.core.logging import get_logger
-from app.core.supabase import get_admin_client
+from app.core.supabase import get_admin_client, get_anon_client
 
 logger = get_logger(__name__)
 settings = get_settings()
@@ -45,20 +46,38 @@ def _decode_user_id(credentials: HTTPAuthorizationCredentials) -> str:
         headers={"WWW-Authenticate": "Bearer"},
     )
 
+    token = credentials.credentials
+
     try:
-        # Note: Supabase uses HS256 with the JWT_SECRET for signing
-        payload = jwt.decode(
-            credentials.credentials,
-            settings.supabase_jwt_secret,
-            algorithms=["HS256"],
-            audience="authenticated",
-        )
-        user_id: str = payload.get("sub")
+        header = jwt.get_unverified_header(token)
+    except JWTError:
+        header = {}
+
+    alg = str(header.get("alg") or "").upper()
+
+    try:
+        # Supabase can issue either symmetric or asymmetric access tokens.
+        # Keep local HS256 verification for simple/test setups and fall back
+        # to the Auth API for newer asymmetric tokens.
+        if alg in {"", "HS256"}:
+            payload = jwt.decode(
+                token,
+                settings.supabase_jwt_secret,
+                algorithms=["HS256"],
+                audience="authenticated",
+            )
+            user_id: str = payload.get("sub")
+        else:
+            response = get_anon_client().auth.get_user(jwt=token)
+            user = getattr(response, "user", None) if response else None
+            user_id = getattr(user, "id", None)
+
         if not user_id:
-            raise credentials_exception
+            raise JWTError("Missing user id in authenticated session")
+
         return user_id
-    except JWTError as exc:
-        logger.warning("JWT validation failed", error=str(exc))
+    except (AuthApiError, AuthRetryableError, JWTError) as exc:
+        logger.warning("JWT validation failed", alg=alg or None, error=str(exc))
         raise credentials_exception
 
 

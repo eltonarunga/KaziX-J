@@ -3,6 +3,7 @@ from types import SimpleNamespace
 import httpx
 import pytest
 from jose import jwt
+from postgrest.exceptions import APIError
 
 from app.api import deps as deps_module
 from app.api.v1 import auth as auth_module
@@ -21,6 +22,16 @@ class _FakeAuthClient:
 class _FakeSupabaseClient:
     def __init__(self) -> None:
         self.auth = _FakeAuthClient()
+
+
+class _FakeAuthLookupClient:
+    def __init__(self, user_id: str) -> None:
+        self.user_id = user_id
+        self.auth = SimpleNamespace(
+            get_user=lambda jwt=None: SimpleNamespace(
+                user=SimpleNamespace(id=self.user_id)
+            )
+        )
 
 
 class _FakeResult:
@@ -76,6 +87,39 @@ class _FakeAdminClient:
 
     def table(self, table_name: str):
         return _FakeTableQuery(self.tables, table_name)
+
+
+class _ErroringTableQuery(_FakeTableQuery):
+    def __init__(
+        self,
+        tables: dict[str, dict[str, dict]],
+        table_name: str,
+        execute_error: dict[str, str] | None = None,
+    ) -> None:
+        super().__init__(tables, table_name)
+        self._execute_error = execute_error
+
+    def execute(self):
+        if self._operation == "upsert" and self._execute_error:
+            raise APIError(self._execute_error)
+        return super().execute()
+
+
+class _ErroringAdminClient(_FakeAdminClient):
+    def __init__(
+        self,
+        execute_errors: dict[str, dict[str, str]],
+        initial_tables: dict[str, dict[str, dict]] | None = None,
+    ) -> None:
+        super().__init__(initial_tables=initial_tables)
+        self.execute_errors = execute_errors
+
+    def table(self, table_name: str):
+        return _ErroringTableQuery(
+            self.tables,
+            table_name,
+            execute_error=self.execute_errors.get(table_name),
+        )
 
 
 def _make_bearer_token(secret: str, user_id: str = "user-123") -> str:
@@ -164,6 +208,80 @@ async def test_create_profile_allows_authenticated_new_user_without_existing_pro
 
 
 @pytest.mark.asyncio
+async def test_create_profile_returns_conflict_for_duplicate_phone(monkeypatch) -> None:
+    secret = "test-jwt-secret"
+    fake_admin = _ErroringAdminClient(
+        execute_errors={
+            "profiles": {
+                "message": 'duplicate key value violates unique constraint "uq_profiles_phone"',
+                "code": "23505",
+                "details": "Key (phone)=(+254712345678) already exists.",
+                "hint": "",
+            }
+        }
+    )
+    monkeypatch.setattr(deps_module, "settings", SimpleNamespace(supabase_jwt_secret=secret))
+    monkeypatch.setattr(auth_module, "get_admin_client", lambda: fake_admin)
+
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.post(
+            "/v1/auth/profile",
+            headers={"Authorization": f"Bearer {_make_bearer_token(secret)}"},
+            json={
+                "full_name": "Jane Wanjiku",
+                "phone": "+254712345678",
+                "email": "jane@example.com",
+                "county": "Nairobi",
+                "area": "Westlands",
+                "role": "client",
+                "mpesa_number": "+254712345678",
+                "preferred_language": "en",
+            },
+        )
+
+    assert response.status_code == 409
+    assert response.json()["detail"] == (
+        "That phone number is already linked to another account. "
+        "Sign in instead or use a different number."
+    )
+
+
+@pytest.mark.asyncio
+async def test_create_profile_rejects_inverted_fundi_rate_range(monkeypatch) -> None:
+    secret = "test-jwt-secret"
+    fake_admin = _FakeAdminClient()
+    monkeypatch.setattr(deps_module, "settings", SimpleNamespace(supabase_jwt_secret=secret))
+    monkeypatch.setattr(auth_module, "get_admin_client", lambda: fake_admin)
+
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.post(
+            "/v1/auth/profile",
+            headers={"Authorization": f"Bearer {_make_bearer_token(secret)}"},
+            json={
+                "full_name": "Jane Wanjiku",
+                "phone": "+254712345678",
+                "email": "jane@example.com",
+                "county": "Nairobi",
+                "area": "Westlands",
+                "role": "fundi",
+                "trade": "plumber",
+                "rate_min": 2000,
+                "rate_max": 800,
+                "experience_years": 5,
+                "bio": "Experienced plumber",
+                "mpesa_number": "+254712345678",
+                "preferred_language": "en",
+            },
+        )
+
+    assert response.status_code == 422
+    assert response.json()["detail"] == "Maximum rate must be greater than or equal to minimum rate."
+    assert fake_admin.tables == {}
+
+
+@pytest.mark.asyncio
 async def test_bootstrap_allows_authenticated_new_user_without_existing_profile(monkeypatch) -> None:
     secret = "test-jwt-secret"
     fake_admin = _FakeAdminClient()
@@ -175,6 +293,40 @@ async def test_bootstrap_allows_authenticated_new_user_without_existing_profile(
         response = await client.get(
             "/v1/auth/bootstrap",
             headers={"Authorization": f"Bearer {_make_bearer_token(secret)}"},
+        )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "is_new_user": True,
+        "redirect_to": "complete-registration",
+        "role": "client",
+        "profile": None,
+    }
+
+
+@pytest.mark.asyncio
+async def test_bootstrap_accepts_asymmetric_supabase_tokens(monkeypatch) -> None:
+    fake_admin = _FakeAdminClient()
+    fake_lookup_client = _FakeAuthLookupClient(user_id="user-rs256")
+
+    monkeypatch.setattr(
+        deps_module,
+        "settings",
+        SimpleNamespace(supabase_jwt_secret="test-jwt-secret"),
+    )
+    monkeypatch.setattr(deps_module, "get_anon_client", lambda: fake_lookup_client)
+    monkeypatch.setattr(
+        deps_module.jwt,
+        "get_unverified_header",
+        lambda _token: {"alg": "RS256"},
+    )
+    monkeypatch.setattr(auth_module, "get_admin_client", lambda: fake_admin)
+
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.get(
+            "/v1/auth/bootstrap",
+            headers={"Authorization": "Bearer asymmetric-token"},
         )
 
     assert response.status_code == 200

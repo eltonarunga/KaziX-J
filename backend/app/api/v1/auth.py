@@ -18,6 +18,7 @@ from typing import Literal
 
 from fastapi import APIRouter, HTTPException, status
 from gotrue.errors import AuthApiError, AuthRetryableError
+from postgrest.exceptions import APIError as PostgrestAPIError
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.api.deps import CurrentSession, CurrentUser
@@ -139,6 +140,74 @@ def _resolve_profile_state(admin, user_id: str) -> tuple[dict | None, bool, str]
     role = profile.get("role") if profile else "client"
     redirect_to = "complete-registration" if is_new_user else f"{role}-dashboard"
     return profile, is_new_user, redirect_to
+
+
+def _profile_write_http_error(exc: Exception, *, table_name: str) -> HTTPException:
+    default_detail = (
+        "Could not save fundi profile."
+        if table_name == "fundi_profiles"
+        else "Could not save profile. Please try again."
+    )
+
+    if isinstance(exc, PostgrestAPIError):
+        error_blob = " ".join(
+            str(part or "")
+            for part in (exc.code, exc.message, exc.details, exc.hint)
+        ).lower()
+
+        if table_name == "profiles":
+            if exc.code == "23505" and (
+                "uq_profiles_phone" in error_blob or "key (phone)" in error_blob
+            ):
+                return HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail=(
+                        "That phone number is already linked to another account. "
+                        "Sign in instead or use a different number."
+                    ),
+                )
+            if exc.code == "23503" and "auth.users" in error_blob:
+                return HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="Your verified session could not be matched to an account. Please verify your email again.",
+                )
+            if exc.code in {"23502", "23514", "22P02"} and (
+                "phone" in error_blob or "mpesa_number" in error_blob
+            ):
+                return HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="Enter a valid Kenyan phone number in +2547XXXXXXXX format.",
+                )
+
+        if table_name == "fundi_profiles":
+            if exc.code == "23514" and "ck_fundi_rate_range" in error_blob:
+                return HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="Maximum rate must be greater than or equal to minimum rate.",
+                )
+            if exc.code == "23514" and "trade" in error_blob:
+                return HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="Please select a valid trade.",
+                )
+            if exc.code == "23514" and "experience_years" in error_blob:
+                return HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="Experience years must be between 0 and 60.",
+                )
+
+        if settings.app_env == "development":
+            debug_detail = exc.details or exc.message or exc.code
+            if debug_detail:
+                return HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"{default_detail} ({debug_detail})",
+                )
+
+    return HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        detail=default_detail,
+    )
 
 
 def _mask_email(email: str) -> str:
@@ -439,6 +508,16 @@ async def create_profile(body: CreateProfileRequest, user: CurrentSession):
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Trade is required for fundi registration.",
         )
+    if (
+        body.role == "fundi"
+        and body.rate_min is not None
+        and body.rate_max is not None
+        and body.rate_max < body.rate_min
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Maximum rate must be greater than or equal to minimum rate.",
+        )
 
     admin = get_admin_client()
 
@@ -462,11 +541,15 @@ async def create_profile(body: CreateProfileRequest, user: CurrentSession):
             .execute()
         )
     except Exception as exc:
-        logger.error("Profile upsert failed", user_id=user.user_id, error=str(exc))
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Could not save profile. Please try again.",
+        logger.error(
+            "Profile upsert failed",
+            user_id=user.user_id,
+            error=str(exc),
+            code=getattr(exc, "code", None),
+            details=getattr(exc, "details", None),
+            hint=getattr(exc, "hint", None),
         )
+        raise _profile_write_http_error(exc, table_name="profiles")
 
     # Create fundi_profiles row if applicable
     if body.role == "fundi":
@@ -482,11 +565,15 @@ async def create_profile(body: CreateProfileRequest, user: CurrentSession):
         try:
             admin.table("fundi_profiles").upsert(fundi_data, on_conflict="id").execute()
         except Exception as exc:
-            logger.error("Fundi profile upsert failed", user_id=user.user_id, error=str(exc))
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Could not save fundi profile.",
+            logger.error(
+                "Fundi profile upsert failed",
+                user_id=user.user_id,
+                error=str(exc),
+                code=getattr(exc, "code", None),
+                details=getattr(exc, "details", None),
+                hint=getattr(exc, "hint", None),
             )
+            raise _profile_write_http_error(exc, table_name="fundi_profiles")
 
     logger.info("Profile created", user_id=user.user_id, role=body.role)
     return {"success": True, "profile": profile_result.data[0] if profile_result.data else {}}

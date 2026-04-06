@@ -51,7 +51,7 @@ create policy profiles_self_update
 create policy profiles_admin_all
   on public.profiles
   for all
-  to authenticated
+  to authenticated, service_role
   using (public.is_admin())
   with check (public.is_admin());
 
@@ -78,7 +78,7 @@ create policy fundi_profiles_self_update
 create policy fundi_profiles_admin_all
   on public.fundi_profiles
   for all
-  to authenticated
+  to authenticated, service_role
   using (public.is_admin())
   with check (public.is_admin());
 
