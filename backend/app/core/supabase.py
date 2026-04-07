@@ -16,9 +16,9 @@ Both clients are module-level singletons (created once, reused).
 from functools import lru_cache
 
 import httpx
-from supabase import Client, ClientOptions, create_client
- 
+
 from app.core.config import get_settings
+from supabase import Client, ClientOptions, create_client
 
 # Generous timeouts so that Supabase email/SMS OTP sends never time out
 # on slow cold-start or under DNS/network variability.
@@ -71,4 +71,15 @@ def get_admin_client() -> Client:
     """
     s = get_settings()
     client = create_client(s.supabase_url, s.supabase_service_role_key, options=_CLIENT_OPTIONS)
+    return _patch_auth_timeout(client)
+
+
+def get_user_client(access_token: str) -> Client:
+    """
+    Request-scoped Supabase client that executes PostgREST calls as the
+    authenticated user. This keeps user-owned writes aligned with RLS.
+    """
+    s = get_settings()
+    client = create_client(s.supabase_url, s.supabase_anon_key, options=_CLIENT_OPTIONS)
+    client.postgrest.auth(access_token)
     return _patch_auth_timeout(client)

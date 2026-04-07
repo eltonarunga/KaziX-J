@@ -34,8 +34,9 @@ class AuthenticatedUser:
 class AuthenticatedSession:
     """Carries the decoded JWT payload for any authenticated Supabase session."""
 
-    def __init__(self, user_id: str):
+    def __init__(self, user_id: str, access_token: str):
         self.user_id = user_id
+        self.access_token = access_token
 
 
 def _decode_user_id(credentials: HTTPAuthorizationCredentials) -> str:
@@ -88,7 +89,10 @@ async def get_authenticated_session(
     Validates the Supabase-issued JWT from the Authorization header.
     Returns the authenticated user id even before a profile exists.
     """
-    return AuthenticatedSession(user_id=_decode_user_id(credentials))
+    return AuthenticatedSession(
+        user_id=_decode_user_id(credentials),
+        access_token=credentials.credentials,
+    )
 
 
 async def get_current_user(

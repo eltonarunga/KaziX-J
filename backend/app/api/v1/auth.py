@@ -24,7 +24,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 from app.api.deps import CurrentSession, CurrentUser
 from app.core.config import get_settings
 from app.core.logging import get_logger
-from app.core.supabase import get_admin_client, get_anon_client
+from app.core.supabase import get_admin_client, get_anon_client, get_user_client
 from supabase import create_client
 
 logger = get_logger(__name__)
@@ -519,7 +519,7 @@ async def create_profile(body: CreateProfileRequest, user: CurrentSession):
             detail="Maximum rate must be greater than or equal to minimum rate.",
         )
 
-    admin = get_admin_client()
+    client = get_user_client(user.access_token)
 
     # Upsert profiles row (idempotent)
     profile_data = {
@@ -536,7 +536,7 @@ async def create_profile(body: CreateProfileRequest, user: CurrentSession):
 
     try:
         profile_result = (
-            admin.table("profiles")
+            client.table("profiles")
             .upsert(profile_data, on_conflict="id")
             .execute()
         )
@@ -563,7 +563,7 @@ async def create_profile(body: CreateProfileRequest, user: CurrentSession):
             "kyc_status":       "pending",
         }
         try:
-            admin.table("fundi_profiles").upsert(fundi_data, on_conflict="id").execute()
+            client.table("fundi_profiles").upsert(fundi_data, on_conflict="id").execute()
         except Exception as exc:
             logger.error(
                 "Fundi profile upsert failed",

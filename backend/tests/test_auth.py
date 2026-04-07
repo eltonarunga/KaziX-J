@@ -182,7 +182,7 @@ async def test_create_profile_allows_authenticated_new_user_without_existing_pro
     secret = "test-jwt-secret"
     fake_admin = _FakeAdminClient()
     monkeypatch.setattr(deps_module, "settings", SimpleNamespace(supabase_jwt_secret=secret))
-    monkeypatch.setattr(auth_module, "get_admin_client", lambda: fake_admin)
+    monkeypatch.setattr(auth_module, "get_user_client", lambda _token: fake_admin)
 
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
@@ -221,7 +221,7 @@ async def test_create_profile_returns_conflict_for_duplicate_phone(monkeypatch) 
         }
     )
     monkeypatch.setattr(deps_module, "settings", SimpleNamespace(supabase_jwt_secret=secret))
-    monkeypatch.setattr(auth_module, "get_admin_client", lambda: fake_admin)
+    monkeypatch.setattr(auth_module, "get_user_client", lambda _token: fake_admin)
 
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
@@ -252,7 +252,7 @@ async def test_create_profile_rejects_inverted_fundi_rate_range(monkeypatch) -> 
     secret = "test-jwt-secret"
     fake_admin = _FakeAdminClient()
     monkeypatch.setattr(deps_module, "settings", SimpleNamespace(supabase_jwt_secret=secret))
-    monkeypatch.setattr(auth_module, "get_admin_client", lambda: fake_admin)
+    monkeypatch.setattr(auth_module, "get_user_client", lambda _token: fake_admin)
 
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
