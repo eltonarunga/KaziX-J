@@ -105,8 +105,8 @@
   <div class="topnav-right">
     <button class="notif-btn" title="Notifications">🔔<span class="notif-dot"></span></button>
     <div class="user-chip" onclick="location.href='client-profile.html'">
-      <div class="user-avatar">AK</div>
-      <span class="user-name">Alex Kuria</span>
+      <div class="user-avatar" id="navUserAvatar">KX</div>
+      <span class="user-name" id="navUserName">My account</span>
     </div>
   </div>
 </nav>
@@ -129,8 +129,8 @@
     <a class="nav-item" href="client-profile.html"><span class="ni-icon">👤</span>My Profile</a>
     <div class="sidebar-bottom">
       <a class="sidebar-profile" href="client-profile.html">
-        <div class="sp-avatar">🏠</div>
-        <div><div class="sp-name">Alex Kuria</div><div class="sp-role">Client Account</div></div>
+        <div class="sp-avatar" id="sidebarAvatar">KX</div>
+        <div><div class="sp-name" id="sidebarName">My profile</div><div class="sp-role" id="sidebarRole">Client account</div></div>
       </a>
     </div>
   </aside>
@@ -138,7 +138,7 @@
   <!-- MAIN -->
   <main class="main">
     <div style="animation:slideUp 0.4s ease both">
-      <div class="page-title">Good morning, Alex 👋</div>
+      <div class="page-title" id="dashboardGreeting">Welcome back 👋</div>
       <div class="page-sub">Here's what's happening with your jobs today</div>
     </div>
 
@@ -335,7 +335,13 @@
   </div>
 </nav>
 
-
+<script src="../assets/js/profile-utils.js"></script>
+<script src="../assets/js/dashboard-session.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  window.KazixDashboard.hydrateDashboard({ expectedRole: 'client' });
+});
+</script>
 <script src="../assets/js/mobile-nav.js"></script>
 </body>
 </html>

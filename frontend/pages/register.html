@@ -381,7 +381,7 @@
         <div class="success-title" id="successTitle">Account Created!</div>
         <div class="success-sub" id="successSub">Welcome to KaziX! Your account is active. Start exploring jobs or posting your first request.</div>
         <div>
-          <a href="find-workers.html" class="btn-home">Find a Fundi</a>
+          <a href="client-profile.html" class="btn-home">Open My Profile</a>
           <a href="post-job.html" class="btn-home" style="background:var(--green)">Post a Job</a>
         </div>
       </div>
@@ -406,6 +406,7 @@ function getCanonicalLocalCallbackUrl() {
   }
   url.pathname = '/pages/auth-callback.html';
   url.search = '';
+  url.searchParams.set('flow', 'register');
   url.hash = '';
   return url.toString();
 }
@@ -418,6 +419,15 @@ let regCurrentStep = 1;
 let regAuthPayload = null;
 let regCountdownTimer = null;
 let magicLinkPollTimer = null;
+const AUTH_WAITER_SESSION_KEY = 'kazix_auth_waiter_id';
+const AUTH_WAITING_OWNER_KEY = 'kazix_auth_waiting_owner';
+const AUTH_WAITING_FLOW_KEY = 'kazix_auth_waiting_flow';
+const AUTH_WAITING_HEARTBEAT_KEY = 'kazix_auth_waiting_heartbeat';
+const AUTH_WAITING_STARTED_KEY = 'kazix_auth_waiting_started_at';
+const authWaiterId = sessionStorage.getItem(AUTH_WAITER_SESSION_KEY)
+  || (window.crypto?.randomUUID?.() || `auth-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+let authWaitHeartbeatTimer = null;
+sessionStorage.setItem(AUTH_WAITER_SESSION_KEY, authWaiterId);
 
 function toDisplayError(err, fallback) {
   const message = err?.message?.trim();
@@ -477,6 +487,29 @@ function mapRedirectToPage(redirectTo) {
     'admin-dashboard': 'admin-dashboard.html',
   };
   return map[redirectTo] || 'index.html';
+}
+
+function touchAuthWaiter() {
+  if (localStorage.getItem(AUTH_WAITING_OWNER_KEY) !== authWaiterId) return;
+  localStorage.setItem(AUTH_WAITING_HEARTBEAT_KEY, String(Date.now()));
+}
+
+function markAuthTabWaiting(flow) {
+  localStorage.setItem(AUTH_WAITING_OWNER_KEY, authWaiterId);
+  localStorage.setItem(AUTH_WAITING_FLOW_KEY, flow);
+  localStorage.setItem(AUTH_WAITING_STARTED_KEY, String(Date.now()));
+  touchAuthWaiter();
+  clearInterval(authWaitHeartbeatTimer);
+  authWaitHeartbeatTimer = setInterval(touchAuthWaiter, 2000);
+}
+
+function clearAuthTabWaiting() {
+  clearInterval(authWaitHeartbeatTimer);
+  if (localStorage.getItem(AUTH_WAITING_OWNER_KEY) !== authWaiterId) return;
+  localStorage.removeItem(AUTH_WAITING_OWNER_KEY);
+  localStorage.removeItem(AUTH_WAITING_FLOW_KEY);
+  localStorage.removeItem(AUTH_WAITING_HEARTBEAT_KEY);
+  localStorage.removeItem(AUTH_WAITING_STARTED_KEY);
 }
 
 function persistSession(payload) {
@@ -587,6 +620,10 @@ async function sendRegOtp() {
   btn.textContent = 'Sending link…';
 
   try {
+    markAuthTabWaiting('register');
+    localStorage.setItem('kazix_auth_flow', 'register');
+    localStorage.removeItem('kazix_magic_link_complete');
+    localStorage.removeItem('kazix_auth_next_page');
     const callbackUrl = getMagicLinkCallbackUrl();
 
     // Send exactly one passwordless email for signup so we do not trip
@@ -605,6 +642,7 @@ async function sendRegOtp() {
     startRegCountdown();
     startMagicLinkPoll();
   } catch (err) {
+    clearAuthTabWaiting();
     console.error('sendRegOtp error:', err);
     const message = err?.message || (typeof err === 'string' ? err : 'Could not send verification link.');
     alert(message);
@@ -619,6 +657,10 @@ async function resendRegOtp() {
   resendBtn.disabled = true;
   const email = document.getElementById('regEmail').value.trim();
   try {
+    markAuthTabWaiting('register');
+    localStorage.setItem('kazix_auth_flow', 'register');
+    localStorage.removeItem('kazix_magic_link_complete');
+    localStorage.removeItem('kazix_auth_next_page');
     const callbackUrl = getMagicLinkCallbackUrl();
 
     const resp = await fetch(`${API_BASE}/v1/auth/send-otp`, {
@@ -640,6 +682,7 @@ async function resendRegOtp() {
 
 function cancelMagicLink() {
   clearInterval(magicLinkPollTimer);
+  clearAuthTabWaiting();
   goRStep(2);
 }
 
@@ -661,7 +704,9 @@ function getMagicLinkCallbackUrl() {
       console.warn('SUPABASE_REDIRECT_URL origin differs from the active local origin. Using current local callback instead.', configured, fallback);
       return fallback;
     }
-    return configured;
+    url.searchParams.set('flow', 'register');
+    url.hash = '';
+    return url.toString();
   } catch (error) {
     console.warn('Invalid SUPABASE_REDIRECT_URL; falling back to current origin.', configured, error);
     return fallback;
@@ -674,7 +719,14 @@ function startMagicLinkPoll() {
   magicLinkPollTimer = setInterval(() => {
     if (localStorage.getItem('kazix_magic_link_complete') === '1') {
       clearInterval(magicLinkPollTimer);
+      const nextPage = localStorage.getItem('kazix_auth_next_page') || 'register.html?step=4';
       localStorage.removeItem('kazix_magic_link_complete');
+      localStorage.removeItem('kazix_auth_next_page');
+      clearAuthTabWaiting();
+      if (nextPage !== 'register.html?step=4') {
+        window.location.href = nextPage;
+        return;
+      }
       document.getElementById('magicLinkStatus').textContent = '✅ Email confirmed! Loading your profile…';
       document.getElementById('magicLinkStatus').style.color = '#1B6B3A';
       setTimeout(() => advanceToStep4(), 600);
@@ -683,6 +735,7 @@ function startMagicLinkPoll() {
 }
 
 function advanceToStep4() {
+  clearAuthTabWaiting();
   restoreRegFormData();
   // Retrieve the session stored by auth-callback
   regAuthPayload = {
@@ -762,20 +815,21 @@ async function submitReg() {
     document.getElementById('successEmoji').textContent = '🔧';
     document.getElementById('successTitle').textContent = 'Welcome to KaziX!';
     document.getElementById('successSub').textContent = 'Your profile is under review. We\'ll verify your ID within 2–4 hours and notify you by SMS. You can already browse available jobs!';
-    document.getElementById('regSuccess').querySelectorAll('a')[0].href = 'find-workers.html';
-    document.getElementById('regSuccess').querySelectorAll('a')[0].textContent = 'View Available Jobs';
-    document.getElementById('regSuccess').querySelectorAll('a')[1].href = 'for-pros.html';
-    document.getElementById('regSuccess').querySelectorAll('a')[1].textContent = 'Complete Your Profile';
+    document.getElementById('regSuccess').querySelectorAll('a')[0].href = 'worker-profile-edit.html';
+    document.getElementById('regSuccess').querySelectorAll('a')[0].textContent = 'Open My Profile';
+    document.getElementById('regSuccess').querySelectorAll('a')[1].href = 'worker-jobs.html';
+    document.getElementById('regSuccess').querySelectorAll('a')[1].textContent = 'Browse Jobs';
   }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   if (isCanonicalRedirectPending) return;
+  restoreRegFormData();
   // If returning from magic link callback, auto-advance to step 4
   const params = new URLSearchParams(window.location.search);
   if (params.get('step') === '4' && localStorage.getItem('kazix_access_token')) {
-    restoreRegFormData();
+    clearAuthTabWaiting();
     regAuthPayload = {
       access_token:  localStorage.getItem('kazix_access_token'),
       refresh_token: localStorage.getItem('kazix_refresh_token'),
@@ -786,6 +840,8 @@ document.addEventListener('DOMContentLoaded', () => {
     goRStep(1);
   }
 });
+
+window.addEventListener('beforeunload', clearAuthTabWaiting);
 </script>
 </body>
 </html>

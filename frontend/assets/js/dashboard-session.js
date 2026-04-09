@@ -1,0 +1,99 @@
+(function () {
+  function firstName(fullName) {
+    return String(fullName || "")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)[0] || "there";
+  }
+
+  function greetingForHour(date) {
+    var hour = date.getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  }
+
+  async function hydrateDashboard(options) {
+    options = options || {};
+    var helpers = window.KazixProfile;
+    if (!helpers) {
+      console.error("KazixProfile helpers are required before dashboard-session.js");
+      return;
+    }
+
+    var getAccessToken = helpers.getAccessToken;
+    var requestJson = helpers.requestJson;
+    var getMyProfile = helpers.getMyProfile;
+    var initials = helpers.initials;
+    var setText = helpers.setText;
+    var formatLocation = helpers.formatLocation;
+    var formatTrade = helpers.formatTrade;
+
+    if (!getAccessToken()) {
+      window.location.href = options.loginHref || "login.html";
+      return;
+    }
+
+    try {
+      var data = getMyProfile
+        ? await getMyProfile()
+        : await requestJson("/v1/profiles/me", { auth: true });
+      var profile = data && data.profile ? data.profile : {};
+      var fundiProfile = data && data.fundi_profile ? data.fundi_profile : {};
+      var role = profile.role || "";
+
+      if (!profile.id || !role) {
+        throw new Error("Missing profile details.");
+      }
+
+      localStorage.setItem("kazix_role", role);
+
+      if (options.expectedRole && role !== options.expectedRole) {
+        var defaultRedirects = {
+          client: "client-dashboard.html",
+          fundi: "worker-dashboard.html",
+          admin: "admin-dashboard.html",
+        };
+        var target = (options.roleRedirects && options.roleRedirects[role]) || defaultRedirects[role] || "index.html";
+        window.location.replace(target);
+        return;
+      }
+
+      var name = profile.full_name || "My account";
+      var avatar = initials(name);
+      var location = formatLocation(profile);
+      var tradeLabel = fundiProfile.trade ? formatTrade(fundiProfile.trade) : null;
+      var roleLabel = role === "fundi"
+        ? (tradeLabel ? "Pro account · " + tradeLabel : "Pro account")
+        : role === "admin"
+          ? "Admin account"
+          : "Client account";
+
+      setText("#navUserAvatar", avatar);
+      setText("#navUserName", name);
+      setText("#sidebarAvatar", avatar);
+      setText("#sidebarName", name);
+      setText("#sidebarRole", roleLabel);
+
+      var greetingName = firstName(name);
+      var greeting = greetingForHour(new Date()) + ", " + greetingName + " 👋";
+      setText("#dashboardGreeting", greeting);
+      setText("#availabilityLocation", location);
+
+      if (options.updateDocumentTitle !== false) {
+        document.title = role === "fundi"
+          ? "Dashboard — " + name + " · KaziX Pro"
+          : "Dashboard — " + name + " · KaziX";
+      }
+    } catch (error) {
+      console.error("Failed to hydrate dashboard shell", error);
+      if ((error && error.message || "").toLowerCase().indexOf("sign in") !== -1) {
+        window.location.href = options.loginHref || "login.html";
+      }
+    }
+  }
+
+  window.KazixDashboard = {
+    hydrateDashboard: hydrateDashboard,
+  };
+})();

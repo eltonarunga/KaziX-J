@@ -95,7 +95,7 @@
   <a href="index.html" class="logo">Kazi<span>X</span></a>
   <div class="topnav-right">
     <button class="notif-btn" onclick="location.href='notifications.html'">🔔<span class="notif-dot"></span></button>
-    <div class="user-chip"><div class="user-avatar">JK</div><span class="user-name">James Kamau</span></div>
+    <div class="user-chip"><div class="user-avatar" id="navUserAvatar">KX</div><span class="user-name" id="navUserName">My account</span></div>
   </div>
 </nav>
 <div class="app-shell">
@@ -112,20 +112,20 @@
     <a class="nav-item" href="worker-profile-edit.html"><span class="ni-icon">👤</span>My Profile</a>
     <div class="sidebar-bottom">
       <div class="sidebar-profile">
-        <div class="sp-avatar">🔧</div>
-        <div><div class="sp-name">James Kamau</div><div class="sp-role">Pro Account · Plumber</div></div>
+        <div class="sp-avatar" id="sidebarAvatar">KX</div>
+        <div><div class="sp-name" id="sidebarName">My profile</div><div class="sp-role" id="sidebarRole">Pro account</div></div>
       </div>
     </div>
   </aside>
   <main class="main">
     <div style="animation:slideUp 0.4s ease both">
-      <div class="page-title">Good morning, James 👋</div>
+      <div class="page-title" id="dashboardGreeting">Welcome back 👋</div>
       <div class="page-sub">You have 8 new job alerts near you today</div>
     </div>
     <div class="avail-banner" style="animation:slideUp 0.4s 0.05s ease both">
       <div class="avail-left">
         <div class="avail-dot" id="availDot"></div>
-        <div><div class="avail-title" id="availTitle">You are available for work</div><div class="avail-sub" id="availSub">Clients and job alerts can reach you · Westlands, Nairobi</div></div>
+        <div><div class="avail-title" id="availTitle">You are available for work</div><div class="avail-sub" id="availSub">Clients and job alerts can reach you · <span id="availabilityLocation">your area</span></div></div>
       </div>
       <div class="avail-toggle-row">
         <span id="availLabel">Available</span>
@@ -177,7 +177,7 @@
         <div class="card">
           <div class="rating-block"><div class="rating-big">4.9</div><div class="rating-stars">★★★★★</div><div class="rating-count">127 reviews</div></div>
           <div style="padding:0.75rem 1.25rem">
-            <div class="mini-review"><div class="mr-top"><span class="mr-name">Alex K.</span><span class="mr-stars">★★★★★</span></div><div class="mr-text">"Fixed burst pipe in 2 hours. Highly reliable."</div></div>
+            <div class="mini-review"><div class="mr-top"><span class="mr-name">Recent client</span><span class="mr-stars">★★★★★</span></div><div class="mr-text">"Fixed burst pipe in 2 hours. Highly reliable."</div></div>
             <div class="mini-review"><div class="mr-top"><span class="mr-name">Purity N.</span><span class="mr-stars">★★★★★</span></div><div class="mr-text">"Solar heater installed perfectly. Very professional."</div></div>
             <a href="worker-reviews.html" class="card-link" style="display:block;margin-top:0.75rem;font-size:0.78rem">View all →</a>
           </div>
@@ -203,7 +203,7 @@
       <div>
         <div class="contract-row">
           <div class="cr-avatar">🏠</div>
-          <div class="cr-info"><div class="cr-title">Fix leaking pipe — Westlands kitchen</div><div class="cr-sub">Alex Kuria · Booking #KX-0187 · Today</div></div>
+          <div class="cr-info"><div class="cr-title">Fix leaking pipe — Westlands kitchen</div><div class="cr-sub">Client account · Booking #KX-0187 · Today</div></div>
           <span class="status-pill sp-active">● In Progress</span>
           <div class="cr-amount">KES 800<div class="cr-amount-sub">in escrow</div></div>
         </div>
@@ -218,10 +218,12 @@
   </main>
 </div>
 <script>
+var workerAvailabilityLocation = 'your area';
+
 function toggleAvail(on){
   document.getElementById('availDot').className='avail-dot'+(on?'':' offline');
   document.getElementById('availTitle').textContent=on?'You are available for work':'You are offline';
-  document.getElementById('availSub').textContent=on?'Clients and job alerts can reach you · Westlands, Nairobi':'Job alerts and messages are paused';
+  document.getElementById('availSub').textContent=on?'Clients and job alerts can reach you · ' + workerAvailabilityLocation:'Job alerts and messages are paused';
   document.getElementById('availLabel').textContent=on?'Available':'Offline';
 }
 </script>
@@ -243,7 +245,22 @@ function toggleAvail(on){
   </div>
 </nav>
 
-
+<script src="../assets/js/profile-utils.js"></script>
+<script src="../assets/js/dashboard-session.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  window.KazixDashboard
+    .hydrateDashboard({ expectedRole: 'fundi' })
+    .then(function () {
+      var locationEl = document.getElementById('availabilityLocation');
+      if (!locationEl) return;
+      workerAvailabilityLocation = locationEl.textContent || workerAvailabilityLocation;
+      if (document.getElementById('availLabel').textContent === 'Available') {
+        document.getElementById('availSub').textContent = 'Clients and job alerts can reach you · ' + workerAvailabilityLocation;
+      }
+    });
+});
+</script>
 <script src="../assets/js/mobile-nav.js"></script>
 </body>
 </html>

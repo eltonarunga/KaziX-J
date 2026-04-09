@@ -93,7 +93,7 @@
   <a href="index.html" class="logo">Kazi<span>X</span></a>
   <div class="topnav-right">
     <button class="notif-btn">🔔<span class="notif-dot"></span></button>
-    <div class="user-chip"><div class="user-avatar">JK</div><span class="user-name">James Kamau</span></div>
+    <div class="user-chip"><div class="user-avatar">KX</div><span class="user-name">My account</span></div>
   </div>
 </nav>
 <div class="app-shell">
@@ -109,7 +109,7 @@
     <a class="nav-item" href="worker-reviews.html"><span class="ni-icon">⭐</span>My Reviews</a>
     <a class="nav-item" href="worker-profile-edit.html"><span class="ni-icon">👤</span>My Profile</a>
     <div class="sidebar-bottom">
-      <div class="sidebar-profile"><div class="sp-avatar">🔧</div><div><div class="sp-name">James Kamau</div><div class="sp-role">Pro Account · Plumber</div></div></div>
+      <div class="sidebar-profile"><div class="sp-avatar">🔧</div><div><div class="sp-name">My account</div><div class="sp-role">Pro account</div></div></div>
     </div>
   </aside>
   <main class="main">
@@ -156,7 +156,7 @@
           </div>
           <div class="client-row">
             <div class="cli-avatar">🏠</div>
-            <div><div class="cli-name">Alex Kuria</div><div class="cli-sub">📱 +254 722 ··· ··· · ★★★★★ 4.8 as client</div></div>
+            <div><div class="cli-name">Homeowner account</div><div class="cli-sub">📱 +254 722 ··· ··· · ★★★★★ 4.8 as client</div></div>
             <div class="cli-actions"><a href="messages.html" class="btn-sm">💬 Message</a><a href="tel:+254722000000" class="btn-sm">📞 Call</a></div>
           </div>
           <div class="ct-actions">
@@ -243,7 +243,7 @@
 <script>
 function filterC(s,el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');document.querySelectorAll('.ct-card').forEach(c=>{c.style.display=(s==='all'||c.dataset.status===s)?'':'none'})}
 function openModal(ref,net){document.getElementById('modalRef').textContent='#'+ref;document.getElementById('modalPayout').textContent='KES '+net;document.getElementById('completeModal').classList.add('open')}
-function confirmComplete(){document.getElementById('completeModal').classList.remove('open');var c=document.querySelector('.ct-card.c-active');if(!c)return;c.classList.remove('c-active');c.classList.add('c-done');c.dataset.status='done';c.style.opacity='0.85';c.querySelector('.status-pill').className='status-pill sp-done';c.querySelector('.status-pill').textContent='✓ Awaiting client';c.querySelector('.ct-actions').innerHTML='<div class="done-banner" style="width:100%">⏳ Job marked complete. Waiting for Alex to confirm — KES 720 arrives within 48 hours.</div>'}
+function confirmComplete(){document.getElementById('completeModal').classList.remove('open');var c=document.querySelector('.ct-card.c-active');if(!c)return;c.classList.remove('c-active');c.classList.add('c-done');c.dataset.status='done';c.style.opacity='0.85';c.querySelector('.status-pill').className='status-pill sp-done';c.querySelector('.status-pill').textContent='✓ Awaiting client';c.querySelector('.ct-actions').innerHTML='<div class="done-banner" style="width:100%">⏳ Job marked complete. Waiting for the client to confirm — KES 720 arrives within 48 hours.</div>'}
 document.getElementById('completeModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})
 </script>
 
@@ -265,6 +265,7 @@ document.getElementById('completeModal').addEventListener('click',function(e){if
 </nav>
 
 
+<script src="../assets/js/profile-utils.js"></script>
 <script src="../assets/js/mobile-nav.js"></script>
 </body>
 </html>

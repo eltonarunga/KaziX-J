@@ -41,6 +41,7 @@ function redirectDevOriginToLocalhost() {
 }
 
 const isCanonicalRedirectPending = redirectDevOriginToLocalhost();
+const API_BASE = (window.KAZIX_API_BASE || window.location.origin).replace(/\/$/, '');
 const SUPABASE_URL = window.SUPABASE_URL || window.KAZIX_CONFIG?.SUPABASE_URL;
 const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || window.KAZIX_CONFIG?.SUPABASE_ANON_KEY;
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
@@ -49,9 +50,40 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 
 const initialSearchParams = new URLSearchParams(window.location.search);
 const initialHashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+const authFlow = initialSearchParams.get('flow') || localStorage.getItem('kazix_auth_flow') || 'register';
+const AUTH_WAITER_SESSION_KEY = 'kazix_auth_waiter_id';
+const AUTH_WAITING_OWNER_KEY = 'kazix_auth_waiting_owner';
+const AUTH_WAITING_FLOW_KEY = 'kazix_auth_waiting_flow';
+const AUTH_WAITING_HEARTBEAT_KEY = 'kazix_auth_waiting_heartbeat';
+const AUTH_WAITING_MAX_AGE_MS = 30000;
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { detectSessionInUrl: false },
 });
+
+function toDisplayError(err, fallback) {
+  const message = err?.message?.trim();
+  if (message === 'Failed to fetch') {
+    return `Cannot reach API at ${API_BASE}. Start the FastAPI app and, if you are using a separate frontend origin, ensure ALLOWED_ORIGINS includes ${window.location.origin}.`;
+  }
+  return message || fallback;
+}
+
+function getRetryConfig(flow) {
+  return flow === 'login'
+    ? { href: 'login.html', label: 'Back to Sign In' }
+    : { href: 'register.html', label: 'Back to Registration' };
+}
+
+function configureFlowUi(flow) {
+  const retry = getRetryConfig(flow);
+  const retryBtn = document.getElementById('retryBtn');
+  retryBtn.href = retry.href;
+  retryBtn.textContent = retry.label;
+  document.getElementById('title').textContent = 'Signing you in…';
+  document.getElementById('sub').textContent = flow === 'login'
+    ? 'Please wait while we confirm your email sign-in.'
+    : 'Please wait while we confirm your identity.';
+}
 
 function showError(msg) {
   document.getElementById('spinner').style.display = 'none';
@@ -113,9 +145,6 @@ async function waitForSession(timeoutMs = 5000) {
 }
 
 async function resolveSessionFromCallback() {
-  const sessionFromStorage = await getCurrentSession();
-  if (sessionFromStorage) return sessionFromStorage;
-
   const accessToken = getCallbackParam('access_token');
   const refreshToken = getCallbackParam('refresh_token');
   if (accessToken && refreshToken) {
@@ -124,14 +153,16 @@ async function resolveSessionFromCallback() {
       refresh_token: refreshToken,
     });
     if (error) throw error;
-    if (data?.session) return data.session;
+    if (!data?.session) throw new Error('No session returned from the email sign-in link.');
+    return data.session;
   }
 
   const code = initialSearchParams.get('code');
   if (code) {
     const { data, error } = await supabaseClient.auth.exchangeCodeForSession(code);
     if (error) throw error;
-    if (data?.session) return data.session;
+    if (!data?.session) throw new Error('No session returned from the sign-in code.');
+    return data.session;
   }
 
   const tokenHash = getCallbackParam('token_hash');
@@ -142,12 +173,93 @@ async function resolveSessionFromCallback() {
       type,
     });
     if (error) throw error;
-    if (data?.session) return data.session;
+    if (!data?.session) throw new Error('No session returned from the magic link.');
+    return data.session;
   }
 
-  const session = await getCurrentSession();
-  if (session) return session;
+  const sessionFromStorage = await getCurrentSession();
+  if (sessionFromStorage) return sessionFromStorage;
   return waitForSession();
+}
+
+function persistSession(session) {
+  const expiresIn = Number.isFinite(session.expires_in)
+    ? session.expires_in
+    : (typeof session.expires_at === 'number'
+        ? Math.max(0, session.expires_at - Math.floor(Date.now() / 1000))
+        : null);
+
+  localStorage.setItem('kazix_access_token', session.access_token);
+  localStorage.setItem('kazix_refresh_token', session.refresh_token);
+  if (expiresIn !== null) {
+    localStorage.setItem('kazix_expires_in', String(expiresIn));
+  }
+  localStorage.setItem('kazix_token_type', session.token_type || 'bearer');
+}
+
+async function bootstrapSession(session) {
+  const resp = await fetch(`${API_BASE}/v1/auth/bootstrap`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${session.access_token}`,
+    },
+  });
+  const data = await resp.json();
+  if (!resp.ok) throw new Error(data.detail || 'Could not finish sign-in.');
+  return data;
+}
+
+function mapRedirectToPage(redirectTo, flow) {
+  if (redirectTo === 'complete-registration') {
+    return flow === 'register' ? 'register.html?step=4' : 'register.html';
+  }
+
+  const map = {
+    'client-dashboard': 'client-dashboard.html',
+    'fundi-dashboard': 'worker-dashboard.html',
+    'admin-dashboard': 'admin-dashboard.html',
+  };
+  return map[redirectTo] || 'index.html';
+}
+
+function getSuccessMessage(nextPage, flow) {
+  if (nextPage.startsWith('register.html')) {
+    return flow === 'register'
+      ? 'Redirecting you back to finish your profile…'
+      : 'Redirecting you to complete your account…';
+  }
+  return 'Redirecting you to your dashboard…';
+}
+
+function shouldHandOffToOriginalTab(flow) {
+  const owner = localStorage.getItem(AUTH_WAITING_OWNER_KEY);
+  const waitingFlow = localStorage.getItem(AUTH_WAITING_FLOW_KEY);
+  const heartbeat = Number(localStorage.getItem(AUTH_WAITING_HEARTBEAT_KEY));
+  const sameTabWaiterId = sessionStorage.getItem(AUTH_WAITER_SESSION_KEY);
+
+  if (!owner || !Number.isFinite(heartbeat)) return false;
+  if (sameTabWaiterId && sameTabWaiterId === owner) return false;
+  if (waitingFlow && waitingFlow !== flow) return false;
+  if ((Date.now() - heartbeat) > AUTH_WAITING_MAX_AGE_MS) return false;
+  return true;
+}
+
+function handOffToOriginalTab(nextPage, flow) {
+  const retryBtn = document.getElementById('retryBtn');
+  document.getElementById('sub').textContent = flow === 'login'
+    ? 'Your original KaziX tab is finishing sign-in now. You can return to it and close this tab.'
+    : 'Your original KaziX tab is finishing registration now. You can return to it and close this tab.';
+  retryBtn.href = nextPage;
+  retryBtn.textContent = 'Continue Here';
+  retryBtn.style.display = 'inline-block';
+
+  setTimeout(() => {
+    try {
+      window.close();
+    } catch (_error) {
+      // Ignore close failures; the button above is the fallback.
+    }
+  }, 400);
 }
 
 async function handleCallback() {
@@ -163,7 +275,9 @@ async function handleCallback() {
       document.getElementById('icon').textContent  = '⏰';
       document.getElementById('title').textContent = 'Link expired';
       document.getElementById('sub').textContent   =
-        'Magic links expire after a short time. Go back and request a fresh one — it only takes a second.';
+        authFlow === 'login'
+          ? 'Email sign-in links expire after a short time. Go back and request a fresh one.'
+          : 'Magic links expire after a short time. Go back and request a fresh one.';
       document.getElementById('retryBtn').textContent  = 'Request a new link';
       document.getElementById('retryBtn').style.display = 'inline-block';
     } else {
@@ -182,34 +296,34 @@ async function handleCallback() {
   try {
     const session = await resolveSessionFromCallback();
     if (!session) throw new Error('No session returned. The link may be invalid or already used.');
-    const expiresIn = Number.isFinite(session.expires_in)
-      ? session.expires_in
-      : (typeof session.expires_at === 'number'
-          ? Math.max(0, session.expires_at - Math.floor(Date.now() / 1000))
-          : null);
+    persistSession(session);
+    const bootstrap = await bootstrapSession(session);
+    const nextPage = mapRedirectToPage(bootstrap.redirect_to, authFlow);
 
-    localStorage.setItem('kazix_access_token',  session.access_token);
-    localStorage.setItem('kazix_refresh_token', session.refresh_token);
-    if (expiresIn !== null) {
-      localStorage.setItem('kazix_expires_in', String(expiresIn));
-    }
-    localStorage.setItem('kazix_token_type', session.token_type || 'bearer');
     localStorage.setItem('kazix_magic_link_complete', '1');
+    localStorage.setItem('kazix_auth_next_page', nextPage);
+    localStorage.setItem('kazix_auth_flow', authFlow);
 
     document.getElementById('icon').textContent  = '✅';
-    document.getElementById('title').textContent = 'Email confirmed!';
-    document.getElementById('sub').textContent   = 'Redirecting you back to finish your profile…';
+    document.getElementById('title').textContent = authFlow === 'login' ? 'You’re signed in!' : 'Email confirmed!';
+    document.getElementById('sub').textContent   = getSuccessMessage(nextPage, authFlow);
     document.getElementById('spinner').style.display = 'none';
 
-    setTimeout(() => { window.location.href = 'register.html?step=4'; }, 800);
+    if (shouldHandOffToOriginalTab(authFlow)) {
+      handOffToOriginalTab(nextPage, authFlow);
+      return;
+    }
+
+    setTimeout(() => { window.location.href = nextPage; }, 800);
 
   } catch (err) {
     console.error('Auth callback error:', err);
-    showError(err.message || 'Unable to confirm your email. Please try again.');
+    showError(toDisplayError(err, 'Unable to confirm your email. Please try again.'));
   }
 }
 
 if (!isCanonicalRedirectPending) {
+  configureFlowUi(authFlow);
   handleCallback();
 }
 </script>

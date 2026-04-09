@@ -79,6 +79,13 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
+    if (
+      window.KazixProfile &&
+      typeof window.KazixProfile.hydrateShell === "function"
+    ) {
+      window.KazixProfile.hydrateShell({ silent: true });
+    }
+
     var moreMenus = Array.from(document.querySelectorAll(".mobile-nav-more"));
     if (!moreMenus.length) {
       return;
