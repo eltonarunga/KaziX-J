@@ -11,15 +11,15 @@ KaziX is a modern marketplace connecting skilled Kenyan workers (fundis) with cl
   - `frontend/pages/` — All HTML pages (index, dashboards, admin, etc.)
   - `frontend/assets/css/` — Stylesheets (styles.css, admin.css)
   - `frontend/assets/js/` — JavaScript files (mobile-nav.js, admin-shell.js, admin-disputes.js)
-- **Served by:** `serve.js` (Node.js custom static file server)
-- **Port:** 5000 (webview)
+- **Served by:** FastAPI backend
+- **Port:** 8000
 - **Design:** High-contrast "Modern Brutalist" aesthetic
 - **Fonts:** Syne (headings), DM Sans (body)
 
-### Backend — FastAPI (Primary)
+### Backend — FastAPI
 - **Location:** `backend/app/`
 - **Framework:** FastAPI + Uvicorn
-- **Port:** 8000 (console workflow)
+- **Port:** 8000
 - **Database:** Supabase (PostgreSQL)
 - **Auth:** Supabase Phone OTP
 - **Payments:** M-Pesa Daraja API (STK Push + Escrow)
@@ -39,13 +39,8 @@ KaziX is a modern marketplace connecting skilled Kenyan workers (fundis) with cl
 - `GET /health` — Health probe
 - `GET /docs` — Swagger UI (dev only)
 
-### Backend — Node.js/Express (Scaffolding)
-- **Location:** `backend/` (server.js + routes/)
-- **Status:** Placeholder routes only (not actively used)
-
 ## Workflows
-- **Start application** — `node serve.js` on port 5000 (frontend webview)
-- **Backend API** — `uvicorn app.main:app` on port 8000 (console)
+- **Run application** — `uvicorn app.main:app` on port 8000
 
 ## Environment Variables
 These must be set in Replit Secrets or env vars before the backend functions fully:
@@ -71,5 +66,4 @@ These must be set in Replit Secrets or env vars before the backend functions ful
 
 ## Deployment
 - Target: `autoscale`
-- Run command: `node serve.js`
-- Frontend serves on port 5000
+- Run command: `cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000`

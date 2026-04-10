@@ -22,7 +22,7 @@ You are working on **KaziX**, a Kenyan marketplace for skilled workers (fundis).
 
 ## 🏗️ Technical Constraints
 - **Frontend:** Stick to **Vanilla CSS3** and **modern HTML5**. Avoid introducing heavy frontend frameworks (e.g., React, Vue) unless specifically instructed.
-- **Backend:** Node.js/Express environment (initial scaffolding).
+- **Backend:** FastAPI environment.
 
 ## 💡 Best Practices
 - **Security:** Prioritize ID verification and escrow logic.

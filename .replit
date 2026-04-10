@@ -1,4 +1,4 @@
-modules = ["web", "python-3.12", "nodejs-20"]
+modules = ["web", "python-3.12"]
 [agent]
 expertMode = true
 
@@ -11,7 +11,7 @@ channel = "stable-25_05"
 APP_ENV = "development"
 APP_SECRET_KEY = "dev-secret-key-change-in-production"
 APP_PORT = "8000"
-ALLOWED_ORIGINS = "http://localhost:5000,http://0.0.0.0:5000"
+ALLOWED_ORIGINS = "http://localhost:8000,http://127.0.0.1:8000"
 SUPABASE_URL = "https://placeholder.supabase.co"
 SUPABASE_ANON_KEY = "placeholder-anon-key"
 SUPABASE_SERVICE_ROLE_KEY = "placeholder-service-role-key"
@@ -21,54 +21,25 @@ AT_USERNAME = "sandbox"
 LOG_LEVEL = "INFO"
 
 [workflows]
-runButton = "Project"
+runButton = "Start KaziX"
 
 [[workflows.workflow]]
-name = "Project"
-mode = "parallel"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Start application"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Backend API"
-
-[[workflows.workflow]]
-name = "Start application"
+name = "Start KaziX"
 author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "node serve.js"
-waitForPort = 5000
+args = "cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"
+waitForPort = 8000
 
 [workflows.workflow.metadata]
 outputType = "webview"
 
-[[workflows.workflow]]
-name = "Backend API"
-author = "agent"
-
-[workflows.workflow.metadata]
-outputType = "console"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd backend && python -m uvicorn app.main:app --host localhost --port 8000"
-waitForPort = 8000
-
-[[ports]]
-localPort = 5000
-externalPort = 80
-
 [[ports]]
 localPort = 8000
-externalPort = 8000
+externalPort = 80
 exposeLocalhost = true
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["node", "serve.js"]
+run = ["sh", "-c", "cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"]
