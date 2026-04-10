@@ -156,8 +156,8 @@ site_url = "http://localhost:8000"
 additional_redirect_urls = [
   "http://localhost:8000/pages/auth-callback.html",
   "http://127.0.0.1:8000/pages/auth-callback.html",
-  "http://localhost:5000/pages/auth-callback.html",
-  "http://127.0.0.1:5000/pages/auth-callback.html",
+  "http://localhost:5173/pages/auth-callback.html",
+  "http://127.0.0.1:5173/pages/auth-callback.html",
   "http://localhost:3000/pages/auth-callback.html",
   "http://127.0.0.1:3000/pages/auth-callback.html",
 ]

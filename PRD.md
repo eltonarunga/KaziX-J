@@ -24,7 +24,7 @@ KaziX is a modern marketplace designed to connect skilled Kenyan workers (fundis
 - **Frontend:** HTML5, Vanilla CSS3 (modern features like CSS Variables, Grid, Flexbox).
 - **Design Aesthetic:** High-contrast "Modern Brutalist" style.
 - **Typography:** `Syne` for headings, `DM Sans` for body text.
-- **Backend:** Node.js environment (initial scaffolding being set up).
+- **Backend:** FastAPI environment.
 - **Mobile-First:** Prioritizing accessibility and usability on mobile devices.
 
 ## 5. Success Metrics

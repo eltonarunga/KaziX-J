@@ -141,7 +141,7 @@ async def test_send_otp_for_signup_forwards_magic_link_redirect(monkeypatch) -> 
             "/v1/auth/send-otp",
             json={
                 "email": "test@example.com",
-                "email_redirect_to": "http://localhost:5000/pages/auth-callback.html",
+                "email_redirect_to": "http://localhost:8000/pages/auth-callback.html",
             },
         )
 
@@ -155,7 +155,7 @@ async def test_send_otp_for_signup_forwards_magic_link_redirect(monkeypatch) -> 
             "email": "test@example.com",
             "options": {
                 "should_create_user": True,
-                "email_redirect_to": "http://localhost:5000/pages/auth-callback.html",
+                "email_redirect_to": "http://localhost:8000/pages/auth-callback.html",
             },
         }
     ]
