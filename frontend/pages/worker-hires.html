@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-<title>Active Contracts — KaziX</title>
+<title>Active Contracts  KaziX</title>
 <link rel="stylesheet" href="../assets/css/styles.css">
 
 <style>
@@ -92,24 +92,24 @@
 <nav class="topnav">
   <a href="index.html" class="logo">Kazi<span>X</span></a>
   <div class="topnav-right">
-    <button class="notif-btn">🔔<span class="notif-dot"></span></button>
+    <button class="notif-btn"><span class="notif-dot"></span></button>
     <div class="user-chip"><div class="user-avatar">KX</div><span class="user-name">My account</span></div>
   </div>
 </nav>
 <div class="app-shell">
   <aside class="sidebar">
     <div class="sidebar-section">Work</div>
-    <a class="nav-item" href="worker-dashboard.html"><span class="ni-icon">📊</span>Dashboard</a>
-    <a class="nav-item" href="worker-jobs.html"><span class="ni-icon">🔍</span>Find Jobs<span class="ni-badge">8</span></a>
-    <a class="nav-item" href="my-applications.html"><span class="ni-icon">📋</span>My Applications<span class="ni-badge">3</span></a>
-    <a class="nav-item active" href="worker-hires.html"><span class="ni-icon">🤝</span>Active Contracts<span class="ni-badge">2</span></a>
+    <a class="nav-item" href="worker-dashboard.html"><span class="ni-icon"></span>Dashboard</a>
+    <a class="nav-item" href="worker-jobs.html"><span class="ni-icon"></span>Find Jobs<span class="ni-badge">8</span></a>
+    <a class="nav-item" href="my-applications.html"><span class="ni-icon"></span>My Applications<span class="ni-badge">3</span></a>
+    <a class="nav-item active" href="worker-hires.html"><span class="ni-icon"></span>Active Contracts<span class="ni-badge">2</span></a>
     <div class="sidebar-section">Account</div>
-    <a class="nav-item" href="messages.html"><span class="ni-icon">💬</span>Messages<span class="ni-badge">1</span></a>
-    <a class="nav-item" href="worker-earnings.html"><span class="ni-icon">💳</span>Earnings</a>
-    <a class="nav-item" href="worker-reviews.html"><span class="ni-icon">⭐</span>My Reviews</a>
-    <a class="nav-item" href="worker-profile-edit.html"><span class="ni-icon">👤</span>My Profile</a>
+    <a class="nav-item" href="messages.html"><span class="ni-icon"></span>Messages<span class="ni-badge">1</span></a>
+    <a class="nav-item" href="worker-earnings.html"><span class="ni-icon"></span>Earnings</a>
+    <a class="nav-item" href="worker-reviews.html"><span class="ni-icon"></span>My Reviews</a>
+    <a class="nav-item" href="worker-profile-edit.html"><span class="ni-icon"></span>My Profile</a>
     <div class="sidebar-bottom">
-      <div class="sidebar-profile"><div class="sp-avatar">🔧</div><div><div class="sp-name">My account</div><div class="sp-role">Pro account</div></div></div>
+      <div class="sidebar-profile"><div class="sp-avatar"></div><div><div class="sp-name">My account</div><div class="sp-role">Pro account</div></div></div>
     </div>
   </aside>
   <main class="main">
@@ -118,12 +118,12 @@
       <div class="page-sub">All payments protected by M-Pesa escrow</div>
     </div>
     <div class="escrow-bar" style="animation:slideUp 0.4s 0.05s ease both">
-      <div class="eb-cell"><div class="eb-label">In Escrow Now</div><div class="eb-val">KES 12,800</div><div class="eb-sub">Held securely · 2 contracts</div></div>
+      <div class="eb-cell"><div class="eb-label">In Escrow Now</div><div class="eb-val">KES ...</div><div class="eb-sub">Held securely  2 contracts</div></div>
       <div class="eb-div"></div>
-      <div class="eb-cell"><div class="eb-label">Releasing Today</div><div class="eb-val">KES 800</div><div class="eb-sub">After client confirms #KX-0187</div></div>
+      <div class="eb-cell"><div class="eb-label">Releasing Today</div><div class="eb-val">KES ...</div><div class="eb-sub">After client confirms #KX-0187</div></div>
       <div class="eb-div"></div>
-      <div class="eb-cell"><div class="eb-label">Released This Month</div><div class="eb-val">KES 86,600</div><div class="eb-sub">Paid to M-Pesa · March 2026</div></div>
-      <div class="eb-note">🔒 Your money is always safe. KaziX holds funds in escrow before you start — you are guaranteed payment upon completion.</div>
+      <div class="eb-cell"><div class="eb-label">Released This Month</div><div class="eb-val">KES ...</div><div class="eb-sub">Paid to M-Pesa  March 2026</div></div>
+      <div class="eb-note"> Your money is always safe. KaziX holds funds in escrow before you start  you are guaranteed payment upon completion.</div>
     </div>
     <div class="tabs" style="animation:slideUp 0.4s 0.08s ease both">
       <div class="tab active" onclick="filterC('all',this)">All <span class="tc">4</span></div>
@@ -132,97 +132,8 @@
       <div class="tab" onclick="filterC('done',this)">Completed <span class="tc">2</span></div>
     </div>
     <div class="contracts-list" id="contractsList">
-      <!-- ACTIVE -->
-      <div class="ct-card c-active" data-status="active" style="animation-delay:0.05s">
-        <div class="ct-head">
-          <div class="ct-icon">🚿</div>
-          <div class="ct-info"><div class="ct-title">Fix leaking pipe — Westlands kitchen</div><div class="ct-sub"><span>📋 #KX-0187</span><span>📅 Today · Started 10:30 AM</span><span>📍 Westlands</span></div></div>
-          <div class="ct-right"><span class="status-pill sp-active">● In Progress</span><div class="ct-amount">KES 800<div class="ct-amount-sub">in escrow</div></div></div>
-        </div>
-        <div class="ct-timeline">
-          <div class="ctl-step done"><div class="ctl-dot dot-done">✓</div><div class="ctl-label">Hired</div></div>
-          <div class="ctl-step done"><div class="ctl-dot dot-done">✓</div><div class="ctl-label">Escrow set</div></div>
-          <div class="ctl-step done"><div class="ctl-dot dot-done">✓</div><div class="ctl-label">Started</div></div>
-          <div class="ctl-step active"><div class="ctl-dot dot-active">●</div><div class="ctl-label">In progress</div></div>
-          <div class="ctl-step"><div class="ctl-dot dot-wait"></div><div class="ctl-label">Confirmed</div></div>
-          <div class="ctl-step"><div class="ctl-dot dot-wait"></div><div class="ctl-label">Paid</div></div>
-        </div>
-        <div class="ct-body">
-          <div class="detail-grid">
-            <div class="detail-tile"><div class="dt-label">Your payout</div><div class="dt-val" style="color:var(--green)">KES 720</div></div>
-            <div class="detail-tile"><div class="dt-label">Platform fee</div><div class="dt-val">KES 80 (10%)</div></div>
-            <div class="detail-tile"><div class="dt-label">Started</div><div class="dt-val">10:30 AM</div></div>
-            <div class="detail-tile"><div class="dt-label">Est. finish</div><div class="dt-val">~1:00 PM</div></div>
-          </div>
-          <div class="client-row">
-            <div class="cli-avatar">🏠</div>
-            <div><div class="cli-name">Homeowner account</div><div class="cli-sub">📱 +254 722 ··· ··· · ★★★★★ 4.8 as client</div></div>
-            <div class="cli-actions"><a href="messages.html" class="btn-sm">💬 Message</a><a href="tel:+254722000000" class="btn-sm">📞 Call</a></div>
-          </div>
-          <div class="ct-actions">
-            <button class="btn-complete" onclick="openModal('KX-0187','720')">✅ Mark as Complete</button>
-            <a href="messages.html" class="btn-msg">💬 Message</a>
-            <a href="dispute.html" class="btn-dispute">⚑ Dispute</a>
-            <span class="ct-posted">Booked 3 days ago</span>
-          </div>
-        </div>
-      </div>
-      <!-- UPCOMING -->
-      <div class="ct-card c-upcoming" data-status="upcoming" style="animation-delay:0.1s">
-        <div class="ct-head">
-          <div class="ct-icon">🏗️</div>
-          <div class="ct-info"><div class="ct-title">Commercial pipe installation — CBD office block</div><div class="ct-sub"><span>📋 #KX-0201</span><span>📅 Tomorrow · 9:00 AM</span><span>📍 CBD, Nairobi</span></div></div>
-          <div class="ct-right"><span class="status-pill sp-upcoming">Confirmed · Thu</span><div class="ct-amount">KES 12,000<div class="ct-amount-sub">in escrow</div></div></div>
-        </div>
-        <div class="ct-timeline">
-          <div class="ctl-step done"><div class="ctl-dot dot-done">✓</div><div class="ctl-label">Hired</div></div>
-          <div class="ctl-step done"><div class="ctl-dot dot-done">✓</div><div class="ctl-label">Escrow set</div></div>
-          <div class="ctl-step active"><div class="ctl-dot dot-active">⏳</div><div class="ctl-label">Starts tomorrow</div></div>
-          <div class="ctl-step"><div class="ctl-dot dot-wait"></div><div class="ctl-label">In progress</div></div>
-          <div class="ctl-step"><div class="ctl-dot dot-wait"></div><div class="ctl-label">Confirmed</div></div>
-          <div class="ctl-step"><div class="ctl-dot dot-wait"></div><div class="ctl-label">Paid</div></div>
-        </div>
-        <div class="ct-body">
-          <div class="detail-grid">
-            <div class="detail-tile"><div class="dt-label">Your payout</div><div class="dt-val" style="color:var(--green)">KES 10,800</div></div>
-            <div class="detail-tile"><div class="dt-label">Platform fee</div><div class="dt-val">KES 1,200</div></div>
-            <div class="detail-tile"><div class="dt-label">Duration</div><div class="dt-val">3–4 days</div></div>
-            <div class="detail-tile"><div class="dt-label">Materials</div><div class="dt-val">Client supplies</div></div>
-          </div>
-          <div class="client-row">
-            <div class="cli-avatar">🏢</div>
-            <div><div class="cli-name">FutureBuilds Ltd</div><div class="cli-sub">★★★★★ 4.9 · 8 jobs completed</div></div>
-            <div class="cli-actions"><a href="messages.html" class="btn-sm">💬 Message</a></div>
-          </div>
-          <div style="background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.2);border-radius:4px;padding:0.75rem 1rem;font-size:0.82rem;color:#7a5a10;margin-bottom:1rem">
-            ⏰ Reminder: Starts <strong>tomorrow 9:00 AM</strong> — Delta House, Upperhill Road, CBD.
-          </div>
-          <div class="ct-actions"><a href="messages.html" class="btn-msg">💬 Message Client</a></div>
-        </div>
-      </div>
-      <!-- DONE 1 -->
-      <div class="ct-card c-done" data-status="done" style="animation-delay:0.15s;opacity:0.85">
-        <div class="ct-head">
-          <div class="ct-icon">💧</div>
-          <div class="ct-info"><div class="ct-title">Kitchen pipe repair × 3 — Lavington</div><div class="ct-sub"><span>📋 #KX-0181</span><span>📅 Completed yesterday</span></div></div>
-          <div class="ct-right"><span class="status-pill sp-done">✓ Complete</span><div class="ct-amount" style="color:var(--green)">KES 1,620<div class="ct-amount-sub">paid · QHJ4MKPL8R</div></div></div>
-        </div>
-        <div class="ct-body">
-          <div class="done-banner">✅ M-Pesa payout of <strong>KES 1,620</strong> sent to your number ending ··678 on 17 Mar 2026 at 16:22.</div>
-          <div style="margin-top:1rem;display:flex;gap:0.5rem"><button class="btn-sm" onclick="alert('Receipt downloaded')">📄 Receipt</button><a href="worker-reviews.html" class="btn-sm">⭐ View Review</a></div>
-        </div>
-      </div>
-      <!-- DONE 2 -->
-      <div class="ct-card c-done" data-status="done" style="animation-delay:0.2s;opacity:0.85">
-        <div class="ct-head">
-          <div class="ct-icon">☀️</div>
-          <div class="ct-info"><div class="ct-title">Solar water heater installation — Kilimani</div><div class="ct-sub"><span>📋 #KX-0172</span><span>📅 Completed 1 week ago</span></div></div>
-          <div class="ct-right"><span class="status-pill sp-done">✓ Complete</span><div class="ct-amount" style="color:var(--green)">KES 7,200<div class="ct-amount-sub">paid · QMN5KLPR2T</div></div></div>
-        </div>
-        <div class="ct-body">
-          <div class="done-banner">✅ M-Pesa payout of <strong>KES 7,200</strong> sent on 11 Mar 2026. Client rated you ★★★★★.</div>
-          <div style="margin-top:1rem;display:flex;gap:0.5rem"><button class="btn-sm" onclick="alert('Receipt downloaded')">📄 Receipt</button><a href="worker-reviews.html" class="btn-sm">⭐ View Review</a></div>
-        </div>
+      <div style="text-align:center;padding:4rem 2rem;color:var(--muted);background:white;border:1px solid var(--border);border-radius:6px" id="loadingState">
+        <p>Loading your contracts...</p>
       </div>
     </div>
   </main>
@@ -232,34 +143,34 @@
   <div class="modal">
     <div class="modal-title">Mark job as complete?</div>
     <div class="modal-sub">Confirm only when the work is fully done. The client will be asked to verify and release payment.</div>
-    <div class="modal-escrow"><span class="me-label">Your M-Pesa payout</span><span class="me-val" id="modalPayout">KES 720</span></div>
-    <div class="modal-note">💡 Client has 48 hours to confirm. If they don't respond, KaziX auto-releases payment. Booking <strong id="modalRef"></strong>.</div>
+    <div class="modal-escrow"><span class="me-label">Your M-Pesa payout</span><span class="me-val" id="modalPayout">KES ...</span></div>
+    <div class="modal-note"> Client has 48 hours to confirm. If they don't respond, KaziX auto-releases payment. Booking <strong id="modalRef"></strong>.</div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="document.getElementById('completeModal').classList.remove('open')">Cancel</button>
-      <button class="btn-confirm" onclick="confirmComplete()">✅ Yes, Job is Done</button>
+      <button class="btn-confirm" onclick="confirmComplete()"> Yes, Job is Done</button>
     </div>
   </div>
 </div>
 <script>
 function filterC(s,el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');document.querySelectorAll('.ct-card').forEach(c=>{c.style.display=(s==='all'||c.dataset.status===s)?'':'none'})}
 function openModal(ref,net){document.getElementById('modalRef').textContent='#'+ref;document.getElementById('modalPayout').textContent='KES '+net;document.getElementById('completeModal').classList.add('open')}
-function confirmComplete(){document.getElementById('completeModal').classList.remove('open');var c=document.querySelector('.ct-card.c-active');if(!c)return;c.classList.remove('c-active');c.classList.add('c-done');c.dataset.status='done';c.style.opacity='0.85';c.querySelector('.status-pill').className='status-pill sp-done';c.querySelector('.status-pill').textContent='✓ Awaiting client';c.querySelector('.ct-actions').innerHTML='<div class="done-banner" style="width:100%">⏳ Job marked complete. Waiting for the client to confirm — KES 720 arrives within 48 hours.</div>'}
+function confirmComplete(){document.getElementById('completeModal').classList.remove('open');var c=document.querySelector('.ct-card.c-active');if(!c)return;c.classList.remove('c-active');c.classList.add('c-done');c.dataset.status='done';c.style.opacity='0.85';c.querySelector('.status-pill').className='status-pill sp-done';c.querySelector('.status-pill').textContent=' Awaiting client';c.querySelector('.ct-actions').innerHTML='<div class="done-banner" style="width:100%"> Job marked complete. Waiting for the client to confirm  KES ... arrives within 48 hours.</div>'}
 document.getElementById('completeModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})
 </script>
 
 <nav class="mobile-nav" aria-label="Primary">
-  <a class="mobile-nav-item" href="worker-dashboard.html"><span class="mn-icon">📊</span><span class="mn-label">Dashboard</span></a>
-  <a class="mobile-nav-item active" href="worker-jobs.html"><span class="mn-icon">🔍</span><span class="mn-label">Jobs</span></a>
-  <a class="mobile-nav-item" href="my-applications.html"><span class="mn-icon">📋</span><span class="mn-label">Applications</span></a>
-  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon">💬</span><span class="mn-label">Messages</span></a>
+  <a class="mobile-nav-item" href="worker-dashboard.html"><span class="mn-icon"></span><span class="mn-label">Dashboard</span></a>
+  <a class="mobile-nav-item active" href="worker-jobs.html"><span class="mn-icon"></span><span class="mn-label">Jobs</span></a>
+  <a class="mobile-nav-item" href="my-applications.html"><span class="mn-icon"></span><span class="mn-label">Applications</span></a>
+  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon"></span><span class="mn-label">Messages</span></a>
   <div class="mobile-nav-more">
     <button class="mobile-nav-item mobile-nav-more-toggle" type="button" aria-controls="mobile-drawer" aria-expanded="false" aria-label="Open navigation menu">
-      <span class="mn-icon">⋯</span><span class="mn-label">More</span>
+      <span class="mn-icon"></span><span class="mn-label">More</span>
     </button>
     <div class="mobile-nav-drawer" id="mobile-drawer" role="navigation" aria-label="Secondary pages" aria-hidden="true">
-      <a class="mobile-nav-drawer-item" href="worker-profile-edit.html">👤 Profile</a>
-      <a class="mobile-nav-drawer-item" href="worker-earnings.html">💳 Earnings</a>
-      <a class="mobile-nav-drawer-item" href="worker-reviews.html">⭐ Reviews</a>
+      <a class="mobile-nav-drawer-item" href="worker-profile-edit.html"> Profile</a>
+      <a class="mobile-nav-drawer-item" href="worker-earnings.html"> Earnings</a>
+      <a class="mobile-nav-drawer-item" href="worker-reviews.html"> Reviews</a>
     </div>
   </div>
 </nav>

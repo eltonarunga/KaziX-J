@@ -2,28 +2,28 @@
   var NAV_SECTIONS = [
     {
       title: "Overview",
-      links: [{ key: "dashboard", label: "Dashboard", href: "admin-dashboard.html", icon: "📊" }]
+      links: [{ key: "dashboard", label: "Dashboard", href: "admin-dashboard.html", icon: "" }]
     },
     {
       title: "Operations",
       links: [
-        { key: "disputes", label: "Disputes", href: "admin-disputes.html", icon: "⚖️", badge: "18" },
-        { key: "payments", label: "Payments", href: "admin-payments.html", icon: "💳" },
-        { key: "escrow-holds", label: "Escrow Holds", href: "admin-payments.html#escrow-holds", icon: "🔒", badge: "12" }
+        { key: "disputes", label: "Disputes", href: "admin-disputes.html", icon: "", badge: "18" },
+        { key: "payments", label: "Payments", href: "admin-payments.html", icon: "" },
+        { key: "escrow-holds", label: "Escrow Holds", href: "admin-payments.html#escrow-holds", icon: "", badge: "12" }
       ]
     },
     {
       title: "Trust",
       links: [
-        { key: "verifications", label: "KYC Verifications", href: "admin-verifications.html", icon: "🪪", badge: "23" },
-        { key: "users", label: "Users", href: "admin-users.html", icon: "👥" }
+        { key: "verifications", label: "KYC Verifications", href: "admin-verifications.html", icon: "", badge: "23" },
+        { key: "users", label: "Users", href: "admin-users.html", icon: "" }
       ]
     },
     {
       title: "System",
       links: [
-        { key: "settings", label: "Settings", href: "#", icon: "⚙️" },
-        { key: "audit-log", label: "Audit Log", href: "#", icon: "🧾" }
+        { key: "settings", label: "Settings", href: "#", icon: "" },
+        { key: "audit-log", label: "Audit Log", href: "#", icon: "" }
       ]
     }
   ];

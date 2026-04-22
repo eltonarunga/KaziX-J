@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-<title>Applicants — Install CCTV · KaziX</title>
+<title>Applicants  Install CCTV  KaziX</title>
 <link rel="stylesheet" href="../assets/css/styles.css">
 <style>
-/* JOB SUMMARY BANNER */
+ /*  JOB SUMMARY BANNER  */
 .job-banner{background:var(--ink);color:#F5F0E8;border-radius:6px;padding:1.5rem 2rem;margin-bottom:2rem;display:flex;align-items:center;gap:1.5rem;position:relative;overflow:hidden}
-.job-banner::after{content:'⚡';position:absolute;right:2rem;top:50%;transform:translateY(-50%);font-size:5rem;opacity:0.06}
+.job-banner::after{content:'';position:absolute;right:2rem;top:50%;transform:translateY(-50%);font-size:5rem;opacity:0.06}
 .jb-icon{width:50px;height:50px;border-radius:6px;background:rgba(245,166,35,0.2);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
 .jb-info{flex:1}
 .jb-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:0.3rem}
@@ -19,7 +19,7 @@
 .jbs-val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--saffron);display:block}
 .jbs-label{font-size:0.65rem;color:rgba(245,240,232,0.45);text-transform:uppercase;letter-spacing:0.06em}
 
-/* FILTER ROW */
+ /*  FILTER ROW  */
 .filter-row{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
 .filter-select{padding:0.5rem 0.85rem;border:1px solid var(--border);border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.82rem;background:white;color:var(--ink);outline:none;cursor:pointer}
 .filter-search{padding:0.5rem 0.85rem;border:1px solid var(--border);border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.82rem;background:white;color:var(--ink);outline:none;flex:1;min-width:180px}
@@ -27,7 +27,7 @@
 .app-count{font-size:0.82rem;color:var(--muted);margin-left:auto}
 .app-count strong{color:var(--ink);font-family:'Syne',sans-serif}
 
-/* APPLICANT CARDS */
+ /*  APPLICANT CARDS  */
 .applicants-list{display:flex;flex-direction:column;gap:1rem}
 .applicant-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.5rem;transition:all 0.2s;animation:slideUp 0.4s ease both;position:relative}
 .applicant-card:hover{box-shadow:0 6px 24px rgba(0,0,0,0.08)}
@@ -68,7 +68,7 @@
 .ac-btn-reject:hover{color:var(--rust)}
 .new-badge{background:var(--saffron);color:var(--ink);font-size:0.62rem;font-weight:700;padding:0.15rem 0.45rem;border-radius:2px;text-transform:uppercase;margin-left:0.5rem}
 
-/* HIRE MODAL */
+ /*  HIRE MODAL  */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(13,13,13,0.6);z-index:1000;align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
 .modal{background:white;border-radius:6px;padding:2rem;max-width:480px;width:90%;animation:slideUp 0.3s ease both}
@@ -91,27 +91,27 @@
 <nav class="topnav">
   <a href="index.html" class="logo">Kazi<span>X</span></a>
   <div class="topnav-right">
-    <button class="notif-btn">🔔<span class="notif-dot"></span></button>
+    <button class="notif-btn">Notifications <span class="notif-dot"></span></button>
     <div class="user-chip"><div class="user-avatar">KX</div><span class="user-name">My account</span></div>
   </div>
 </nav>
 <div class="app-shell">
   <aside class="sidebar">
     <div class="sidebar-section">Main</div>
-    <a class="nav-item" href="client-dashboard.html"><span class="ni-icon">📊</span>Dashboard</a>
-    <a class="nav-item" href="my-jobs.html"><span class="ni-icon">📋</span>My Jobs<span class="ni-badge">3</span></a>
-    <a class="nav-item active" href="job-applicants.html"><span class="ni-icon">👥</span>Applications<span class="ni-badge">7</span></a>
-    <a class="nav-item" href="my-hires.html"><span class="ni-icon">🤝</span>My Hires</a>
+    <a class="nav-item" href="client-dashboard.html"><span class="ni-icon"></span>Dashboard</a>
+    <a class="nav-item" href="my-jobs.html"><span class="ni-icon"></span>My Jobs<span class="ni-badge">3</span></a>
+    <a class="nav-item active" href="job-applicants.html"><span class="ni-icon"></span>Applications<span class="ni-badge">7</span></a>
+    <a class="nav-item" href="my-hires.html"><span class="ni-icon"></span>My Hires</a>
     <div class="sidebar-section">Discover</div>
-    <a class="nav-item" href="find-workers.html"><span class="ni-icon">🔍</span>Find Fundis</a>
-    <a class="nav-item" href="saved-workers.html"><span class="ni-icon">❤️</span>Saved Fundis<span class="ni-badge">5</span></a>
-    <a class="nav-item" href="post-job.html"><span class="ni-icon">➕</span>Post a Job</a>
+    <a class="nav-item" href="find-workers.html"><span class="ni-icon"></span>Find Fundis</a>
+    <a class="nav-item" href="saved-workers.html"><span class="ni-icon"></span>Saved Fundis<span class="ni-badge">5</span></a>
+    <a class="nav-item" href="post-job.html"><span class="ni-icon"></span>Post a Job</a>
     <div class="sidebar-section">Account</div>
-    <a class="nav-item" href="messages.html"><span class="ni-icon">💬</span>Messages<span class="ni-badge">2</span></a>
-    <a class="nav-item" href="payments.html"><span class="ni-icon">💳</span>Payments</a>
-    <a class="nav-item" href="client-profile.html"><span class="ni-icon">👤</span>My Profile</a>
+    <a class="nav-item" href="messages.html"><span class="ni-icon"></span>Messages<span class="ni-badge">2</span></a>
+    <a class="nav-item" href="payments.html"><span class="ni-icon"></span>Payments</a>
+    <a class="nav-item" href="client-profile.html"><span class="ni-icon"></span>My Profile</a>
     <div class="sidebar-bottom">
-      <div class="sidebar-profile"><div class="sp-avatar">🏠</div><div><div class="sp-name">My account</div><div class="sp-role">Client account</div></div></div>
+      <div class="sidebar-profile"><div class="sp-avatar">KX</div><div><div class="sp-name">My account</div><div class="sp-role">Client account</div></div></div>
     </div>
   </aside>
 
@@ -119,20 +119,20 @@
     <!-- BREADCRUMB -->
     <div style="font-size:0.78rem;color:var(--muted);margin-bottom:1.5rem;display:flex;align-items:center;gap:0.5rem">
       <a href="my-jobs.html" style="color:var(--muted);text-decoration:none">My Jobs</a>
-      <span>›</span>
-      <span style="color:var(--ink);font-weight:500">Install CCTV cameras — Kilimani</span>
+      <span></span>
+      <span style="color:var(--ink);font-weight:500">Install CCTV cameras  Kilimani</span>
     </div>
 
     <!-- JOB BANNER -->
     <div class="job-banner" style="animation:slideUp 0.4s ease both">
-      <div class="jb-icon">⚡</div>
+      <div class="jb-icon">KX</div>
       <div class="jb-info">
-        <div class="jb-title">Install CCTV cameras — Kilimani</div>
+        <div class="jb-title">Install CCTV cameras  Kilimani</div>
         <div class="jb-sub">
-          <span>⚡ Electrician</span>
-          <span>📍 Kilimani, Nairobi</span>
-          <span>💰 KES 3,000 – 7,000</span>
-          <span>⏰ Closes in 1 day</span>
+          <span> Electrician</span>
+          <span> Kilimani, Nairobi</span>
+          <span> KES ...</span>
+          <span> Closes in 1 day</span>
         </div>
       </div>
       <div class="jb-stats">
@@ -147,113 +147,16 @@
     <div class="filter-row" style="animation:slideUp 0.4s 0.05s ease both">
       <select class="filter-select"><option>All applicants</option><option>Shortlisted</option><option>New only</option><option>Verified only</option></select>
       <select class="filter-select"><option>Sort: Highest rated</option><option>Sort: Lowest bid</option><option>Sort: Most jobs</option><option>Sort: Nearest</option></select>
-      <input class="filter-search" type="text" placeholder="Search applicants…">
-      <div class="app-count"><strong>5</strong> applicants · <strong>2</strong> shortlisted</div>
+      <input class="filter-search" type="text" placeholder="Search applicants">
+      <div class="app-count"><strong>5</strong> applicants  <strong>2</strong> shortlisted</div>
     </div>
 
     <!-- APPLICANT CARDS -->
-    <div class="applicants-list">
-
-      <!-- Card 1 — Shortlisted -->
-      <div class="applicant-card shortlisted" style="animation-delay:0.1s">
-        <div class="ac-top">
-          <div class="ac-avatar">⚡<div class="ac-verified">✓</div></div>
-          <div class="ac-info">
-            <div class="ac-name">Faith Njeri <span class="new-badge">New</span></div>
-            <div class="ac-trade">Electrician · KPLC Licensed</div>
-            <div class="ac-loc">📍 Kasarani · 3.2 km away</div>
-            <div class="ac-rating"><span class="ac-stars">★★★★★</span><span class="ac-score">4.8</span><span class="ac-jobs">(89 jobs)</span></div>
-          </div>
-          <div class="ac-right">
-            <div class="ac-bid">KES 4,500</div>
-            <div class="ac-bid-label">Proposed rate</div>
-          </div>
-        </div>
-        <div class="ac-stats">
-          <div class="acs"><div class="acs-val">89</div><div class="acs-label">Jobs done</div></div>
-          <div class="acs"><div class="acs-val">4.8★</div><div class="acs-label">Rating</div></div>
-          <div class="acs"><div class="acs-val">98%</div><div class="acs-label">Completion</div></div>
-          <div class="acs"><div class="acs-val">< 1hr</div><div class="acs-label">Response</div></div>
-          <div class="acs"><div class="acs-val">5 yrs</div><div class="acs-label">Experience</div></div>
-        </div>
-        <div class="ac-cover">"I have installed over 30 CCTV systems in Nairobi — both residential and commercial. I work with Hikvision and Dahua equipment and can source materials or work with yours. Available Thursday."</div>
-        <div class="ac-skills">
-          <span class="skill-chip">CCTV Installation</span><span class="skill-chip">NVR Setup</span><span class="skill-chip">Cable concealment</span><span class="skill-chip">Solar</span><span class="skill-chip">KPLC wiring</span>
-        </div>
-        <div class="ac-actions">
-          <button class="ac-btn ac-btn-hire" onclick="openHireModal('Faith Njeri','4,500')">✅ Hire Faith — KES 4,500</button>
-          <a href="messages.html" class="ac-btn ac-btn-msg">💬 Message</a>
-          <a href="worker-profile.html" class="ac-btn ac-btn-view">View Profile</a>
-          <button class="ac-btn ac-btn-reject" onclick="this.closest('.applicant-card').style.opacity='0.4'">Decline ✕</button>
-        </div>
+    <div class="applicants-list" id="applicantsList">
+      <div style="text-align:center;padding:4rem 2rem;color:var(--muted);background:white;border:1px solid var(--border);border-radius:6px" id="loadingState">
+        <h3>Loading applicants...</h3>
+        <p style="margin-top:0.5rem">Fetching fundis who have applied for this job.</p>
       </div>
-
-      <!-- Card 2 -->
-      <div class="applicant-card" style="animation-delay:0.15s">
-        <div class="ac-top">
-          <div class="ac-avatar">🔌<div class="ac-verified">✓</div></div>
-          <div class="ac-info">
-            <div class="ac-name">Samuel Otieno</div>
-            <div class="ac-trade">Electrician</div>
-            <div class="ac-loc">📍 South B · 4.8 km away</div>
-            <div class="ac-rating"><span class="ac-stars">★★★★</span>☆<span class="ac-score">4.5</span><span class="ac-jobs">(42 jobs)</span></div>
-          </div>
-          <div class="ac-right">
-            <div class="ac-bid">KES 3,800</div>
-            <div class="ac-bid-label">Proposed rate</div>
-          </div>
-        </div>
-        <div class="ac-stats">
-          <div class="acs"><div class="acs-val">42</div><div class="acs-label">Jobs done</div></div>
-          <div class="acs"><div class="acs-val">4.5★</div><div class="acs-label">Rating</div></div>
-          <div class="acs"><div class="acs-val">95%</div><div class="acs-label">Completion</div></div>
-          <div class="acs"><div class="acs-val">2–3hr</div><div class="acs-label">Response</div></div>
-          <div class="acs"><div class="acs-val">3 yrs</div><div class="acs-label">Experience</div></div>
-        </div>
-        <div class="ac-cover">"Experienced with CCTV and general electrical work. I can come any day this week and will cable-manage properly."</div>
-        <div class="ac-skills"><span class="skill-chip">CCTV</span><span class="skill-chip">Wiring</span><span class="skill-chip">General electrical</span></div>
-        <div class="ac-actions">
-          <button class="ac-btn ac-btn-hire" onclick="openHireModal('Samuel Otieno','3,800')">✅ Hire Samuel — KES 3,800</button>
-          <a href="messages.html" class="ac-btn ac-btn-msg">💬 Message</a>
-          <a href="worker-profile.html" class="ac-btn ac-btn-view">View Profile</a>
-          <button class="ac-btn ac-btn-short" onclick="this.textContent='★ Shortlisted'">☆ Shortlist</button>
-          <button class="ac-btn ac-btn-reject" onclick="this.closest('.applicant-card').style.opacity='0.4'">Decline ✕</button>
-        </div>
-      </div>
-
-      <!-- Card 3 — New -->
-      <div class="applicant-card" style="animation-delay:0.2s">
-        <div class="ac-top">
-          <div class="ac-avatar">⚡</div>
-          <div class="ac-info">
-            <div class="ac-name">David Mutua <span class="new-badge">New</span></div>
-            <div class="ac-trade">Senior Electrician</div>
-            <div class="ac-loc">📍 Karen · 9.1 km away</div>
-            <div class="ac-rating"><span class="ac-stars">★★★★★</span><span class="ac-score">5.0</span><span class="ac-jobs">(204 jobs)</span></div>
-          </div>
-          <div class="ac-right">
-            <div class="ac-bid">KES 6,000</div>
-            <div class="ac-bid-label">Proposed rate</div>
-          </div>
-        </div>
-        <div class="ac-stats">
-          <div class="acs"><div class="acs-val">204</div><div class="acs-label">Jobs done</div></div>
-          <div class="acs"><div class="acs-val">5.0★</div><div class="acs-label">Rating</div></div>
-          <div class="acs"><div class="acs-val">100%</div><div class="acs-label">Completion</div></div>
-          <div class="acs"><div class="acs-val">< 30m</div><div class="acs-label">Response</div></div>
-          <div class="acs"><div class="acs-val">12 yrs</div><div class="acs-label">Experience</div></div>
-        </div>
-        <div class="ac-cover">"Master electrician with perfect record. I supply all materials at cost + my labour. CCTV is my specialty — I've done 60+ installations this year alone."</div>
-        <div class="ac-skills"><span class="skill-chip">CCTV</span><span class="skill-chip">IP Cameras</span><span class="skill-chip">NVR/DVR</span><span class="skill-chip">Network cabling</span><span class="skill-chip">Solar</span></div>
-        <div class="ac-actions">
-          <button class="ac-btn ac-btn-hire" onclick="openHireModal('David Mutua','6,000')">✅ Hire David — KES 6,000</button>
-          <a href="messages.html" class="ac-btn ac-btn-msg">💬 Message</a>
-          <a href="worker-profile.html" class="ac-btn ac-btn-view">View Profile</a>
-          <button class="ac-btn ac-btn-short" onclick="this.textContent='★ Shortlisted'">☆ Shortlist</button>
-          <button class="ac-btn ac-btn-reject" onclick="this.closest('.applicant-card').style.opacity='0.4'">Decline ✕</button>
-        </div>
-      </div>
-
     </div>
   </main>
 </div>
@@ -261,7 +164,7 @@
 <!-- HIRE MODAL -->
 <div class="modal-overlay" id="hireModal">
   <div class="modal">
-    <div class="modal-title">Hire <span id="hiree">Faith Njeri</span></div>
+    <div class="modal-title">Hire <span id="hiree">...</span></div>
     <div class="modal-sub">Confirm the agreed rate and we'll send an M-Pesa STK push to your phone to lock in the booking.</div>
     <div class="modal-field">
       <label class="modal-label">Agreed Rate (KES)</label>
@@ -271,10 +174,10 @@
       <label class="modal-label">Agreed Start Date</label>
       <input class="modal-input" type="date">
     </div>
-    <div class="mpesa-info">📱 <div>You'll receive an M-Pesa STK push on +254 712 345 678. Funds are held in escrow until you confirm the job is done.</div></div>
+    <div class="mpesa-info">KX <div>You'll receive an M-Pesa STK push on +254 712 345 678. Funds are held in escrow until you confirm the job is done.</div></div>
     <div class="modal-btns">
       <button class="modal-cancel" onclick="closeHireModal()">Cancel</button>
-      <button class="modal-confirm" onclick="confirmHire()">Confirm & Pay via M-Pesa →</button>
+      <button class="modal-confirm" onclick="confirmHire()">Confirm & Pay via M-Pesa </button>
     </div>
   </div>
 </div>
@@ -288,26 +191,26 @@ function openHireModal(name, amount) {
 function closeHireModal() { document.getElementById('hireModal').classList.remove('open'); }
 function confirmHire() {
   closeHireModal();
-  alert('✅ M-Pesa STK push sent to +254 712 345 678. Check your phone to complete payment and confirm the booking.');
+  alert('M-Pesa STK push sent to +254 712 345 678. Check your phone to complete payment and confirm the booking.');
   location.href = 'my-hires.html';
 }
 </script>
 
 <nav class="mobile-nav" aria-label="Primary">
-  <a class="mobile-nav-item" href="client-dashboard.html"><span class="mn-icon">📊</span><span class="mn-label">Dashboard</span></a>
-  <a class="mobile-nav-item active" href="my-jobs.html"><span class="mn-icon">📋</span><span class="mn-label">Jobs</span></a>
-  <a class="mobile-nav-item" href="find-workers.html"><span class="mn-icon">🔍</span><span class="mn-label">Find</span></a>
-  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon">💬</span><span class="mn-label">Messages</span></a>
+  <a class="mobile-nav-item" href="client-dashboard.html"><span class="mn-icon"></span><span class="mn-label">Dashboard</span></a>
+  <a class="mobile-nav-item active" href="my-jobs.html"><span class="ni-icon"></span><span class="mn-label">Jobs</span></a>
+  <a class="mobile-nav-item" href="find-workers.html"><span class="ni-icon"></span><span class="mn-label">Find</span></a>
+  <a class="mobile-nav-item" href="messages.html"><span class="ni-icon"></span><span class="mn-label">Messages</span></a>
   <div class="mobile-nav-more">
     <button class="mobile-nav-item mobile-nav-more-toggle" type="button" aria-controls="mobile-drawer" aria-expanded="false" aria-label="Open navigation menu">
-      <span class="mn-icon">⋯</span><span class="mn-label">More</span>
+      <span class="mn-icon"></span><span class="mn-label">More</span>
     </button>
     <div class="mobile-nav-drawer" id="mobile-drawer" role="navigation" aria-label="Secondary pages" aria-hidden="true">
-      <a class="mobile-nav-drawer-item" href="client-profile.html">👤 Profile</a>
-      <a class="mobile-nav-drawer-item" href="notifications.html">🔔 Notifications</a>
-      <a class="mobile-nav-drawer-item" href="payments.html">💳 Payments</a>
-      <a class="mobile-nav-drawer-item" href="reviews.html">⭐ Reviews</a>
-      <a class="mobile-nav-drawer-item" href="saved-workers.html">❤️ Saved Fundis</a>
+      <a class="mobile-nav-drawer-item" href="client-profile.html">Profile</a>
+      <a class="mobile-nav-drawer-item" href="notifications.html">Notifications</a>
+      <a class="mobile-nav-drawer-item" href="payments.html">Payments</a>
+      <a class="mobile-nav-drawer-item" href="reviews.html">Reviews</a>
+      <a class="mobile-nav-drawer-item" href="saved-workers.html">Saved Fundis</a>
     </div>
   </div>
 </nav>

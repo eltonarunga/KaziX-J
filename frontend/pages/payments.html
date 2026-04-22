@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-<title>Payments — KaziX</title>
+<title>Payments  KaziX</title>
 <link rel="stylesheet" href="../assets/css/styles.css">
 <style>
 
-/* SPEND SUMMARY */
+ /*  SPEND SUMMARY  */
 .spend-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
 .spend-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.25rem 1.5rem;position:relative;overflow:hidden}
 .spend-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
@@ -21,14 +21,14 @@
 .sc-sub{font-size:0.72rem;color:var(--muted);margin-top:0.2rem}
 .sc-icon{position:absolute;top:1rem;right:1rem;font-size:1.3rem;opacity:0.12}
 
-/* ESCROW SUMMARY */
+ /*  ESCROW SUMMARY  */
 .escrow-summary{background:var(--ink);color:#F5F0E8;border-radius:6px;padding:1.5rem 2rem;margin-bottom:2rem;display:flex;align-items:center;gap:2rem;flex-wrap:wrap}
 .es-label{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(245,240,232,0.45);margin-bottom:0.25rem}
 .es-val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:var(--saffron);letter-spacing:-0.04em}
 .es-divider{width:1px;height:48px;background:rgba(245,240,232,0.15)}
 .es-note{flex:1;font-size:0.82rem;color:rgba(245,240,232,0.55);line-height:1.6}
 
-/* TABLE */
+ /*  TABLE  */
 .table-card{background:white;border:1px solid var(--border);border-radius:6px;overflow:hidden}
 .table-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem}
 .table-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem}
@@ -61,7 +61,7 @@
 .tx-receipt{padding:0.3rem 0.65rem;border:1px solid var(--border);border-radius:2px;background:white;font-family:'Syne',sans-serif;font-weight:600;font-size:0.68rem;cursor:pointer;transition:all 0.2s;color:var(--ink)}
 .tx-receipt:hover{background:var(--ink);color:white;border-color:var(--ink)}
 
-/* PAGINATION */
+ /*  PAGINATION  */
 .pagination{display:flex;justify-content:center;align-items:center;gap:0.4rem;padding:1.5rem}
 .pg-btn{width:36px;height:36px;border:1px solid var(--border);border-radius:2px;background:white;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
 .pg-btn.active{background:var(--ink);color:#F5F0E8;border-color:var(--ink)}
@@ -75,27 +75,27 @@
 <nav class="topnav">
   <a href="index.html" class="logo">Kazi<span>X</span></a>
   <div class="topnav-right">
-    <button class="notif-btn">🔔<span class="notif-dot"></span></button>
+    <button class="notif-btn"><span class="notif-dot"></span></button>
     <div class="user-chip"><div class="user-avatar">KX</div><span class="user-name">My account</span></div>
   </div>
 </nav>
 <div class="app-shell">
   <aside class="sidebar">
     <div class="sidebar-section">Main</div>
-    <a class="nav-item" href="client-dashboard.html"><span class="ni-icon">📊</span>Dashboard</a>
-    <a class="nav-item" href="my-jobs.html"><span class="ni-icon">📋</span>My Jobs<span class="ni-badge">3</span></a>
-    <a class="nav-item" href="job-applicants.html"><span class="ni-icon">👥</span>Applications<span class="ni-badge">7</span></a>
-    <a class="nav-item" href="my-hires.html"><span class="ni-icon">🤝</span>My Hires</a>
+    <a class="nav-item" href="client-dashboard.html"><span class="ni-icon"></span>Dashboard</a>
+    <a class="nav-item" href="my-jobs.html"><span class="ni-icon"></span>My Jobs<span class="ni-badge">3</span></a>
+    <a class="nav-item" href="job-applicants.html"><span class="ni-icon"></span>Applications<span class="ni-badge">7</span></a>
+    <a class="nav-item" href="my-hires.html"><span class="ni-icon"></span>My Hires</a>
     <div class="sidebar-section">Discover</div>
-    <a class="nav-item" href="find-workers.html"><span class="ni-icon">🔍</span>Find Fundis</a>
-    <a class="nav-item" href="saved-workers.html"><span class="ni-icon">❤️</span>Saved Fundis<span class="ni-badge">5</span></a>
-    <a class="nav-item" href="post-job.html"><span class="ni-icon">➕</span>Post a Job</a>
+    <a class="nav-item" href="find-workers.html"><span class="ni-icon"></span>Find Fundis</a>
+    <a class="nav-item" href="saved-workers.html"><span class="ni-icon"></span>Saved Fundis<span class="ni-badge">5</span></a>
+    <a class="nav-item" href="post-job.html"><span class="ni-icon"></span>Post a Job</a>
     <div class="sidebar-section">Account</div>
-    <a class="nav-item" href="messages.html"><span class="ni-icon">💬</span>Messages<span class="ni-badge">2</span></a>
-    <a class="nav-item active" href="payments.html"><span class="ni-icon">💳</span>Payments</a>
-    <a class="nav-item" href="client-profile.html"><span class="ni-icon">👤</span>My Profile</a>
+    <a class="nav-item" href="messages.html"><span class="ni-icon"></span>Messages<span class="ni-badge">2</span></a>
+    <a class="nav-item active" href="payments.html"><span class="ni-icon"></span>Payments</a>
+    <a class="nav-item" href="client-profile.html"><span class="ni-icon"></span>My Profile</a>
     <div class="sidebar-bottom">
-      <div class="sidebar-profile"><div class="sp-avatar">🏠</div><div><div class="sp-name">My account</div><div class="sp-role">Client account</div></div></div>
+      <div class="sidebar-profile"><div class="sp-avatar"></div><div><div class="sp-name">My account</div><div class="sp-role">Client account</div></div></div>
     </div>
   </aside>
 
@@ -106,20 +106,20 @@
 
     <!-- SPEND SUMMARY -->
     <div class="spend-grid" style="animation:slideUp 0.4s 0.05s ease both">
-      <div class="spend-card sc-ink"><div class="sc-label">Total spent</div><div class="sc-value">48,200</div><div class="sc-sub">All time · KES</div><div class="sc-icon">💳</div></div>
-      <div class="spend-card sc-saffron"><div class="sc-label">In escrow now</div><div class="sc-value">7,700</div><div class="sc-sub">2 active bookings</div><div class="sc-icon">🔒</div></div>
-      <div class="spend-card sc-green"><div class="sc-label">This month</div><div class="sc-value">8,400</div><div class="sc-sub">March 2026 · 3 jobs</div><div class="sc-icon">📅</div></div>
-      <div class="spend-card sc-muted"><div class="sc-label">Avg job value</div><div class="sc-value">4,017</div><div class="sc-sub">Across 12 completed jobs</div><div class="sc-icon">📊</div></div>
+      <div class="spend-card sc-ink"><div class="sc-label">Total spent</div><div class="sc-value">48,200</div><div class="sc-sub">All time  KES</div><div class="sc-icon"></div></div>
+      <div class="spend-card sc-saffron"><div class="sc-label">In escrow now</div><div class="sc-value">7,700</div><div class="sc-sub">2 active bookings</div><div class="sc-icon"></div></div>
+      <div class="spend-card sc-green"><div class="sc-label">This month</div><div class="sc-value">8,400</div><div class="sc-sub">March 2026  3 jobs</div><div class="sc-icon"></div></div>
+      <div class="spend-card sc-muted"><div class="sc-label">Avg job value</div><div class="sc-value">4,017</div><div class="sc-sub">Across 12 completed jobs</div><div class="sc-icon"></div></div>
     </div>
 
     <!-- ESCROW -->
     <div class="escrow-summary" style="animation:slideUp 0.4s 0.1s ease both">
-      <div><div class="es-label">Held in M-Pesa Escrow</div><div class="es-val">KES 7,700</div></div>
+      <div><div class="es-label">Held in M-Pesa Escrow</div><div class="es-val">KES ...</div></div>
       <div class="es-divider"></div>
       <div><div class="es-label">Escrow accounts</div><div class="es-val">2</div></div>
       <div class="es-divider"></div>
-      <div class="es-note">🔒 Your escrow funds are held securely. They are released to the fundi only when you confirm the job is done — or automatically after 48 hours. Disputes are resolved by KaziX admin.</div>
-      <a href="my-hires.html" style="padding:0.65rem 1.25rem;background:var(--saffron);color:var(--ink);font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;border-radius:2px;text-decoration:none;white-space:nowrap">View Active Bookings →</a>
+      <div class="es-note"> Your escrow funds are held securely. They are released to the fundi only when you confirm the job is done  or automatically after 48 hours. Disputes are resolved by KaziX admin.</div>
+      <a href="my-hires.html" style="padding:0.65rem 1.25rem;background:var(--saffron);color:var(--ink);font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;border-radius:2px;text-decoration:none;white-space:nowrap">View Active Bookings </a>
     </div>
 
     <!-- TRANSACTION TABLE -->
@@ -129,10 +129,10 @@
         <div class="table-controls">
           <select class="tc-select"><option>All transactions</option><option>Payments</option><option>Escrow</option><option>Refunds</option></select>
           <select class="tc-select"><option>All time</option><option>This month</option><option>Last 3 months</option><option>This year</option></select>
-          <button class="export-btn" onclick="alert('PDF statement downloaded')">⬇ Export PDF</button>
+          <button class="export-btn" onclick="alert('PDF statement downloaded')"> Export PDF</button>
         </div>
       </div>
-      <table class="tx-table">
+      <table class="tx-table" id="paymentsTable">
         <thead>
           <tr>
             <th></th>
@@ -146,67 +146,16 @@
         </thead>
         <tbody>
           <tr>
-            <td><div class="tx-icon tx-saffron">🔒</div></td>
-            <td><div class="tx-type">Escrow held</div><div class="tx-job">Install CCTV · Faith Njeri · #KX-0198</div></td>
-            <td><div class="tx-ref">QST7GHJK2P</div><div class="tx-mpesa">M-Pesa confirmed</div></td>
-            <td style="color:var(--muted);font-size:0.78rem">Today, 14:32</td>
-            <td><div class="tx-amount held">- 4,500</div></td>
-            <td><span class="tx-status ts-held">In Escrow</span></td>
-            <td><button class="tx-receipt" onclick="showReceipt('QST7GHJK2P')">📄 Receipt</button></td>
-          </tr>
-          <tr>
-            <td><div class="tx-icon tx-saffron">🔒</div></td>
-            <td><div class="tx-type">Escrow held</div><div class="tx-job">Paint rooms · Mary Akinyi · #KX-0192</div></td>
-            <td><div class="tx-ref">QHP2MKLRT5</div><div class="tx-mpesa">M-Pesa confirmed</div></td>
-            <td style="color:var(--muted);font-size:0.78rem">Yesterday, 10:14</td>
-            <td><div class="tx-amount held">- 3,200</div></td>
-            <td><span class="tx-status ts-held">In Escrow</span></td>
-            <td><button class="tx-receipt" onclick="showReceipt('QHP2MKLRT5')">📄 Receipt</button></td>
-          </tr>
-          <tr>
-            <td><div class="tx-icon tx-green">✅</div></td>
-            <td><div class="tx-type">Escrow released</div><div class="tx-job">Fix fence · Peter Odhiambo · #KX-0181</div></td>
-            <td><div class="tx-ref">QHJ4MKPL8R</div><div class="tx-mpesa">M-Pesa confirmed</div></td>
-            <td style="color:var(--muted);font-size:0.78rem">3 days ago</td>
-            <td><div class="tx-amount debit">- 3,500</div></td>
-            <td><span class="tx-status ts-success">Paid Out</span></td>
-            <td><button class="tx-receipt" onclick="showReceipt('QHJ4MKPL8R')">📄 Receipt</button></td>
-          </tr>
-          <tr>
-            <td><div class="tx-icon tx-green">✅</div></td>
-            <td><div class="tx-type">Escrow released</div><div class="tx-job">Kitchen pipe repair · James Kamau · #KX-0187</div></td>
-            <td><div class="tx-ref">QKL8NPJR4T</div><div class="tx-mpesa">M-Pesa confirmed</div></td>
-            <td style="color:var(--muted);font-size:0.78rem">1 week ago</td>
-            <td><div class="tx-amount debit">- 1,800</div></td>
-            <td><span class="tx-status ts-success">Paid Out</span></td>
-            <td><button class="tx-receipt">📄 Receipt</button></td>
-          </tr>
-          <tr>
-            <td><div class="tx-icon tx-green">✅</div></td>
-            <td><div class="tx-type">Escrow released</div><div class="tx-job">Electrical repair · David M. · #KX-0175</div></td>
-            <td><div class="tx-ref">QMN5KLPR2T</div><div class="tx-mpesa">M-Pesa confirmed</div></td>
-            <td style="color:var(--muted);font-size:0.78rem">2 weeks ago</td>
-            <td><div class="tx-amount debit">- 2,400</div></td>
-            <td><span class="tx-status ts-success">Paid Out</span></td>
-            <td><button class="tx-receipt">📄 Receipt</button></td>
-          </tr>
-          <tr>
-            <td><div class="tx-icon tx-rust">↩</div></td>
-            <td><div class="tx-type">Refund issued</div><div class="tx-job">Cancelled booking · #KX-0168</div></td>
-            <td><div class="tx-ref">Reversal</div></td>
-            <td style="color:var(--muted);font-size:0.78rem">3 weeks ago</td>
-            <td><div class="tx-amount credit">+ 1,500</div></td>
-            <td><span class="tx-status ts-refunded">Refunded</span></td>
-            <td><button class="tx-receipt">📄 Receipt</button></td>
+            <td colspan="7" style="text-align:center;padding:3rem;color:var(--muted)">Loading transaction history...</td>
           </tr>
         </tbody>
       </table>
       <div class="pagination">
-        <button class="pg-btn" disabled>←</button>
+        <button class="pg-btn" disabled></button>
         <button class="pg-btn active">1</button>
         <button class="pg-btn">2</button>
         <button class="pg-btn">3</button>
-        <button class="pg-btn">→</button>
+        <button class="pg-btn"></button>
       </div>
     </div>
   </main>
@@ -217,18 +166,18 @@
   <div style="background:white;border-radius:6px;padding:2rem;max-width:380px;width:90%;animation:slideUp 0.3s ease both">
     <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border)">M-Pesa Receipt</div>
     <div style="display:flex;flex-direction:column;gap:0.75rem;font-size:0.875rem">
-      <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Transaction ID</span><span id="rRef" style="font-weight:600;font-family:'DM Sans',sans-serif">—</span></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Transaction ID</span><span id="rRef" style="font-weight:600;font-family:'DM Sans',sans-serif"></span></div>
       <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Paid to</span><span style="font-weight:600">KaziX Escrow</span></div>
       <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">From</span><span style="font-weight:600">+254 712 345 678</span></div>
       <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Service</span><span style="font-weight:600">Paybill 888700</span></div>
     </div>
     <div style="background:rgba(27,107,58,0.08);border-radius:4px;padding:1rem;margin-top:1.25rem;text-align:center">
       <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:0.25rem">Amount</div>
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:var(--green)">KES 4,500</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:var(--green)">KES ...</div>
     </div>
     <div style="display:flex;gap:0.5rem;margin-top:1.25rem">
       <button onclick="document.getElementById('receiptModal').style.display='none'" style="flex:1;padding:0.75rem;background:var(--cream);border:1px solid var(--border);border-radius:2px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;cursor:pointer">Close</button>
-      <button onclick="alert('Receipt downloaded')" style="flex:1;padding:0.75rem;background:var(--ink);color:white;border:none;border-radius:2px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;cursor:pointer">⬇ Download</button>
+      <button onclick="alert('Receipt downloaded')" style="flex:1;padding:0.75rem;background:var(--ink);color:white;border:none;border-radius:2px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;cursor:pointer"> Download</button>
     </div>
   </div>
 </div>
@@ -242,20 +191,20 @@ function showReceipt(ref) {
 </script>
 
 <nav class="mobile-nav" aria-label="Primary">
-  <a class="mobile-nav-item" href="client-dashboard.html"><span class="mn-icon">📊</span><span class="mn-label">Dashboard</span></a>
-  <a class="mobile-nav-item" href="my-jobs.html"><span class="mn-icon">📋</span><span class="mn-label">Jobs</span></a>
-  <a class="mobile-nav-item" href="find-workers.html"><span class="mn-icon">🔍</span><span class="mn-label">Find</span></a>
-  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon">💬</span><span class="mn-label">Messages</span></a>
+  <a class="mobile-nav-item" href="client-dashboard.html"><span class="mn-icon"></span><span class="mn-label">Dashboard</span></a>
+  <a class="mobile-nav-item" href="my-jobs.html"><span class="mn-icon"></span><span class="mn-label">Jobs</span></a>
+  <a class="mobile-nav-item" href="find-workers.html"><span class="mn-icon"></span><span class="mn-label">Find</span></a>
+  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon"></span><span class="mn-label">Messages</span></a>
   <div class="mobile-nav-more active">
     <button class="mobile-nav-item mobile-nav-more-toggle" type="button" aria-controls="mobile-drawer" aria-expanded="false" aria-label="Open navigation menu">
-      <span class="mn-icon">⋯</span><span class="mn-label">More</span>
+      <span class="mn-icon"></span><span class="mn-label">More</span>
     </button>
     <div class="mobile-nav-drawer" id="mobile-drawer" role="navigation" aria-label="Secondary pages" aria-hidden="true">
-      <a class="mobile-nav-drawer-item" href="client-profile.html">👤 Profile</a>
-      <a class="mobile-nav-drawer-item" href="notifications.html">🔔 Notifications</a>
-      <a class="mobile-nav-drawer-item active" href="payments.html">💳 Payments</a>
-      <a class="mobile-nav-drawer-item" href="reviews.html">⭐ Reviews</a>
-      <a class="mobile-nav-drawer-item" href="saved-workers.html">❤️ Saved Fundis</a>
+      <a class="mobile-nav-drawer-item" href="client-profile.html"> Profile</a>
+      <a class="mobile-nav-drawer-item" href="notifications.html"> Notifications</a>
+      <a class="mobile-nav-drawer-item active" href="payments.html"> Payments</a>
+      <a class="mobile-nav-drawer-item" href="reviews.html"> Reviews</a>
+      <a class="mobile-nav-drawer-item" href="saved-workers.html"> Saved Fundis</a>
     </div>
   </div>
 </nav>

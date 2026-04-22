@@ -53,7 +53,7 @@
   <section class="panel">
     <div class="panel-head">
       <div class="panel-title">Users</div>
-      <span class="pill">12,480 total</span>
+      <span class="pill">... total</span>
     </div>
     <div class="panel-body">
       <div class="user-filters">
@@ -101,86 +101,9 @@
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td><input class="user-select" type="checkbox" aria-label="Select homeowner account"></td>
-              <td><div class="name-main">Homeowner account</div><div class="name-sub">Client ID: CL-2231</div></td>
-              <td>Client</td>
-              <td>+254 712 *** 678</td>
-              <td>Nairobi</td>
-              <td>Nov 10, 2024</td>
-              <td><span class="user-status active">Active</span></td>
-              <td>
-                <div class="action-group">
-                  <a class="table-action" href="client-profile.html">View profile</a>
-                  <button class="table-action suspend suspend-toggle" type="button">Suspend</button>
-                  <button class="table-action flag" type="button">Flag for review</button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td><input class="user-select" type="checkbox" aria-label="Select James Kamau"></td>
-              <td><div class="name-main">James Kamau</div><div class="name-sub">Fundi ID: FD-8812</div></td>
-              <td>Fundi</td>
-              <td>+254 701 *** 314</td>
-              <td>Kiambu</td>
-              <td>Jan 14, 2025</td>
-              <td><span class="user-status active">Active</span></td>
-              <td>
-                <div class="action-group">
-                  <a class="table-action" href="worker-profile.html">View profile</a>
-                  <button class="table-action suspend suspend-toggle" type="button">Suspend</button>
-                  <button class="table-action flag" type="button">Flag for review</button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td><input class="user-select" type="checkbox" aria-label="Select Mercy Wairimu"></td>
-              <td><div class="name-main">Mercy Wairimu</div><div class="name-sub">Client ID: CL-1740</div></td>
-              <td>Client</td>
-              <td>+254 733 *** 294</td>
-              <td>Nakuru</td>
-              <td>Sep 22, 2024</td>
-              <td><span class="user-status suspended">Suspended</span></td>
-              <td>
-                <div class="action-group">
-                  <a class="table-action" href="client-profile.html">View profile</a>
-                  <button class="table-action unsuspend suspend-toggle" type="button">Unsuspend</button>
-                  <button class="table-action flag" type="button">Flag for review</button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td><input class="user-select" type="checkbox" aria-label="Select Rose Akinyi"></td>
-              <td><div class="name-main">Rose Akinyi</div><div class="name-sub">Fundi ID: FD-5620</div></td>
-              <td>Fundi</td>
-              <td>+254 748 *** 051</td>
-              <td>Kisumu</td>
-              <td>Feb 02, 2025</td>
-              <td><span class="user-status active">Active</span></td>
-              <td>
-                <div class="action-group">
-                  <a class="table-action" href="worker-profile.html">View profile</a>
-                  <button class="table-action suspend suspend-toggle" type="button">Suspend</button>
-                  <button class="table-action flag" type="button">Flag for review</button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td><input class="user-select" type="checkbox" aria-label="Select Patricia Nyongesa"></td>
-              <td><div class="name-main">Patricia Nyongesa</div><div class="name-sub">Fundi ID: FD-7721</div></td>
-              <td>Fundi</td>
-              <td>+254 722 *** 443</td>
-              <td>Mombasa</td>
-              <td>Mar 09, 2025</td>
-              <td><span class="user-status active">Active</span></td>
-              <td>
-                <div class="action-group">
-                  <a class="table-action" href="worker-profile.html">View profile</a>
-                  <button class="table-action suspend suspend-toggle" type="button">Suspend</button>
-                  <button class="table-action flag" type="button">Flag for review</button>
-                </div>
-              </td>
+          <tbody id="userTableBody">
+            <tr id="loadingRow">
+              <td colspan="8" style="text-align:center;padding:3rem;color:var(--muted)">Loading users...</td>
             </tr>
           </tbody>
         </table>

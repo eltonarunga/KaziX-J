@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-<title>Find Workers — KaziX</title>
+<title>Find Workers  KaziX</title>
 <link rel="stylesheet" href="../assets/css/styles.css">
 <style>
   :root {
@@ -16,7 +16,7 @@
   body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden}
   body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.35}
 
-  /* NAV */
+   /*  NAV  */
   nav{display:flex;align-items:center;justify-content:space-between;padding:1.4rem 5%;position:sticky;top:0;background:rgba(245,240,232,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:100}
   .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:-0.04em;color:var(--ink);text-decoration:none}
   .logo span{color:var(--saffron)}
@@ -27,7 +27,7 @@
   .nav-cta{background:var(--ink);color:var(--cream)!important;padding:0.55rem 1.2rem;border-radius:2px;font-weight:500}
   .nav-cta:hover{background:var(--green)!important}
 
-  /* PAGE HEADER */
+   /*  PAGE HEADER  */
   .page-header{background:var(--ink);color:var(--cream);padding:3rem 5%;position:relative;overflow:hidden}
   .page-header::after{content:'SEARCH';position:absolute;right:-1%;top:50%;transform:translateY(-50%);font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(60px,12vw,160px);opacity:0.04;pointer-events:none;letter-spacing:-0.06em}
   .page-header h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.8rem,4vw,3rem);letter-spacing:-0.04em;margin-bottom:0.5rem}
@@ -38,10 +38,10 @@
   .header-search button{padding:0.9rem 1.5rem;background:var(--saffron);color:var(--ink);font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;border:none;cursor:pointer;transition:background 0.2s}
   .header-search button:hover{background:var(--rust);color:white}
 
-  /* LAYOUT */
+   /*  LAYOUT  */
   .search-layout{display:grid;grid-template-columns:280px 1fr;gap:2rem;padding:2.5rem 5%;align-items:start}
 
-  /* FILTERS SIDEBAR */
+   /*  FILTERS SIDEBAR  */
   .filters{position:sticky;top:100px;background:white;border:1px solid var(--border);border-radius:4px;padding:1.5rem;animation:slideUp 0.5s ease both}
   .filter-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center}
   .filter-clear{font-size:0.78rem;color:var(--rust);cursor:pointer;font-weight:500;font-family:'DM Sans',sans-serif}
@@ -53,7 +53,7 @@
   .filter-option input[type=checkbox]{width:16px;height:16px;accent-color:var(--ink);cursor:pointer}
   .filter-option input[type=radio]{width:16px;height:16px;accent-color:var(--ink);cursor:pointer}
   .filter-count{margin-left:auto;font-size:0.72rem;color:var(--muted);background:var(--cream);padding:0.15rem 0.45rem;border-radius:2px}
-  /* RANGE SLIDER */
+   /*  RANGE SLIDER  */
   .range-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;font-size:0.82rem;font-weight:600;}
   .slider-container{position:relative;width:100%;height:6px;background:var(--cream);border-radius:3px;margin:1.5rem 0 1rem;}
   .slider-track{position:absolute;height:100%;top:0;bottom:0;background:var(--saffron);border-radius:3px;left:0%;right:50%;}
@@ -67,7 +67,7 @@
   .apply-btn{width:100%;padding:0.75rem;background:var(--ink);color:var(--cream);font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;border:none;border-radius:2px;cursor:pointer;transition:background 0.2s;margin-top:0.5rem}
   .apply-btn:hover{background:var(--green)}
 
-  /* RESULTS */
+   /*  RESULTS  */
   .results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.75rem}
   .results-count{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem}
   .results-count span{color:var(--saffron)}
@@ -78,13 +78,13 @@
   .view-btn{width:34px;height:34px;border:1px solid var(--border);border-radius:2px;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all 0.2s}
   .view-btn.active{background:var(--ink);border-color:var(--ink);color:white}
 
-  /* ACTIVE FILTERS */
+   /*  ACTIVE FILTERS  */
   .active-filters{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.25rem}
   .active-tag{display:inline-flex;align-items:center;gap:0.4rem;background:var(--ink);color:var(--cream);font-size:0.75rem;font-weight:500;padding:0.3rem 0.75rem;border-radius:2px}
   .active-tag button{background:none;border:none;color:var(--cream);cursor:pointer;font-size:0.85rem;line-height:1;padding:0;opacity:0.6}
   .active-tag button:hover{opacity:1}
 
-  /* WORKER CARDS GRID */
+   /*  WORKER CARDS GRID  */
   .workers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.25rem}
   .workers-grid.list-view{grid-template-columns:1fr}
 
@@ -114,7 +114,7 @@
   .hire-btn:hover{background:var(--green)}
   .avail-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;margin-right:0.35rem;animation:pulse 2s infinite}
 
-  /* LIST VIEW CARD */
+   /*  LIST VIEW CARD  */
   .workers-grid.list-view .pro-card{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:1.5rem;padding:1.25rem 1.5rem}
   .workers-grid.list-view .pro-card-top{margin-bottom:0;flex:none}
   .workers-grid.list-view .pro-card-mid{flex:1}
@@ -122,14 +122,14 @@
   .workers-grid.list-view .pro-footer{border-top:none;padding-top:0;flex-direction:column;align-items:flex-end;gap:0.5rem;min-width:120px}
   .workers-grid.list-view .pro-card::before{display:none}
 
-  /* PAGINATION */
+   /*  PAGINATION  */
   .pagination{display:flex;align-items:center;justify-content:center;gap:0.5rem;margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border)}
   .page-btn{width:38px;height:38px;border:1px solid var(--border);border-radius:2px;background:white;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;transition:all 0.2s;display:flex;align-items:center;justify-content:center}
   .page-btn.active{background:var(--ink);color:var(--cream);border-color:var(--ink)}
   .page-btn:hover:not(.active){background:var(--cream);border-color:var(--ink)}
   .page-btn:disabled{opacity:0.35;cursor:default}
 
-  /* FOOTER */
+   /*  FOOTER  */
   footer{background:var(--ink);color:var(--cream);padding:3rem 5% 2rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem}
   .footer-brand .logo{display:block;margin-bottom:0.75rem}
   .footer-brand p{font-size:0.85rem;color:rgba(245,240,232,0.5);line-height:1.7;max-width:280px}
@@ -146,8 +146,10 @@
 
   @media(max-width:900px){
     .search-layout{grid-template-columns:1fr}
-    .filters{position:static;display:none}
+    .filters{position:fixed;top:0;left:0;right:0;bottom:0;z-index:1000;display:none;background:white;overflow-y:auto;padding:2rem}
     .filters.mobile-open{display:block}
+    .filter-close-mobile{display:block !important;position:absolute;top:1rem;right:1rem;font-size:1.5rem;cursor:pointer}
+    #mobileFilterBtn{display:block !important}
     footer{grid-template-columns:1fr 1fr}
   }
 </style>
@@ -167,11 +169,11 @@
 
 <!-- PAGE HEADER -->
 <div class="page-header">
-  <div class="page-header-eyebrow" style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--saffron);margin-bottom:0.5rem">12,000+ Verified Fundis</div>
+  <div class="page-header-eyebrow" style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--saffron);margin-bottom:0.5rem">Thousands of Verified Fundis</div>
   <h1>Find Skilled Workers Near You</h1>
   <p>Browse verified fundis by trade, location, rating and availability</p>
   <div class="header-search">
-    <input type="text" placeholder="e.g. plumber, electrician, mason…" value="Plumber">
+    <input type="text" placeholder="e.g. plumber, electrician, mason" value="Plumber">
     <select>
       <option>Nairobi</option>
       <option>Mombasa</option>
@@ -179,7 +181,7 @@
       <option>Nakuru</option>
       <option>Eldoret</option>
     </select>
-    <button>Search →</button>
+    <button>Search </button>
   </div>
 </div>
 
@@ -188,6 +190,7 @@
 
   <!-- FILTERS -->
   <aside class="filters">
+    <div class="filter-close-mobile" style="display:none;font-weight:800;font-size:1.5rem;padding:0.5rem;" onclick="toggleFilters()">&times;</div>
     <div class="filter-title">
       Filters
       <span class="filter-clear">Clear all</span>
@@ -196,23 +199,23 @@
     <div class="filter-section">
       <div class="filter-label">Trade</div>
       <div class="filter-options">
-        <label class="filter-option"><input type="checkbox" checked> 🚿 Plumber <span class="filter-count">842</span></label>
-        <label class="filter-option"><input type="checkbox"> ⚡ Electrician <span class="filter-count">1,204</span></label>
-        <label class="filter-option"><input type="checkbox"> 🧱 Mason <span class="filter-count">634</span></label>
-        <label class="filter-option"><input type="checkbox"> 👗 Mama Fua <span class="filter-count">2,310</span></label>
-        <label class="filter-option"><input type="checkbox"> 🪚 Carpenter <span class="filter-count">487</span></label>
-        <label class="filter-option"><input type="checkbox"> 🎨 Painter <span class="filter-count">395</span></label>
-        <label class="filter-option"><input type="checkbox"> 🏠 Roofer <span class="filter-count">218</span></label>
-        <label class="filter-option"><input type="checkbox"> 🌿 Gardener <span class="filter-count">512</span></label>
-        <label class="filter-option"><input type="checkbox"> 🛻 Driver/Mover <span class="filter-count">763</span></label>
-        <label class="filter-option"><input type="checkbox"> 🔒 Security <span class="filter-count">941</span></label>
+        <label class="filter-option"><input type="checkbox" checked> Plumber</label>
+        <label class="filter-option"><input type="checkbox"> Electrician</label>
+        <label class="filter-option"><input type="checkbox"> Mason</label>
+        <label class="filter-option"><input type="checkbox"> Mama Fua</label>
+        <label class="filter-option"><input type="checkbox"> Carpenter</label>
+        <label class="filter-option"><input type="checkbox"> Painter</label>
+        <label class="filter-option"><input type="checkbox"> Roofer</label>
+        <label class="filter-option"><input type="checkbox"> Gardener</label>
+        <label class="filter-option"><input type="checkbox"> Driver/Mover</label>
+        <label class="filter-option"><input type="checkbox"> Security</label>
       </div>
     </div>
 
     <div class="filter-section">
       <div class="filter-label" style="display:flex;justify-content:space-between;align-items:center;">
         Rate (KES / hr)
-        <span class="range-values" style="font-size:0.75rem;font-weight:700;color:var(--ink);font-family:'DM Sans',sans-serif;text-transform:none;letter-spacing:0;">0 - 5,000</span>
+        <span class="range-values" style="font-size:0.75rem;font-weight:700;color:var(--ink);font-family:'DM Sans',sans-serif;text-transform:none;letter-spacing:0;">0 — 5,000</span>
       </div>
       <div class="slider-container">
         <div class="slider-track"></div>
@@ -226,15 +229,15 @@
       <div class="rating-stars">
         <label class="filter-option"><input type="radio" name="rating" checked> Any rating</label>
         <label class="filter-option"><input type="radio" name="rating"> <span class="stars">★★★★★</span> 5.0</label>
-        <label class="filter-option"><input type="radio" name="rating"> <span class="stars">★★★★</span>☆ 4.0+</label>
-        <label class="filter-option"><input type="radio" name="rating"> <span class="stars">★★★</span>☆☆ 3.0+</label>
+        <label class="filter-option"><input type="radio" name="rating"> <span class="stars">★★★★_</span> 4.0+</label>
+        <label class="filter-option"><input type="radio" name="rating"> <span class="stars">★★★__</span> 3.0+</label>
       </div>
     </div>
 
     <div class="filter-section">
       <div class="filter-label">Verification</div>
       <div class="filter-options">
-        <label class="filter-option"><input type="checkbox" checked> ✓ Verified only</label>
+        <label class="filter-option"><input type="checkbox" checked>  Verified only</label>
         <label class="filter-option"><input type="checkbox" checked> <span class="avail-dot"></span> Available now</label>
       </div>
     </div>
@@ -255,7 +258,8 @@
   <!-- RESULTS -->
   <main>
     <div class="results-header">
-      <div class="results-count"><span>842</span> plumbers found in Nairobi</div>
+      <button class="apply-btn" style="display:none;margin:0;width:auto;padding:0.45rem 1rem" id="mobileFilterBtn" onclick="toggleFilters()">Show Filters</button>
+      <div class="results-count"><span>...</span> workers found</div>
       <div class="sort-row">
         <span class="sort-label">Sort by</span>
         <select class="sort-select">
@@ -266,157 +270,35 @@
           <option>Lowest rate</option>
         </select>
         <div class="view-toggle">
-          <button class="view-btn active" id="gridBtn" onclick="setView('grid')" title="Grid view">⊞</button>
-          <button class="view-btn" id="listBtn" onclick="setView('list')" title="List view">☰</button>
+          <button class="view-btn active" id="gridBtn" onclick="setView('grid')" title="Grid view"></button>
+          <button class="view-btn" id="listBtn" onclick="setView('list')" title="List view"></button>
         </div>
       </div>
     </div>
 
     <div class="active-filters">
-      <span class="active-tag">Plumber <button onclick="this.parentElement.remove()">✕</button></span>
-      <span class="active-tag">Nairobi <button onclick="this.parentElement.remove()">✕</button></span>
-      <span class="active-tag">Verified <button onclick="this.parentElement.remove()">✕</button></span>
-      <span class="active-tag">Available now <button onclick="this.parentElement.remove()">✕</button></span>
+      <span class="active-tag">Plumber <button onclick="this.parentElement.remove()"></button></span>
+      <span class="active-tag">Nairobi <button onclick="this.parentElement.remove()"></button></span>
+      <span class="active-tag">Verified <button onclick="this.parentElement.remove()"></button></span>
+      <span class="active-tag">Available now <button onclick="this.parentElement.remove()"></button></span>
     </div>
 
     <div class="workers-grid" id="workersGrid">
-
-      <!-- Card 1 -->
-      <div class="pro-card" style="animation-delay:0.05s">
-        <div class="pro-card-top">
-          <div class="pro-avatar">🔧</div>
-          <div class="pro-card-mid">
-            <div class="pro-name">James Kamau</div>
-            <div class="pro-trade">Master Plumber</div>
-            <div class="pro-location">📍 Westlands, Nairobi · 1.2 km</div>
-            <div class="rating-row2"><span class="stars">★★★★★</span><span class="score">4.9</span><span class="jobs">(127 jobs)</span></div>
-            <span class="verified-badge">✓ Verified</span>
-          </div>
-        </div>
-        <div class="pro-skills">
-          <span class="skill-chip">Pipe fitting</span><span class="skill-chip">Drain unblocking</span><span class="skill-chip">Water tanks</span>
-        </div>
-        <div class="pro-footer">
-          <div class="pro-rate">KES 1,200<span>/hr</span></div>
-          <a href="worker-profile.html" class="hire-btn">View Profile</a>
-        </div>
+      <div style="grid-column:1/-1;text-align:center;padding:4rem 2rem;color:var(--muted)" id="loadingState">
+        <h3>Finding fundis...</h3>
+        <p style="margin-top:0.5rem">Connecting you to top-rated professionals nearby.</p>
       </div>
-
-      <!-- Card 2 -->
-      <div class="pro-card" style="animation-delay:0.1s">
-        <div class="pro-card-top">
-          <div class="pro-avatar">🚿</div>
-          <div class="pro-card-mid">
-            <div class="pro-name">Grace Wanjiku</div>
-            <div class="pro-trade">Plumber</div>
-            <div class="pro-location">📍 Kasarani, Nairobi · 3.4 km</div>
-            <div class="rating-row2"><span class="stars">★★★★★</span><span class="score">4.8</span><span class="jobs">(89 jobs)</span></div>
-            <span class="verified-badge">✓ Verified</span>
-          </div>
-        </div>
-        <div class="pro-skills">
-          <span class="skill-chip">Solar water heater</span><span class="skill-chip">Pipe fitting</span>
-        </div>
-        <div class="pro-footer">
-          <div class="pro-rate">KES 950<span>/hr</span></div>
-          <a href="worker-profile.html" class="hire-btn">View Profile</a>
-        </div>
-      </div>
-
-      <!-- Card 3 -->
-      <div class="pro-card" style="animation-delay:0.15s">
-        <div class="pro-card-top">
-          <div class="pro-avatar">🔩</div>
-          <div class="pro-card-mid">
-            <div class="pro-name">Samuel Otieno</div>
-            <div class="pro-trade">Plumber</div>
-            <div class="pro-location">📍 South B, Nairobi · 4.1 km</div>
-            <div class="rating-row2"><span class="stars">★★★★</span>☆<span class="score">4.6</span><span class="jobs">(52 jobs)</span></div>
-          </div>
-        </div>
-        <div class="pro-skills">
-          <span class="skill-chip">Drain unblocking</span><span class="skill-chip">Bathroom repair</span>
-        </div>
-        <div class="pro-footer">
-          <div class="pro-rate">KES 800<span>/hr</span></div>
-          <a href="worker-profile.html" class="hire-btn">View Profile</a>
-        </div>
-      </div>
-
-      <!-- Card 4 -->
-      <div class="pro-card" style="animation-delay:0.2s">
-        <div class="pro-card-top">
-          <div class="pro-avatar">💧</div>
-          <div class="pro-card-mid">
-            <div class="pro-name">David Mutua</div>
-            <div class="pro-trade">Senior Plumber</div>
-            <div class="pro-location">📍 Karen, Nairobi · 7.8 km</div>
-            <div class="rating-row2"><span class="stars">★★★★★</span><span class="score">5.0</span><span class="jobs">(204 jobs)</span></div>
-            <span class="verified-badge">✓ Verified</span>
-          </div>
-        </div>
-        <div class="pro-skills">
-          <span class="skill-chip">Commercial plumbing</span><span class="skill-chip">Water treatment</span><span class="skill-chip">Borehole</span>
-        </div>
-        <div class="pro-footer">
-          <div class="pro-rate">KES 2,000<span>/hr</span></div>
-          <a href="worker-profile.html" class="hire-btn">View Profile</a>
-        </div>
-      </div>
-
-      <!-- Card 5 -->
-      <div class="pro-card" style="animation-delay:0.25s">
-        <div class="pro-card-top">
-          <div class="pro-avatar">🔧</div>
-          <div class="pro-card-mid">
-            <div class="pro-name">John Mwangi</div>
-            <div class="pro-trade">Plumber</div>
-            <div class="pro-location">📍 Ruaraka, Nairobi · 5.3 km</div>
-            <div class="rating-row2"><span class="stars">★★★★</span>☆<span class="score">4.5</span><span class="jobs">(38 jobs)</span></div>
-            <span class="verified-badge">✓ Verified</span>
-          </div>
-        </div>
-        <div class="pro-skills">
-          <span class="skill-chip">Pipe fitting</span><span class="skill-chip">Leak repair</span>
-        </div>
-        <div class="pro-footer">
-          <div class="pro-rate">KES 700<span>/hr</span></div>
-          <a href="worker-profile.html" class="hire-btn">View Profile</a>
-        </div>
-      </div>
-
-      <!-- Card 6 -->
-      <div class="pro-card" style="animation-delay:0.3s">
-        <div class="pro-card-top">
-          <div class="pro-avatar">🚿</div>
-          <div class="pro-card-mid">
-            <div class="pro-name">Mary Akinyi</div>
-            <div class="pro-trade">Plumber</div>
-            <div class="pro-location">📍 Embakasi, Nairobi · 8.2 km</div>
-            <div class="rating-row2"><span class="stars">★★★★★</span><span class="score">4.7</span><span class="jobs">(71 jobs)</span></div>
-            <span class="verified-badge">✓ Verified</span>
-          </div>
-        </div>
-        <div class="pro-skills">
-          <span class="skill-chip">Water tanks</span><span class="skill-chip">Drain unblocking</span>
-        </div>
-        <div class="pro-footer">
-          <div class="pro-rate">KES 900<span>/hr</span></div>
-          <a href="worker-profile.html" class="hire-btn">View Profile</a>
-        </div>
-      </div>
-
     </div><!-- /workers-grid -->
 
     <!-- PAGINATION -->
     <div class="pagination">
-      <button class="page-btn" disabled>←</button>
+      <button class="page-btn" disabled></button>
       <button class="page-btn active">1</button>
       <button class="page-btn">2</button>
       <button class="page-btn">3</button>
-      <span style="font-size:0.82rem;color:var(--muted);padding:0 0.25rem">…</span>
+      <span style="font-size:0.82rem;color:var(--muted);padding:0 0.25rem"></span>
       <button class="page-btn">42</button>
-      <button class="page-btn">→</button>
+      <button class="page-btn"></button>
     </div>
   </main>
 </div>
@@ -456,11 +338,16 @@
   </div>
 </footer>
 <div class="footer-bottom">
-  <span>© 2025 KaziX Ltd. All rights reserved.</span>
-  <span>Built for Kenya 🇰🇪 · <a href="#">Powered by M-Pesa</a></span>
+  <span> 2025 KaziX Ltd. All rights reserved.</span>
+  <span>Built for Kenya   <a href="#">Powered by M-Pesa</a></span>
 </div>
 
 <script>
+  function toggleFilters() {
+    const f = document.querySelector('.filters');
+    f.classList.toggle('mobile-open');
+  }
+
   function setView(mode) {
     const grid = document.getElementById('workersGrid');
     const gridBtn = document.getElementById('gridBtn');
@@ -479,7 +366,7 @@
   // Pagination buttons
   document.querySelectorAll('.page-btn:not([disabled])').forEach(btn => {
     btn.addEventListener('click', function() {
-      if (this.textContent === '←' || this.textContent === '→') return;
+      if (this.textContent === '' || this.textContent === '') return;
       document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
       this.classList.add('active');
     });

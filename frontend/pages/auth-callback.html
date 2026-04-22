@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-<title>Signing you in… — KaziX</title>
+<title>Signing you in  KaziX</title>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'DM Sans',sans-serif;background:#F5F0E8;color:#0D0D0D;min-height:100vh;display:flex;align-items:center;justify-content:center}
@@ -21,8 +21,8 @@
 </head>
 <body>
 <div class="card">
-  <div class="icon" id="icon">✉️</div>
-  <h1 id="title">Signing you in…</h1>
+  <div class="icon" id="icon"></div>
+  <h1 id="title">Signing you in</h1>
   <p id="sub">Please wait while we confirm your identity.</p>
   <div class="spinner" id="spinner"></div>
   <div class="error" id="errMsg" style="display:none"></div>
@@ -79,7 +79,7 @@ function configureFlowUi(flow) {
   const retryBtn = document.getElementById('retryBtn');
   retryBtn.href = retry.href;
   retryBtn.textContent = retry.label;
-  document.getElementById('title').textContent = 'Signing you in…';
+  document.getElementById('title').textContent = 'Signing you in';
   document.getElementById('sub').textContent = flow === 'login'
     ? 'Please wait while we confirm your email sign-in.'
     : 'Please wait while we confirm your identity.';
@@ -87,7 +87,7 @@ function configureFlowUi(flow) {
 
 function showError(msg) {
   document.getElementById('spinner').style.display = 'none';
-  document.getElementById('icon').textContent = '❌';
+  document.getElementById('icon').textContent = '';
   document.getElementById('title').textContent  = 'Something went wrong';
   document.getElementById('sub').textContent    = msg;
   document.getElementById('errMsg').style.display = 'none';
@@ -129,7 +129,7 @@ async function waitForSession(timeoutMs = 5000) {
           finish(resolve, session);
           return;
         }
-        finish(reject, new Error('No session received — the link may have already been used.'));
+        finish(reject, new Error('No session received  the link may have already been used.'));
       } catch (error) {
         finish(reject, error);
       }
@@ -225,10 +225,10 @@ function mapRedirectToPage(redirectTo, flow) {
 function getSuccessMessage(nextPage, flow) {
   if (nextPage.startsWith('register.html')) {
     return flow === 'register'
-      ? 'Redirecting you back to finish your profile…'
-      : 'Redirecting you to complete your account…';
+      ? 'Redirecting you back to finish your profile'
+      : 'Redirecting you to complete your account';
   }
-  return 'Redirecting you to your dashboard…';
+  return 'Redirecting you to your dashboard';
 }
 
 function shouldHandOffToOriginalTab(flow) {
@@ -263,7 +263,7 @@ function handOffToOriginalTab(nextPage, flow) {
 }
 
 async function handleCallback() {
-  // ── 1. Check for error params in the callback URL first ──────────────────
+  //  1. Check for error params in the callback URL first
   const urlError = getCallbackParam('error');
   const urlErrorCode = getCallbackParam('error_code');
   const urlErrorDesc = getCallbackParam('error_description');
@@ -272,7 +272,7 @@ async function handleCallback() {
     clearCallbackUrl();
     document.getElementById('spinner').style.display = 'none';
     if (urlErrorCode === 'otp_expired') {
-      document.getElementById('icon').textContent  = '⏰';
+      document.getElementById('icon').textContent  = '';
       document.getElementById('title').textContent = 'Link expired';
       document.getElementById('sub').textContent   =
         authFlow === 'login'
@@ -292,7 +292,7 @@ async function handleCallback() {
 
   clearCallbackUrl();
 
-  // ── 2. No error — recover the session using the current v2 APIs ──────────
+  //  2. No error  recover the session using the current v2 APIs
   try {
     const session = await resolveSessionFromCallback();
     if (!session) throw new Error('No session returned. The link may be invalid or already used.');
@@ -304,8 +304,8 @@ async function handleCallback() {
     localStorage.setItem('kazix_auth_next_page', nextPage);
     localStorage.setItem('kazix_auth_flow', authFlow);
 
-    document.getElementById('icon').textContent  = '✅';
-    document.getElementById('title').textContent = authFlow === 'login' ? 'You’re signed in!' : 'Email confirmed!';
+    document.getElementById('icon').textContent  = '';
+    document.getElementById('title').textContent = authFlow === 'login' ? 'Youre signed in!' : 'Email confirmed!';
     document.getElementById('sub').textContent   = getSuccessMessage(nextPage, authFlow);
     document.getElementById('spinner').style.display = 'none';
 
