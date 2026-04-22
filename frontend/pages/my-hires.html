@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-<title>My Hires — KaziX</title>
+<title>My Hires  KaziX</title>
 <link rel="stylesheet" href="../assets/css/styles.css">
 <style>
 
-/* TABS */
+ /*  TABS  */
 .hire-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:2rem}
 .htab{padding:0.75rem 1.5rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s;display:flex;align-items:center;gap:0.4rem}
 .htab:hover{color:var(--ink)}
@@ -16,7 +16,7 @@
 .htab .tc{background:var(--cream);font-size:0.65rem;padding:0.1rem 0.45rem;border-radius:10px}
 .htab.active .tc{background:var(--ink);color:#F5F0E8}
 
-/* CONTRACT CARDS */
+ /*  CONTRACT CARDS  */
 .contracts{display:flex;flex-direction:column;gap:1.25rem}
 .contract-card{background:white;border:1px solid var(--border);border-radius:6px;overflow:hidden;animation:slideUp 0.4s ease both;transition:box-shadow 0.2s}
 .contract-card:hover{box-shadow:0 6px 24px rgba(0,0,0,0.07)}
@@ -39,7 +39,7 @@
 .ccd-val{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;color:var(--ink)}
 .ccd-label{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:0.15rem}
 
-/* ESCROW BAR */
+ /*  ESCROW BAR  */
 .escrow-bar{background:var(--cream);border:1px solid var(--border);border-radius:4px;padding:1rem 1.25rem;margin-bottom:1rem}
 .escrow-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem}
 .escrow-label{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted)}
@@ -49,7 +49,7 @@
 .escrow-note{font-size:0.72rem;color:var(--muted)}
 .escrow-release-timer{font-size:0.75rem;color:var(--rust);font-weight:500;display:flex;align-items:center;gap:0.3rem}
 
-/* TIMELINE */
+ /*  TIMELINE  */
 .timeline{display:flex;gap:0;margin-bottom:1rem}
 .tl-step{flex:1;text-align:center;position:relative}
 .tl-step:not(:last-child)::after{content:'';position:absolute;top:10px;left:50%;right:-50%;height:2px;background:var(--border)}
@@ -62,7 +62,7 @@
 .tl-step.done .tl-label{color:var(--green);font-weight:600}
 .tl-step.active .tl-label{color:var(--ink);font-weight:700}
 
-/* ACTIONS */
+ /*  ACTIONS  */
 .cc-actions{display:flex;gap:0.6rem;flex-wrap:wrap}
 .cc-btn{padding:0.5rem 1rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.78rem;border-radius:2px;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;gap:0.3rem}
 .ccb-complete{background:var(--green);color:white;border:none}
@@ -83,27 +83,27 @@
 <nav class="topnav">
   <a href="index.html" class="logo">Kazi<span>X</span></a>
   <div class="topnav-right">
-    <button class="notif-btn">🔔<span class="notif-dot"></span></button>
+    <button class="notif-btn"><span class="notif-dot"></span></button>
     <div class="user-chip"><div class="user-avatar">KX</div><span class="user-name">My account</span></div>
   </div>
 </nav>
 <div class="app-shell">
   <aside class="sidebar">
     <div class="sidebar-section">Main</div>
-    <a class="nav-item" href="client-dashboard.html"><span class="ni-icon">📊</span>Dashboard</a>
-    <a class="nav-item" href="my-jobs.html"><span class="ni-icon">📋</span>My Jobs<span class="ni-badge">3</span></a>
-    <a class="nav-item" href="job-applicants.html"><span class="ni-icon">👥</span>Applications<span class="ni-badge">7</span></a>
-    <a class="nav-item active" href="my-hires.html"><span class="ni-icon">🤝</span>My Hires</a>
+    <a class="nav-item" href="client-dashboard.html"><span class="ni-icon"></span>Dashboard</a>
+    <a class="nav-item" href="my-jobs.html"><span class="ni-icon"></span>My Jobs<span class="ni-badge">3</span></a>
+    <a class="nav-item" href="job-applicants.html"><span class="ni-icon"></span>Applications<span class="ni-badge">7</span></a>
+    <a class="nav-item active" href="my-hires.html"><span class="ni-icon"></span>My Hires</a>
     <div class="sidebar-section">Discover</div>
-    <a class="nav-item" href="find-workers.html"><span class="ni-icon">🔍</span>Find Fundis</a>
-    <a class="nav-item" href="saved-workers.html"><span class="ni-icon">❤️</span>Saved Fundis<span class="ni-badge">5</span></a>
-    <a class="nav-item" href="post-job.html"><span class="ni-icon">➕</span>Post a Job</a>
+    <a class="nav-item" href="find-workers.html"><span class="ni-icon"></span>Find Fundis</a>
+    <a class="nav-item" href="saved-workers.html"><span class="ni-icon"></span>Saved Fundis<span class="ni-badge">5</span></a>
+    <a class="nav-item" href="post-job.html"><span class="ni-icon"></span>Post a Job</a>
     <div class="sidebar-section">Account</div>
-    <a class="nav-item" href="messages.html"><span class="ni-icon">💬</span>Messages<span class="ni-badge">2</span></a>
-    <a class="nav-item" href="payments.html"><span class="ni-icon">💳</span>Payments</a>
-    <a class="nav-item" href="client-profile.html"><span class="ni-icon">👤</span>My Profile</a>
+    <a class="nav-item" href="messages.html"><span class="ni-icon"></span>Messages<span class="ni-badge">2</span></a>
+    <a class="nav-item" href="payments.html"><span class="ni-icon"></span>Payments</a>
+    <a class="nav-item" href="client-profile.html"><span class="ni-icon"></span>My Profile</a>
     <div class="sidebar-bottom">
-      <div class="sidebar-profile"><div class="sp-avatar">🏠</div><div><div class="sp-name">My account</div><div class="sp-role">Client account</div></div></div>
+      <div class="sidebar-profile"><div class="sp-avatar"></div><div><div class="sp-name">My account</div><div class="sp-role">Client account</div></div></div>
     </div>
   </aside>
 
@@ -119,170 +119,40 @@
       <div class="htab">Disputed <span class="tc">0</span></div>
     </div>
 
-    <div class="contracts">
-
-      <!-- Contract 1: In Progress -->
-      <div class="contract-card" style="animation-delay:0.05s">
-        <div class="cc-header">
-          <div class="cc-avatar">🎨</div>
-          <div class="cc-worker-info">
-            <div class="cc-worker-name">Mary Akinyi</div>
-            <div class="cc-trade">Painter</div>
-            <div class="cc-loc">📍 Embakasi · Started yesterday</div>
-          </div>
-          <div class="cc-status-block">
-            <span class="cc-status cs-active">● In Progress</span>
-            <div class="cc-ref">Booking #KX-2024-0192</div>
-          </div>
-        </div>
-        <div class="cc-body">
-          <div class="cc-job-title">Paint bedroom + living room (3-bed house) — Kilimani</div>
-
-          <!-- TIMELINE -->
-          <div class="timeline" style="margin-bottom:1rem">
-            <div class="tl-step done"><div class="tl-dot done">✓</div><div class="tl-label">Booked</div></div>
-            <div class="tl-step done"><div class="tl-dot done">✓</div><div class="tl-label">Paid</div></div>
-            <div class="tl-step active"><div class="tl-dot active">●</div><div class="tl-label">Working</div></div>
-            <div class="tl-step pending"><div class="tl-dot pending"></div><div class="tl-label">Complete</div></div>
-            <div class="tl-step pending"><div class="tl-dot pending"></div><div class="tl-label">Reviewed</div></div>
-          </div>
-
-          <div class="cc-details">
-            <div class="ccd"><div class="ccd-val">KES 3,200</div><div class="ccd-label">Agreed rate</div></div>
-            <div class="ccd"><div class="ccd-val">2–3 days</div><div class="ccd-label">Estimated duration</div></div>
-            <div class="ccd"><div class="ccd-val">4.7 ★</div><div class="ccd-label">Worker rating</div></div>
-            <div class="ccd"><div class="ccd-val">Day 1</div><div class="ccd-label">Progress</div></div>
-          </div>
-
-          <div class="escrow-bar">
-            <div class="escrow-header">
-              <div class="escrow-label">🔒 M-Pesa Escrow</div>
-              <div class="escrow-amount">KES 3,200 held securely</div>
-            </div>
-            <div class="escrow-track"><div class="escrow-fill" style="width:100%"></div></div>
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div class="escrow-note">Payment is locked until you confirm the job is done</div>
-              <div class="escrow-release-timer">⏰ Auto-releases in 48h after completion</div>
-            </div>
-          </div>
-
-          <div class="cc-actions">
-            <button class="cc-btn ccb-complete" onclick="confirmComplete()">✅ Mark Job Complete & Release Payment</button>
-            <a href="messages.html" class="cc-btn ccb-msg">💬 Message Mary</a>
-            <a href="dispute.html" class="cc-btn ccb-dispute">⚠ Raise Dispute</a>
-          </div>
-        </div>
+    <div class="contracts" id="contractsList">
+      <div style="text-align:center;padding:4rem 2rem;color:var(--muted);background:white;border:1px solid var(--border);border-radius:6px">
+        <h3>Loading your hires...</h3>
+        <p style="margin-top:0.5rem">Fetching your active and completed contracts.</p>
       </div>
-
-      <!-- Contract 2: Awaiting confirmation -->
-      <div class="contract-card" style="animation-delay:0.1s">
-        <div class="cc-header">
-          <div class="cc-avatar">⚡</div>
-          <div class="cc-worker-info">
-            <div class="cc-worker-name">Faith Njeri</div>
-            <div class="cc-trade">Electrician · KPLC Licensed</div>
-            <div class="cc-loc">📍 Kasarani · Hired today · Starts Thursday</div>
-          </div>
-          <div class="cc-status-block">
-            <span class="cc-status cs-pending">Confirmed · Awaiting Start</span>
-            <div class="cc-ref">Booking #KX-2024-0198</div>
-          </div>
-        </div>
-        <div class="cc-body">
-          <div class="cc-job-title">Install CCTV cameras (4 units) — Kilimani compound</div>
-
-          <div class="timeline" style="margin-bottom:1rem">
-            <div class="tl-step done"><div class="tl-dot done">✓</div><div class="tl-label">Booked</div></div>
-            <div class="tl-step done"><div class="tl-dot done">✓</div><div class="tl-label">Paid</div></div>
-            <div class="tl-step active"><div class="tl-dot active">📅</div><div class="tl-label">Thu 9AM</div></div>
-            <div class="tl-step pending"><div class="tl-dot pending"></div><div class="tl-label">Complete</div></div>
-            <div class="tl-step pending"><div class="tl-dot pending"></div><div class="tl-label">Reviewed</div></div>
-          </div>
-
-          <div class="cc-details">
-            <div class="ccd"><div class="ccd-val">KES 4,500</div><div class="ccd-label">Agreed rate</div></div>
-            <div class="ccd"><div class="ccd-val">1 day</div><div class="ccd-label">Estimated</div></div>
-            <div class="ccd"><div class="ccd-val">4.8 ★</div><div class="ccd-label">Worker rating</div></div>
-            <div class="ccd"><div class="ccd-val">Thu 9AM</div><div class="ccd-label">Starts</div></div>
-          </div>
-
-          <div class="escrow-bar">
-            <div class="escrow-header">
-              <div class="escrow-label">🔒 M-Pesa Escrow</div>
-              <div class="escrow-amount">KES 4,500 held securely</div>
-            </div>
-            <div class="escrow-track"><div class="escrow-fill" style="width:100%"></div></div>
-            <div class="escrow-note">M-Pesa receipt: QST7GHJK2P · Paid today 14:32</div>
-          </div>
-
-          <div class="cc-actions">
-            <a href="messages.html" class="cc-btn ccb-msg">💬 Message Faith</a>
-            <button class="cc-btn ccb-dispute" style="color:var(--muted);border-color:var(--border)">📅 Reschedule</button>
-            <button class="cc-btn ccb-dispute">✕ Cancel Booking</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Contract 3: Completed — needs review -->
-      <div class="contract-card" style="animation-delay:0.15s">
-        <div class="cc-header">
-          <div class="cc-avatar">🪚</div>
-          <div class="cc-worker-info">
-            <div class="cc-worker-name">Peter Odhiambo</div>
-            <div class="cc-trade">Carpenter</div>
-            <div class="cc-loc">📍 Kibera · Completed 3 days ago</div>
-          </div>
-          <div class="cc-status-block">
-            <span class="cc-status cs-done">Completed</span>
-            <div class="cc-ref">Booking #KX-2024-0181</div>
-          </div>
-        </div>
-        <div class="cc-body">
-          <div class="cc-job-title">Repair wooden fence — backyard</div>
-          <div class="cc-details">
-            <div class="ccd"><div class="ccd-val">KES 3,500</div><div class="ccd-label">Paid out</div></div>
-            <div class="ccd"><div class="ccd-val">1 day</div><div class="ccd-label">Duration</div></div>
-            <div class="ccd"><div class="ccd-val">4.8 ★</div><div class="ccd-label">Worker rating</div></div>
-            <div class="ccd"><div class="ccd-val">3 days ago</div><div class="ccd-label">Completed</div></div>
-          </div>
-          <div style="background:rgba(27,107,58,0.08);border:1px solid rgba(27,107,58,0.2);border-radius:4px;padding:0.75rem 1rem;font-size:0.78rem;color:var(--green);margin-bottom:1rem;display:flex;gap:0.5rem;align-items:center">
-            ✅ <div>KES 3,500 paid to Peter's M-Pesa · Receipt: QHJ4MKPL8R · 3 days ago</div>
-          </div>
-          <div class="cc-actions">
-            <button class="cc-btn ccb-review" onclick="alert('Review modal would open here')">⭐ Leave a Review for Peter</button>
-            <button class="cc-btn ccb-rehire">🔁 Hire Peter Again</button>
-            <a href="payments.html" class="cc-btn ccb-rehire">📄 View Receipt</a>
-          </div>
-        </div>
-      </div>
-
     </div>
   </main>
 </div>
 
 <script>
-function confirmComplete() {
-  if (confirm('Confirm that the painting job is done and release KES 3,200 to Mary Akinyi via M-Pesa?')) {
-    alert('✅ Payment released! KES 2,880 sent to Mary\'s M-Pesa (KES 320 KaziX fee). You can now leave a review.');
+function confirmComplete(workerName, amount) {
+  if (confirm(`Confirm that the job is done and release KES ${amount} to ${workerName} via M-Pesa?`)) {
+    const fee = amount * 0.1;
+    const net = amount - fee;
+    alert(`Payment released! KES ${net.toLocaleString()} sent to ${workerName}'s M-Pesa (KES ${fee.toLocaleString()} KaziX fee). You can now leave a review.`);
   }
 }
 </script>
 
 <nav class="mobile-nav" aria-label="Primary">
-  <a class="mobile-nav-item" href="client-dashboard.html"><span class="mn-icon">📊</span><span class="mn-label">Dashboard</span></a>
-  <a class="mobile-nav-item active" href="my-jobs.html"><span class="mn-icon">📋</span><span class="mn-label">Jobs</span></a>
-  <a class="mobile-nav-item" href="find-workers.html"><span class="mn-icon">🔍</span><span class="mn-label">Find</span></a>
-  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon">💬</span><span class="mn-label">Messages</span></a>
+  <a class="mobile-nav-item" href="client-dashboard.html"><span class="mn-icon"></span><span class="mn-label">Dashboard</span></a>
+  <a class="mobile-nav-item active" href="my-jobs.html"><span class="mn-icon"></span><span class="mn-label">Jobs</span></a>
+  <a class="mobile-nav-item" href="find-workers.html"><span class="mn-icon"></span><span class="mn-label">Find</span></a>
+  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon"></span><span class="mn-label">Messages</span></a>
   <div class="mobile-nav-more">
     <button class="mobile-nav-item mobile-nav-more-toggle" type="button" aria-controls="mobile-drawer" aria-expanded="false" aria-label="Open navigation menu">
-      <span class="mn-icon">⋯</span><span class="mn-label">More</span>
+      <span class="mn-icon"></span><span class="mn-label">More</span>
     </button>
     <div class="mobile-nav-drawer" id="mobile-drawer" role="navigation" aria-label="Secondary pages" aria-hidden="true">
-      <a class="mobile-nav-drawer-item" href="client-profile.html">👤 Profile</a>
-      <a class="mobile-nav-drawer-item" href="notifications.html">🔔 Notifications</a>
-      <a class="mobile-nav-drawer-item" href="payments.html">💳 Payments</a>
-      <a class="mobile-nav-drawer-item" href="reviews.html">⭐ Reviews</a>
-      <a class="mobile-nav-drawer-item" href="saved-workers.html">❤️ Saved Fundis</a>
+      <a class="mobile-nav-drawer-item" href="client-profile.html"> Profile</a>
+      <a class="mobile-nav-drawer-item" href="notifications.html"> Notifications</a>
+      <a class="mobile-nav-drawer-item" href="payments.html"> Payments</a>
+      <a class="mobile-nav-drawer-item" href="reviews.html"> Reviews</a>
+      <a class="mobile-nav-drawer-item" href="saved-workers.html"> Saved Fundis</a>
     </div>
   </div>
 </nav>

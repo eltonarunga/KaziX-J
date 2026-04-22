@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-<title>Saved Fundis — KaziX</title>
+<title>Saved Fundis  KaziX</title>
 <link rel="stylesheet" href="../assets/css/styles.css">
 <style>
 .btn-primary{padding:.7rem 1.5rem;background:var(--ink);color:#F5F0E8;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;border:none;border-radius:2px;cursor:pointer;transition:background .2s;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem}
 .btn-primary:hover{background:var(--green)}
-/* ── COLLECTIONS ── */
+ /*   COLLECTIONS   */
 .collections-row{display:flex;gap:1rem;margin-bottom:2rem;animation:up .4s .05s ease both;flex-wrap:wrap}
 .collection-pill{display:flex;align-items:center;gap:.5rem;padding:.55rem 1.1rem;border-radius:2px;border:1.5px solid var(--border);background:white;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:.78rem;transition:all .2s;position:relative}
 .collection-pill:hover{border-color:var(--ink)}
@@ -18,16 +18,16 @@
 .collection-pill.active .cp-count{background:rgba(245,240,232,.15);color:#F5F0E8}
 .add-list-btn{display:flex;align-items:center;gap:.4rem;padding:.55rem 1rem;border-radius:2px;border:1.5px dashed var(--border);background:transparent;cursor:pointer;font-size:.78rem;color:var(--muted);transition:all .2s}
 .add-list-btn:hover{border-color:var(--ink);color:var(--ink)}
-/* ── SAVED GRID ── */
+ /*   SAVED GRID   */
 .saved-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem;animation:up .4s .1s ease both}
 .saved-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.5rem;transition:all .25s;position:relative;overflow:hidden}
 .saved-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.08)}
 .saved-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--saffron);transform:scaleX(0);transform-origin:left;transition:transform .3s}
 .saved-card:hover::before{transform:scaleX(1)}
-/* unsave btn */
+ /*  unsave btn  */
 .unsave-btn{position:absolute;top:.85rem;right:.85rem;width:28px;height:28px;border-radius:50%;background:rgba(192,57,43,.1);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.75rem;transition:all .2s}
 .unsave-btn:hover{background:var(--rust);color:white}
-/* worker top */
+ /*  worker top  */
 .sc-top{display:flex;align-items:flex-start;gap:.85rem;margin-bottom:1rem}
 .sc-avatar{width:52px;height:52px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;border:2px solid var(--border);position:relative}
 .sc-online{position:absolute;bottom:1px;right:1px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid white}
@@ -39,17 +39,17 @@
 .sc-score{font-weight:700}
 .sc-jobs{color:var(--muted)}
 .badge-verified{background:rgba(27,107,58,.1);color:var(--green);font-size:.62rem;font-weight:700;padding:.18rem .45rem;border-radius:2px;text-transform:uppercase;letter-spacing:.05em;display:inline-block;margin-top:.3rem}
-/* stats row */
+ /*  stats row  */
 .sc-stats{display:flex;gap:1rem;padding:.75rem;background:var(--cream);border-radius:4px;margin-bottom:1rem}
 .scs{flex:1;text-align:center}
 .scs-val{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;color:var(--ink)}
 .scs-label{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:.1rem}
-/* note */
+ /*  note  */
 .sc-note{font-size:.78rem;color:var(--muted);font-style:italic;padding:.6rem .85rem;background:rgba(245,166,35,.06);border-left:2px solid var(--saffron);border-radius:2px;margin-bottom:1rem;line-height:1.5}
-/* skills */
+ /*  skills  */
 .sc-skills{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1rem}
 .skill-chip{background:var(--cream);font-size:.7rem;font-weight:500;padding:.2rem .55rem;border-radius:2px;color:var(--steel)}
-/* actions */
+ /*  actions  */
 .sc-actions{display:flex;gap:.5rem}
 .sc-btn{flex:1;padding:.55rem;font-family:'Syne',sans-serif;font-weight:700;font-size:.75rem;border-radius:2px;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:.3rem}
 .scb-hire{background:var(--ink);color:#F5F0E8;border:none}
@@ -58,9 +58,9 @@
 .scb-msg:hover{background:var(--ink);color:#F5F0E8}
 .scb-view{background:transparent;color:var(--muted);border:1px solid var(--border)}
 .scb-view:hover{border-color:var(--ink);color:var(--ink)}
-/* last hired tag */
+ /*  last hired tag  */
 .last-hired-tag{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:.2rem .55rem;border-radius:2px;background:rgba(27,107,58,.1);color:var(--green);display:inline-block;margin-bottom:.65rem}
-/* empty state */
+ /*  empty state  */
 .empty-col{text-align:center;padding:4rem 2rem;color:var(--muted);grid-column:1/-1}
 .ec-icon{font-size:3rem;opacity:.35;margin-bottom:1rem}
 .ec-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:var(--ink);margin-bottom:.5rem}
@@ -73,7 +73,7 @@
 <nav class="topnav">
   <a href="index.html" class="logo">Kazi<span>X</span></a>
   <div class="topnav-right">
-    <button class="notif-btn">🔔<span class="notif-dot"></span></button>
+    <button class="notif-btn"><span class="notif-dot"></span></button>
     <div class="user-chip" onclick="location.href='client-profile.html'">
       <div class="user-avatar">KX</div><span class="user-name">My account</span>
     </div>
@@ -82,21 +82,21 @@
 <div class="app-shell">
   <aside class="sidebar">
     <div class="sidebar-section">Main</div>
-    <a class="nav-item" href="client-dashboard.html"><span class="ni-icon">📊</span>Dashboard</a>
-    <a class="nav-item" href="my-jobs.html"><span class="ni-icon">📋</span>My Jobs<span class="ni-badge">3</span></a>
-    <a class="nav-item" href="job-applicants.html"><span class="ni-icon">👥</span>Applications<span class="ni-badge">7</span></a>
-    <a class="nav-item" href="my-hires.html"><span class="ni-icon">🤝</span>My Hires</a>
+    <a class="nav-item" href="client-dashboard.html"><span class="ni-icon"></span>Dashboard</a>
+    <a class="nav-item" href="my-jobs.html"><span class="ni-icon"></span>My Jobs<span class="ni-badge">3</span></a>
+    <a class="nav-item" href="job-applicants.html"><span class="ni-icon"></span>Applications<span class="ni-badge">7</span></a>
+    <a class="nav-item" href="my-hires.html"><span class="ni-icon"></span>My Hires</a>
     <div class="sidebar-section">Discover</div>
-    <a class="nav-item" href="find-workers.html"><span class="ni-icon">🔍</span>Find Fundis</a>
-    <a class="nav-item active" href="saved-workers.html"><span class="ni-icon">❤️</span>Saved Fundis<span class="ni-badge">5</span></a>
-    <a class="nav-item" href="post-job.html"><span class="ni-icon">➕</span>Post a Job</a>
+    <a class="nav-item" href="find-workers.html"><span class="ni-icon"></span>Find Fundis</a>
+    <a class="nav-item active" href="saved-workers.html"><span class="ni-icon"></span>Saved Fundis<span class="ni-badge">5</span></a>
+    <a class="nav-item" href="post-job.html"><span class="ni-icon"></span>Post a Job</a>
     <div class="sidebar-section">Account</div>
-    <a class="nav-item" href="messages.html"><span class="ni-icon">💬</span>Messages<span class="ni-badge">2</span></a>
-    <a class="nav-item" href="payments.html"><span class="ni-icon">💳</span>Payments</a>
-    <a class="nav-item" href="client-profile.html"><span class="ni-icon">👤</span>My Profile</a>
+    <a class="nav-item" href="messages.html"><span class="ni-icon"></span>Messages<span class="ni-badge">2</span></a>
+    <a class="nav-item" href="payments.html"><span class="ni-icon"></span>Payments</a>
+    <a class="nav-item" href="client-profile.html"><span class="ni-icon"></span>My Profile</a>
     <div class="sidebar-bottom">
       <a class="sidebar-profile" href="client-profile.html">
-        <div class="sp-avatar">🏠</div>
+        <div class="sp-avatar">KX</div>
         <div><div class="sp-name">My account</div><div class="sp-role">Client account</div></div>
       </a>
     </div>
@@ -106,160 +106,27 @@
     <div class="page-head">
       <div>
         <div class="page-title">Saved Fundis</div>
-        <div class="page-sub">Your shortlisted workers — organised into collections</div>
+        <div class="page-sub">Your shortlisted workers  organised into collections</div>
       </div>
-      <a href="find-workers.html" class="btn-primary">🔍 Browse More Fundis</a>
+      <a href="find-workers.html" class="btn-primary">Browse More Fundis</a>
     </div>
 
     <!-- COLLECTION TABS -->
     <div class="collections-row">
       <div class="collection-pill active" onclick="filterCol('all',this)">All Saved <span class="cp-count">5</span></div>
-      <div class="collection-pill" onclick="filterCol('plumbing',this)">🚿 Plumbing <span class="cp-count">2</span></div>
-      <div class="collection-pill" onclick="filterCol('electrical',this)">⚡ Electrical <span class="cp-count">1</span></div>
-      <div class="collection-pill" onclick="filterCol('home',this)">🏠 Home Repairs <span class="cp-count">2</span></div>
-      <button class="add-list-btn" onclick="createCollection()">＋ New Collection</button>
+      <div class="collection-pill" onclick="filterCol('plumbing',this)">Plumbing <span class="cp-count">2</span></div>
+      <div class="collection-pill" onclick="filterCol('electrical',this)">Electrical <span class="cp-count">1</span></div>
+      <div class="collection-pill" onclick="filterCol('home',this)">Home Repairs <span class="cp-count">2</span></div>
+      <button class="add-list-btn" onclick="createCollection()">New Collection</button>
     </div>
 
     <!-- GRID -->
     <div class="saved-grid" id="savedGrid">
-
-      <!-- Card 1 — James Kamau, previously hired -->
-      <div class="saved-card" data-col="plumbing">
-        <button class="unsave-btn" title="Remove from saved" onclick="unsave(this)">♥</button>
-        <div class="last-hired-tag">✓ Hired before · 3 jobs</div>
-        <div class="sc-top">
-          <div class="sc-avatar">🔧<div class="sc-online"></div></div>
-          <div>
-            <div class="sc-name">James Kamau</div>
-            <div class="sc-trade">Master Plumber</div>
-            <div class="sc-loc">📍 Westlands · 1.2 km</div>
-            <div class="sc-rating"><span class="sc-stars">★★★★★</span><span class="sc-score">4.9</span><span class="sc-jobs">(127 jobs)</span></div>
-            <span class="badge-verified">✓ ID Verified</span>
-          </div>
-        </div>
-        <div class="sc-stats">
-          <div class="scs"><div class="scs-val">127</div><div class="scs-label">Jobs done</div></div>
-          <div class="scs"><div class="scs-val">KES 1,200</div><div class="scs-label">Per hr</div></div>
-          <div class="scs"><div class="scs-val">8 yrs</div><div class="scs-label">Exp.</div></div>
-        </div>
-        <div class="sc-note">💬 "James fixed our burst pipe in 2hrs. Highly reliable — saved for all plumbing jobs."</div>
-        <div class="sc-skills"><span class="skill-chip">Pipe fitting</span><span class="skill-chip">Drain unblocking</span><span class="skill-chip">Water tanks</span></div>
-        <div class="sc-actions">
-          <a href="post-job.html" class="sc-btn scb-hire">➕ Post Job for James</a>
-          <a href="messages.html" class="sc-btn scb-msg">💬</a>
-          <a href="worker-profile.html" class="sc-btn scb-view">👤</a>
-        </div>
+      <div class="empty-col" id="loadingState">
+        <div class="ec-icon">KX</div>
+        <div class="ec-title">Loading saved fundis...</div>
+        <div class="ec-sub">Fetching your collection of shortlisted workers.</div>
       </div>
-
-      <!-- Card 2 -->
-      <div class="saved-card" data-col="electrical">
-        <button class="unsave-btn" title="Remove from saved" onclick="unsave(this)">♥</button>
-        <div class="sc-top">
-          <div class="sc-avatar">⚡<div class="sc-online"></div></div>
-          <div>
-            <div class="sc-name">Faith Njeri</div>
-            <div class="sc-trade">Electrician · KPLC Licensed</div>
-            <div class="sc-loc">📍 Kasarani · 3.2 km</div>
-            <div class="sc-rating"><span class="sc-stars">★★★★★</span><span class="sc-score">4.8</span><span class="sc-jobs">(89 jobs)</span></div>
-            <span class="badge-verified">✓ ID Verified</span>
-          </div>
-        </div>
-        <div class="sc-stats">
-          <div class="scs"><div class="scs-val">89</div><div class="scs-label">Jobs done</div></div>
-          <div class="scs"><div class="scs-val">KES 1,500</div><div class="scs-label">Per hr</div></div>
-          <div class="scs"><div class="scs-val">5 yrs</div><div class="scs-label">Exp.</div></div>
-        </div>
-        <div class="sc-note">💬 "Shortlisted for CCTV installation — currently hired on a booking."</div>
-        <div class="sc-skills"><span class="skill-chip">CCTV</span><span class="skill-chip">NVR setup</span><span class="skill-chip">Cable concealment</span></div>
-        <div class="sc-actions">
-          <a href="post-job.html" class="sc-btn scb-hire">➕ Post Job for Faith</a>
-          <a href="messages.html" class="sc-btn scb-msg">💬</a>
-          <a href="worker-profile.html" class="sc-btn scb-view">👤</a>
-        </div>
-      </div>
-
-      <!-- Card 3 -->
-      <div class="saved-card" data-col="home">
-        <button class="unsave-btn" title="Remove from saved" onclick="unsave(this)">♥</button>
-        <div class="last-hired-tag">✓ Hired before · 1 job</div>
-        <div class="sc-top">
-          <div class="sc-avatar">🪚</div>
-          <div>
-            <div class="sc-name">Peter Odhiambo</div>
-            <div class="sc-trade">Carpenter</div>
-            <div class="sc-loc">📍 Kibera · 6.1 km</div>
-            <div class="sc-rating"><span class="sc-stars">★★★★★</span><span class="sc-score">4.8</span><span class="sc-jobs">(52 jobs)</span></div>
-            <span class="badge-verified">✓ ID Verified</span>
-          </div>
-        </div>
-        <div class="sc-stats">
-          <div class="scs"><div class="scs-val">52</div><div class="scs-label">Jobs done</div></div>
-          <div class="scs"><div class="scs-val">KES 1,000</div><div class="scs-label">Per hr</div></div>
-          <div class="scs"><div class="scs-val">6 yrs</div><div class="scs-label">Exp.</div></div>
-        </div>
-        <div class="sc-note">💬 "Did excellent fence repair. Keep for future carpentry & furniture work."</div>
-        <div class="sc-skills"><span class="skill-chip">Furniture</span><span class="skill-chip">Fencing</span><span class="skill-chip">Wood repair</span></div>
-        <div class="sc-actions">
-          <a href="post-job.html" class="sc-btn scb-hire">➕ Post Job for Peter</a>
-          <a href="messages.html" class="sc-btn scb-msg">💬</a>
-          <a href="worker-profile.html" class="sc-btn scb-view">👤</a>
-        </div>
-      </div>
-
-      <!-- Card 4 -->
-      <div class="saved-card" data-col="plumbing">
-        <button class="unsave-btn" title="Remove from saved" onclick="unsave(this)">♥</button>
-        <div class="sc-top">
-          <div class="sc-avatar">🚿</div>
-          <div>
-            <div class="sc-name">Grace Wanjiku</div>
-            <div class="sc-trade">Plumber</div>
-            <div class="sc-loc">📍 Kasarani · 3.4 km</div>
-            <div class="sc-rating"><span class="sc-stars">★★★★★</span><span class="sc-score">4.8</span><span class="sc-jobs">(89 jobs)</span></div>
-            <span class="badge-verified">✓ ID Verified</span>
-          </div>
-        </div>
-        <div class="sc-stats">
-          <div class="scs"><div class="scs-val">89</div><div class="scs-label">Jobs done</div></div>
-          <div class="scs"><div class="scs-val">KES 950</div><div class="scs-label">Per hr</div></div>
-          <div class="scs"><div class="scs-val">4 yrs</div><div class="scs-label">Exp.</div></div>
-        </div>
-        <div class="sc-note">💬 "Backup plumber option — specialises in solar water heaters."</div>
-        <div class="sc-skills"><span class="skill-chip">Solar heater</span><span class="skill-chip">Pipe fitting</span></div>
-        <div class="sc-actions">
-          <a href="post-job.html" class="sc-btn scb-hire">➕ Post Job for Grace</a>
-          <a href="messages.html" class="sc-btn scb-msg">💬</a>
-          <a href="worker-profile.html" class="sc-btn scb-view">👤</a>
-        </div>
-      </div>
-
-      <!-- Card 5 -->
-      <div class="saved-card" data-col="home">
-        <button class="unsave-btn" title="Remove from saved" onclick="unsave(this)">♥</button>
-        <div class="sc-top">
-          <div class="sc-avatar">🎨</div>
-          <div>
-            <div class="sc-name">Mary Akinyi</div>
-            <div class="sc-trade">Painter</div>
-            <div class="sc-loc">📍 Embakasi · 8.2 km</div>
-            <div class="sc-rating"><span class="sc-stars">★★★★★</span><span class="sc-score">4.7</span><span class="sc-jobs">(71 jobs)</span></div>
-            <span class="badge-verified">✓ ID Verified</span>
-          </div>
-        </div>
-        <div class="sc-stats">
-          <div class="scs"><div class="scs-val">71</div><div class="scs-label">Jobs done</div></div>
-          <div class="scs"><div class="scs-val">KES 900</div><div class="scs-label">Per hr</div></div>
-          <div class="scs"><div class="scs-val">5 yrs</div><div class="scs-label">Exp.</div></div>
-        </div>
-        <div class="sc-note">💬 "Currently painting my house — great attention to detail, keep for future painting."</div>
-        <div class="sc-skills"><span class="skill-chip">Interior painting</span><span class="skill-chip">Exterior</span><span class="skill-chip">Decorative</span></div>
-        <div class="sc-actions">
-          <a href="my-hires.html" class="sc-btn scb-hire" style="background:var(--green)">● Active hire</a>
-          <a href="messages.html" class="sc-btn scb-msg">💬</a>
-          <a href="worker-profile.html" class="sc-btn scb-view">👤</a>
-        </div>
-      </div>
-
     </div><!-- /saved-grid -->
   </main>
 </div>
@@ -269,7 +136,7 @@
   <div style="background:white;border-radius:6px;padding:2rem;max-width:400px;width:90%">
     <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:1.25rem">New Collection</div>
     <label style="font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.4rem">Collection Name</label>
-    <input id="colName" type="text" placeholder="e.g. Trusted Plumbers, Nairobi Specialists…" style="width:100%;padding:.8rem 1rem;border:1.5px solid var(--border);border-radius:2px;font-family:'DM Sans',sans-serif;font-size:.875rem;background:var(--cream);outline:none;margin-bottom:1.25rem" onfocus="this.style.borderColor='var(--ink)'" onblur="this.style.borderColor='var(--border)'">
+    <input id="colName" type="text" placeholder="e.g. Trusted Plumbers, Nairobi Specialists" style="width:100%;padding:.8rem 1rem;border:1.5px solid var(--border);border-radius:2px;font-family:'DM Sans',sans-serif;font-size:.875rem;background:var(--cream);outline:none;margin-bottom:1.25rem" onfocus="this.style.borderColor='var(--ink)'" onblur="this.style.borderColor='var(--border)'">
     <div style="display:flex;gap:.75rem">
       <button onclick="document.getElementById('colModal').style.display='none'" style="flex:1;padding:.75rem;background:var(--cream);border:1px solid var(--border);border-radius:2px;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer">Cancel</button>
       <button onclick="addCollection()" style="flex:2;padding:.75rem;background:var(--ink);color:white;border:none;border-radius:2px;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer">Create Collection</button>
@@ -308,20 +175,20 @@ function addCollection() {
 </script>
 
 <nav class="mobile-nav" aria-label="Primary">
-  <a class="mobile-nav-item" href="client-dashboard.html"><span class="mn-icon">📊</span><span class="mn-label">Dashboard</span></a>
-  <a class="mobile-nav-item" href="my-jobs.html"><span class="mn-icon">📋</span><span class="mn-label">Jobs</span></a>
-  <a class="mobile-nav-item" href="find-workers.html"><span class="mn-icon">🔍</span><span class="mn-label">Find</span></a>
-  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon">💬</span><span class="mn-label">Messages</span></a>
+  <a class="mobile-nav-item" href="client-dashboard.html"><span class="mn-icon"></span><span class="mn-label">Dashboard</span></a>
+  <a class="mobile-nav-item" href="my-jobs.html"><span class="ni-icon"></span><span class="mn-label">Jobs</span></a>
+  <a class="mobile-nav-item" href="find-workers.html"><span class="ni-icon"></span><span class="mn-label">Find</span></a>
+  <a class="mobile-nav-item" href="messages.html"><span class="ni-icon"></span><span class="mn-label">Messages</span></a>
   <div class="mobile-nav-more active">
     <button class="mobile-nav-item mobile-nav-more-toggle" type="button" aria-controls="mobile-drawer" aria-expanded="false" aria-label="Open navigation menu">
-      <span class="mn-icon">⋯</span><span class="mn-label">More</span>
+      <span class="mn-icon"></span><span class="mn-label">More</span>
     </button>
     <div class="mobile-nav-drawer" id="mobile-drawer" role="navigation" aria-label="Secondary pages" aria-hidden="true">
-      <a class="mobile-nav-drawer-item" href="client-profile.html">👤 Profile</a>
-      <a class="mobile-nav-drawer-item" href="notifications.html">🔔 Notifications</a>
-      <a class="mobile-nav-drawer-item" href="payments.html">💳 Payments</a>
-      <a class="mobile-nav-drawer-item" href="reviews.html">⭐ Reviews</a>
-      <a class="mobile-nav-drawer-item active" href="saved-workers.html">❤️ Saved Fundis</a>
+      <a class="mobile-nav-drawer-item" href="client-profile.html">Profile</a>
+      <a class="mobile-nav-drawer-item" href="notifications.html">Notifications</a>
+      <a class="mobile-nav-drawer-item" href="payments.html">Payments</a>
+      <a class="mobile-nav-drawer-item" href="reviews.html">Reviews</a>
+      <a class="mobile-nav-drawer-item active" href="saved-workers.html">Saved Fundis</a>
     </div>
   </div>
 </nav>

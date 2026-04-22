@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-<title>Dashboard — KaziX</title>
+<title>Dashboard  KaziX</title>
 <link rel="stylesheet" href="../assets/css/styles.css">
 <style>
 
-/* STAT CARDS */
+ /*  STAT CARDS  */
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
 .stat-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.25rem 1.5rem;position:relative;overflow:hidden;transition:box-shadow 0.2s}
 .stat-card:hover{box-shadow:0 6px 24px rgba(0,0,0,0.07)}
@@ -23,7 +23,7 @@
 .stat-delta.down{color:var(--rust)}
 .stat-icon{position:absolute;top:1rem;right:1rem;font-size:1.4rem;opacity:0.15}
 
-/* SECTION BLOCKS */
+ /*  SECTION BLOCKS  */
 .dash-grid{display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
 .card{background:white;border:1px solid var(--border);border-radius:6px;overflow:hidden}
 .card-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
@@ -32,7 +32,7 @@
 .card-link:hover{text-decoration:underline}
 .card-body{padding:1.5rem}
 
-/* JOB ROWS */
+ /*  JOB ROWS  */
 .job-row{display:flex;align-items:center;gap:1rem;padding:0.9rem 0;border-bottom:1px solid var(--border)}
 .job-row:last-child{border-bottom:none;padding-bottom:0}
 .job-status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
@@ -51,7 +51,7 @@
 .job-apps{font-size:0.75rem;color:var(--muted);text-align:right;white-space:nowrap}
 .job-apps strong{color:var(--ink);font-family:'Syne',sans-serif}
 
-/* MESSAGE ROWS */
+ /*  MESSAGE ROWS  */
 .msg-row{display:flex;align-items:flex-start;gap:0.85rem;padding:0.9rem 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;border-radius:4px;padding:0.75rem}
 .msg-row:hover{background:var(--cream)}
 .msg-row:last-child{border-bottom:none}
@@ -63,7 +63,7 @@
 .msg-unread .msg-name,.msg-unread .msg-preview{color:var(--ink)}
 .msg-unread-dot{width:8px;height:8px;border-radius:50%;background:var(--saffron);margin-top:4px;flex-shrink:0}
 
-/* ACTION ITEMS */
+ /*  ACTION ITEMS  */
 .action-list{display:flex;flex-direction:column;gap:0.5rem}
 .action-item{display:flex;align-items:flex-start;gap:0.75rem;padding:0.85rem;border-radius:4px;border:1px solid var(--border);background:white;cursor:pointer;transition:all 0.2s;text-decoration:none}
 .action-item:hover{border-color:var(--ink);transform:translateX(3px)}
@@ -76,7 +76,7 @@
 .action-sub{font-size:0.72rem;color:var(--muted)}
 .action-arrow{color:var(--muted);font-size:0.8rem;margin-top:2px}
 
-/* SPEND CHART (simple CSS bars) */
+ /*  SPEND CHART (simple CSS bars)  */
 .spend-bars{display:flex;align-items:flex-end;gap:6px;height:80px;margin-bottom:0.5rem}
 .spend-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
 .spend-bar{width:100%;border-radius:2px 2px 0 0;background:var(--saffron);opacity:0.7;transition:opacity 0.2s;cursor:pointer}
@@ -86,7 +86,7 @@
 .spend-total{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:-0.04em;color:var(--ink)}
 .spend-sub{font-size:0.72rem;color:var(--muted)}
 
-/* QUICK ACTIONS BAR */
+ /*  QUICK ACTIONS BAR  */
 .quick-actions{display:flex;gap:0.75rem;margin-bottom:2rem;flex-wrap:wrap}
 .qa-btn{display:flex;align-items:center;gap:0.5rem;padding:0.6rem 1.1rem;border-radius:2px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem;cursor:pointer;border:1.5px solid var(--border);background:white;transition:all 0.2s;text-decoration:none;color:var(--ink)}
 .qa-btn:hover{border-color:var(--ink);transform:translateY(-1px)}
@@ -103,7 +103,7 @@
 <nav class="topnav">
   <a href="index.html" class="logo">Kazi<span>X</span></a>
   <div class="topnav-right">
-    <button class="notif-btn" title="Notifications">🔔<span class="notif-dot"></span></button>
+    <button class="notif-btn" title="Notifications"><span class="notif-dot"></span></button>
     <div class="user-chip" onclick="location.href='client-profile.html'">
       <div class="user-avatar" id="navUserAvatar">KX</div>
       <span class="user-name" id="navUserName">My account</span>
@@ -115,18 +115,18 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-section">Main</div>
-    <a class="nav-item active" href="client-dashboard.html"><span class="ni-icon">📊</span>Dashboard</a>
-    <a class="nav-item" href="my-jobs.html"><span class="ni-icon">📋</span>My Jobs<span class="ni-badge">3</span></a>
-    <a class="nav-item" href="job-applicants.html"><span class="ni-icon">👥</span>Applications<span class="ni-badge">7</span></a>
-    <a class="nav-item" href="my-hires.html"><span class="ni-icon">🤝</span>My Hires</a>
+    <a class="nav-item active" href="client-dashboard.html"><span class="ni-icon"></span>Dashboard</a>
+    <a class="nav-item" href="my-jobs.html"><span class="ni-icon"></span>My Jobs<span class="ni-badge">3</span></a>
+    <a class="nav-item" href="job-applicants.html"><span class="ni-icon"></span>Applications<span class="ni-badge">7</span></a>
+    <a class="nav-item" href="my-hires.html"><span class="ni-icon"></span>My Hires</a>
     <div class="sidebar-section">Discover</div>
-    <a class="nav-item" href="find-workers.html"><span class="ni-icon">🔍</span>Find Fundis</a>
-    <a class="nav-item" href="saved-workers.html"><span class="ni-icon">❤️</span>Saved Fundis<span class="ni-badge">5</span></a>
-    <a class="nav-item" href="post-job.html"><span class="ni-icon">➕</span>Post a Job</a>
+    <a class="nav-item" href="find-workers.html"><span class="ni-icon"></span>Find Fundis</a>
+    <a class="nav-item" href="saved-workers.html"><span class="ni-icon"></span>Saved Fundis<span class="ni-badge">5</span></a>
+    <a class="nav-item" href="post-job.html"><span class="ni-icon"></span>Post a Job</a>
     <div class="sidebar-section">Account</div>
-    <a class="nav-item" href="messages.html"><span class="ni-icon">💬</span>Messages<span class="ni-badge">2</span></a>
-    <a class="nav-item" href="payments.html"><span class="ni-icon">💳</span>Payments</a>
-    <a class="nav-item" href="client-profile.html"><span class="ni-icon">👤</span>My Profile</a>
+    <a class="nav-item" href="messages.html"><span class="ni-icon"></span>Messages<span class="ni-badge">2</span></a>
+    <a class="nav-item" href="payments.html"><span class="ni-icon"></span>Payments</a>
+    <a class="nav-item" href="client-profile.html"><span class="ni-icon"></span>My Profile</a>
     <div class="sidebar-bottom">
       <a class="sidebar-profile" href="client-profile.html">
         <div class="sp-avatar" id="sidebarAvatar">KX</div>
@@ -138,43 +138,43 @@
   <!-- MAIN -->
   <main class="main">
     <div style="animation:slideUp 0.4s ease both">
-      <div class="page-title" id="dashboardGreeting">Welcome back 👋</div>
+      <div class="page-title" id="dashboardGreeting">Welcome back</div>
       <div class="page-sub">Here's what's happening with your jobs today</div>
     </div>
 
     <!-- QUICK ACTIONS -->
     <div class="quick-actions" style="animation:slideUp 0.4s 0.05s ease both">
-      <a href="post-job.html" class="qa-btn primary">➕ Post a New Job</a>
-      <a href="find-workers.html" class="qa-btn">🔍 Find Fundis</a>
-      <a href="job-applicants.html" class="qa-btn">👥 Review Applications <span style="background:var(--saffron);color:var(--ink);font-size:0.65rem;padding:0.1rem 0.45rem;border-radius:10px;margin-left:4px">7 new</span></a>
-      <a href="messages.html" class="qa-btn">💬 Messages <span style="background:var(--rust);color:white;font-size:0.65rem;padding:0.1rem 0.45rem;border-radius:10px;margin-left:4px">2</span></a>
+      <a href="post-job.html" class="qa-btn primary"> Post a New Job</a>
+      <a href="find-workers.html" class="qa-btn"> Find Fundis</a>
+      <a href="job-applicants.html" class="qa-btn"> Review Applications <span style="background:var(--saffron);color:var(--ink);font-size:0.65rem;padding:0.1rem 0.45rem;border-radius:10px;margin-left:4px">7 new</span></a>
+      <a href="messages.html" class="qa-btn"> Messages <span style="background:var(--rust);color:white;font-size:0.65rem;padding:0.1rem 0.45rem;border-radius:10px;margin-left:4px">2</span></a>
     </div>
 
     <!-- STAT CARDS -->
     <div class="stats-row" style="animation:slideUp 0.4s 0.1s ease both">
       <div class="stat-card ink">
         <div class="stat-label">Active Jobs</div>
-        <div class="stat-value">3</div>
-        <div class="stat-delta">↑ 1 posted this week</div>
-        <div class="stat-icon">📋</div>
+        <div class="stat-value">...</div>
+        <div class="stat-delta">...</div>
+        <div class="stat-icon"></div>
       </div>
       <div class="stat-card saffron">
         <div class="stat-label">Pending Applications</div>
-        <div class="stat-value">7</div>
-        <div class="stat-delta">↑ 4 new today</div>
-        <div class="stat-icon">👥</div>
+        <div class="stat-value">...</div>
+        <div class="stat-delta">...</div>
+        <div class="stat-icon"></div>
       </div>
       <div class="stat-card green">
         <div class="stat-label">Jobs Completed</div>
-        <div class="stat-value">12</div>
-        <div class="stat-delta">↑ 2 this month</div>
-        <div class="stat-icon">✅</div>
+        <div class="stat-value">...</div>
+        <div class="stat-delta">...</div>
+        <div class="stat-icon"></div>
       </div>
       <div class="stat-card rust">
         <div class="stat-label">Total Spent (KES)</div>
-        <div class="stat-value">48,200</div>
-        <div class="stat-delta down">This month: KES 8,400</div>
-        <div class="stat-icon">💳</div>
+        <div class="stat-value">...</div>
+        <div class="stat-delta">...</div>
+        <div class="stat-icon"></div>
       </div>
     </div>
 
@@ -185,45 +185,10 @@
       <div class="card">
         <div class="card-header">
           <div class="card-title">My Active Jobs</div>
-          <a href="my-jobs.html" class="card-link">View all →</a>
+          <a href="my-jobs.html" class="card-link">View all </a>
         </div>
-        <div class="card-body" style="padding:0 1.5rem">
-          <div class="job-row">
-            <div class="job-status-dot dot-review"></div>
-            <div class="job-info">
-              <div class="job-title">Install CCTV cameras — Kilimani</div>
-              <div class="job-meta">⚡ Electrician · Posted 2 days ago · Nairobi</div>
-            </div>
-            <span class="job-badge jb-review">Reviewing</span>
-            <div class="job-apps"><strong>5</strong><br>applicants</div>
-          </div>
-          <div class="job-row">
-            <div class="job-status-dot dot-open"></div>
-            <div class="job-info">
-              <div class="job-title">Fix leaking pipe — Westlands</div>
-              <div class="job-meta">🚿 Plumber · Posted today · Nairobi</div>
-            </div>
-            <span class="job-badge jb-open">Open</span>
-            <div class="job-apps"><strong>2</strong><br>applicants</div>
-          </div>
-          <div class="job-row">
-            <div class="job-status-dot dot-active"></div>
-            <div class="job-info">
-              <div class="job-title">Paint bedroom + living room</div>
-              <div class="job-meta">🎨 Painter · Started yesterday · Nairobi</div>
-            </div>
-            <span class="job-badge jb-active">In Progress</span>
-            <div class="job-apps" style="text-align:right"><strong>Mary A.</strong><br><span style="color:var(--green);font-size:0.65rem">★ 4.7</span></div>
-          </div>
-          <div class="job-row">
-            <div class="job-status-dot dot-done"></div>
-            <div class="job-info">
-              <div class="job-title">Repair garden fence</div>
-              <div class="job-meta">🌿 Carpenter · Completed 3 days ago</div>
-            </div>
-            <span class="job-badge jb-done">Done</span>
-            <div class="job-apps" style="text-align:right;color:var(--saffron);font-size:0.75rem">Leave review →</div>
-          </div>
+        <div class="card-body" style="padding:2rem 1.5rem;text-align:center;color:var(--muted)">
+          <p>Loading your active jobs...</p>
         </div>
       </div>
 
@@ -235,24 +200,8 @@
           <div class="card-header">
             <div class="card-title">Action Needed</div>
           </div>
-          <div class="card-body">
-            <div class="action-list">
-              <a href="job-applicants.html" class="action-item">
-                <div class="action-icon ai-saffron">👥</div>
-                <div class="action-text"><div class="action-title">5 new applicants on CCTV job</div><div class="action-sub">Review and hire a fundi</div></div>
-                <span class="action-arrow">›</span>
-              </a>
-              <a href="my-hires.html" class="action-item">
-                <div class="action-icon ai-green">✅</div>
-                <div class="action-text"><div class="action-title">Confirm painting job complete</div><div class="action-sub">Release KES 3,200 from escrow</div></div>
-                <span class="action-arrow">›</span>
-              </a>
-              <a href="my-hires.html" class="action-item">
-                <div class="action-icon ai-rust">⭐</div>
-                <div class="action-text"><div class="action-title">Review Peter Odhiambo</div><div class="action-sub">Fence repair · 3 days ago</div></div>
-                <span class="action-arrow">›</span>
-              </a>
-            </div>
+          <div class="card-body" style="text-align:center;color:var(--muted)">
+            <p>No actions pending.</p>
           </div>
         </div>
 
@@ -260,7 +209,7 @@
         <div class="card">
           <div class="card-header">
             <div class="card-title">Monthly Spend</div>
-            <a href="payments.html" class="card-link">Details →</a>
+            <a href="payments.html" class="card-link">Details </a>
           </div>
           <div class="card-body">
             <div class="spend-bars">
@@ -271,8 +220,8 @@
               <div class="spend-bar-wrap"><div class="spend-bar" style="height:55%"></div><div class="spend-bar-label">Dec</div></div>
               <div class="spend-bar-wrap"><div class="spend-bar spend-bar-this" style="height:42%"></div><div class="spend-bar-label" style="font-weight:700;color:var(--ink)">Mar</div></div>
             </div>
-            <div class="spend-total">KES 8,400</div>
-            <div class="spend-sub">This month · <span style="color:var(--green);font-weight:600">↓ 12% vs last month</span></div>
+            <div class="spend-total">KES ...</div>
+            <div class="spend-sub">This month</div>
           </div>
         </div>
 
@@ -283,32 +232,10 @@
     <div class="card" style="animation:slideUp 0.4s 0.2s ease both">
       <div class="card-header">
         <div class="card-title">Recent Messages</div>
-        <a href="messages.html" class="card-link">View all →</a>
+        <a href="messages.html" class="card-link">View all </a>
       </div>
-      <div class="card-body" style="padding:0 1.5rem">
-        <div class="msg-row msg-unread">
-          <div class="msg-avatar">🔧</div>
-          <div class="msg-info">
-            <div class="msg-name">James Kamau <span class="msg-time">2 min ago</span></div>
-            <div class="msg-preview">Nimewasili Westlands, niko njiani kwako sasa…</div>
-          </div>
-          <div class="msg-unread-dot"></div>
-        </div>
-        <div class="msg-row msg-unread">
-          <div class="msg-avatar">🎨</div>
-          <div class="msg-info">
-            <div class="msg-name">Mary Akinyi <span class="msg-time">1 hr ago</span></div>
-            <div class="msg-preview">Nimekamilisha chumba cha kwanza. Ninahitaji paint zaidi…</div>
-          </div>
-          <div class="msg-unread-dot"></div>
-        </div>
-        <div class="msg-row">
-          <div class="msg-avatar">⚡</div>
-          <div class="msg-info">
-            <div class="msg-name">Faith Njeri <span class="msg-time">Yesterday</span></div>
-            <div class="msg-preview">Thank you for the opportunity. I can come Thursday morning…</div>
-          </div>
-        </div>
+      <div class="card-body" style="padding:2rem 1.5rem;text-align:center;color:var(--muted)">
+        <p>No recent messages.</p>
       </div>
     </div>
 
@@ -317,20 +244,20 @@
 
 
 <nav class="mobile-nav" aria-label="Primary">
-  <a class="mobile-nav-item active" href="client-dashboard.html"><span class="mn-icon">📊</span><span class="mn-label">Dashboard</span></a>
-  <a class="mobile-nav-item" href="my-jobs.html"><span class="mn-icon">📋</span><span class="mn-label">Jobs</span></a>
-  <a class="mobile-nav-item" href="find-workers.html"><span class="mn-icon">🔍</span><span class="mn-label">Find</span></a>
-  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon">💬</span><span class="mn-label">Messages</span></a>
+  <a class="mobile-nav-item active" href="client-dashboard.html"><span class="mn-icon"></span><span class="mn-label">Dashboard</span></a>
+  <a class="mobile-nav-item" href="my-jobs.html"><span class="mn-icon"></span><span class="mn-label">Jobs</span></a>
+  <a class="mobile-nav-item" href="find-workers.html"><span class="mn-icon"></span><span class="mn-label">Find</span></a>
+  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon"></span><span class="mn-label">Messages</span></a>
   <div class="mobile-nav-more">
     <button class="mobile-nav-item mobile-nav-more-toggle" type="button" aria-controls="mobile-drawer" aria-expanded="false" aria-label="Open navigation menu">
-      <span class="mn-icon">⋯</span><span class="mn-label">More</span>
+      <span class="mn-icon"></span><span class="mn-label">More</span>
     </button>
     <div class="mobile-nav-drawer" id="mobile-drawer" role="navigation" aria-label="Secondary pages" aria-hidden="true">
-      <a class="mobile-nav-drawer-item" href="client-profile.html">👤 Profile</a>
-      <a class="mobile-nav-drawer-item" href="notifications.html">🔔 Notifications</a>
-      <a class="mobile-nav-drawer-item" href="payments.html">💳 Payments</a>
-      <a class="mobile-nav-drawer-item" href="reviews.html">⭐ Reviews</a>
-      <a class="mobile-nav-drawer-item" href="saved-workers.html">❤️ Saved Fundis</a>
+      <a class="mobile-nav-drawer-item" href="client-profile.html"> Profile</a>
+      <a class="mobile-nav-drawer-item" href="notifications.html"> Notifications</a>
+      <a class="mobile-nav-drawer-item" href="payments.html"> Payments</a>
+      <a class="mobile-nav-drawer-item" href="reviews.html"> Reviews</a>
+      <a class="mobile-nav-drawer-item" href="saved-workers.html"> Saved Fundis</a>
     </div>
   </div>
 </nav>

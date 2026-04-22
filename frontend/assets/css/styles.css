@@ -13,6 +13,26 @@
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
+/* Standardized Card & Button Styles */
+.job-card, .pro-card, .stat, .step, .category, .testimonial, .card, .stat-card {
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.job-card:hover, .pro-card:hover, .stat:hover, .step:hover, .category:hover, .testimonial:hover, .card:hover, .stat-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  transform: translateY(-2px);
+}
+
+.btn-primary, .btn-secondary, .nav-cta, .cta-btn, .post-btn, .apply-btn {
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.btn-primary:hover, .btn-secondary:hover, .nav-cta:hover, .cta-btn:hover, .post-btn:hover, .apply-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+
 body{
   font-family:'DM Sans',sans-serif;
   background:var(--cream);

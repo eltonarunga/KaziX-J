@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-<title>Dispute Resolution — KaziX</title>
+<title>Dispute Resolution  KaziX</title>
 <link rel="stylesheet" href="../assets/css/styles.css">
 <style>
 
-/* LAYOUT */
+ /*  LAYOUT  */
 .dispute-layout{display:grid;grid-template-columns:1fr 320px;gap:1.5rem;align-items:start;animation:up .4s ease both}
 
-/* STEPS GUIDE */
+ /*  STEPS GUIDE  */
 .process-steps{background:white;border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin-bottom:1.5rem}
 .ps-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:1.25rem}
 .ps-timeline{display:flex;flex-direction:column;gap:0}
@@ -27,13 +27,13 @@
 .ps-label.active{color:var(--rust)}
 .ps-sub{font-size:.72rem;color:var(--muted);margin-top:.15rem}
 
-/* WARNING BANNER */
+ /*  WARNING BANNER  */
 .warn-banner{background:rgba(192,57,43,.07);border:1.5px solid rgba(192,57,43,.2);border-radius:6px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;gap:1rem;align-items:flex-start}
 .wb-icon{font-size:1.4rem;flex-shrink:0}
 .wb-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;color:var(--rust);margin-bottom:.3rem}
 .wb-sub{font-size:.82rem;color:var(--steel);line-height:1.6}
 
-/* BOOKING SUMMARY CARD */
+ /*  BOOKING SUMMARY CARD  */
 .booking-ref{background:white;border:1px solid var(--border);border-radius:6px;padding:1.25rem 1.5rem;margin-bottom:1.5rem}
 .br-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:1rem}
 .br-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.85rem}
@@ -42,7 +42,7 @@
 .br-val{font-weight:600}
 .br-escrow{color:var(--saffron);font-family:'Syne',sans-serif;font-weight:700}
 
-/* FORM CARD */
+ /*  FORM CARD  */
 .form-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin-bottom:1.5rem}
 .fc-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
 .field-group{margin-bottom:1.1rem}
@@ -54,14 +54,14 @@ select.f-input{cursor:pointer;appearance:none;background-image:url("data:image/s
 textarea.f-input{resize:vertical;min-height:110px;line-height:1.6}
 .f-hint{font-size:.72rem;color:var(--muted);margin-top:.3rem}
 
-/* UPLOAD ZONE */
+ /*  UPLOAD ZONE  */
 .upload-zone{border:1.5px dashed var(--border);border-radius:4px;padding:1.5rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--cream)}
 .upload-zone:hover{border-color:var(--ink);background:white}
 .uz-icon{font-size:1.75rem;margin-bottom:.4rem}
 .uz-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;margin-bottom:.2rem}
 .uz-sub{font-size:.72rem;color:var(--muted)}
 
-/* REASON RADIO */
+ /*  REASON RADIO  */
 .reason-options{display:flex;flex-direction:column;gap:.5rem}
 .reason-option{display:flex;align-items:flex-start;gap:.75rem;padding:.85rem 1rem;border:1.5px solid var(--border);border-radius:4px;cursor:pointer;transition:all .2s}
 .reason-option:hover{border-color:var(--ink)}
@@ -70,11 +70,11 @@ textarea.f-input{resize:vertical;min-height:110px;line-height:1.6}
 .ro-label{font-size:.875rem;font-weight:600;color:var(--ink);margin-bottom:.15rem}
 .ro-sub{font-size:.75rem;color:var(--muted)}
 
-/* SUBMIT BTN */
+ /*  SUBMIT BTN  */
 .submit-dispute{width:100%;padding:1rem;background:var(--rust);color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;border:none;border-radius:2px;cursor:pointer;transition:background .2s}
 .submit-dispute:hover{background:#991f15}
 
-/* SIDEBAR CARDS */
+ /*  SIDEBAR CARDS  */
 .side-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin-bottom:1rem}
 .sc-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:1rem}
 .policy-item{display:flex;align-items:flex-start;gap:.6rem;margin-bottom:.85rem;font-size:.82rem;line-height:1.55;color:var(--steel)}
@@ -88,7 +88,7 @@ textarea.f-input{resize:vertical;min-height:110px;line-height:1.6}
 .ro-text .ro-name{font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem}
 .ro-text .ro-desc{font-size:.72rem;color:var(--muted);margin-top:.1rem}
 
-/* OPEN DISPUTE DISPLAY */
+ /*  OPEN DISPUTE DISPLAY  */
 .open-dispute{background:white;border:1.5px solid rgba(192,57,43,.3);border-radius:6px;overflow:hidden;margin-bottom:1.5rem;display:none}
 .od-header{background:rgba(192,57,43,.07);padding:1rem 1.5rem;border-bottom:1px solid rgba(192,57,43,.15);display:flex;align-items:center;justify-content:space-between}
 .od-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;color:var(--rust)}
@@ -112,29 +112,29 @@ textarea.f-input{resize:vertical;min-height:110px;line-height:1.6}
 <nav class="topnav">
   <a href="index.html" class="logo">Kazi<span>X</span></a>
   <div class="topnav-right">
-    <button class="notif-btn">🔔<span class="notif-dot"></span></button>
+    <button class="notif-btn"><span class="notif-dot"></span></button>
     <div class="user-chip"><div class="user-avatar">KX</div><span class="user-name">My account</span></div>
   </div>
 </nav>
 <div class="app-shell">
   <aside class="sidebar">
     <div class="sidebar-section">Main</div>
-    <a class="nav-item" href="client-dashboard.html"><span class="ni-icon">📊</span>Dashboard</a>
-    <a class="nav-item" href="my-jobs.html"><span class="ni-icon">📋</span>My Jobs<span class="ni-badge">3</span></a>
-    <a class="nav-item" href="job-applicants.html"><span class="ni-icon">👥</span>Applications<span class="ni-badge">7</span></a>
-    <a class="nav-item" href="my-hires.html"><span class="ni-icon">🤝</span>My Hires</a>
+    <a class="nav-item" href="client-dashboard.html"><span class="ni-icon"></span>Dashboard</a>
+    <a class="nav-item" href="my-jobs.html"><span class="ni-icon"></span>My Jobs<span class="ni-badge">3</span></a>
+    <a class="nav-item" href="job-applicants.html"><span class="ni-icon"></span>Applications<span class="ni-badge">7</span></a>
+    <a class="nav-item" href="my-hires.html"><span class="ni-icon"></span>My Hires</a>
     <div class="sidebar-section">Discover</div>
-    <a class="nav-item" href="find-workers.html"><span class="ni-icon">🔍</span>Find Fundis</a>
-    <a class="nav-item" href="saved-workers.html"><span class="ni-icon">❤️</span>Saved Fundis<span class="ni-badge">5</span></a>
-    <a class="nav-item" href="post-job.html"><span class="ni-icon">➕</span>Post a Job</a>
+    <a class="nav-item" href="find-workers.html"><span class="ni-icon"></span>Find Fundis</a>
+    <a class="nav-item" href="saved-workers.html"><span class="ni-icon"></span>Saved Fundis<span class="ni-badge">5</span></a>
+    <a class="nav-item" href="post-job.html"><span class="ni-icon"></span>Post a Job</a>
     <div class="sidebar-section">Account</div>
-    <a class="nav-item" href="messages.html"><span class="ni-icon">💬</span>Messages<span class="ni-badge">2</span></a>
-    <a class="nav-item" href="payments.html"><span class="ni-icon">💳</span>Payments</a>
-    <a class="nav-item active" href="dispute.html"><span class="ni-icon">⚠️</span>Disputes</a>
-    <a class="nav-item" href="client-profile.html"><span class="ni-icon">👤</span>My Profile</a>
+    <a class="nav-item" href="messages.html"><span class="ni-icon"></span>Messages<span class="ni-badge">2</span></a>
+    <a class="nav-item" href="payments.html"><span class="ni-icon"></span>Payments</a>
+    <a class="nav-item active" href="dispute.html"><span class="ni-icon"></span>Disputes</a>
+    <a class="nav-item" href="client-profile.html"><span class="ni-icon"></span>My Profile</a>
     <div class="sidebar-bottom">
       <a class="sidebar-profile" href="client-profile.html">
-        <div class="sp-avatar">🏠</div>
+        <div class="sp-avatar">KX</div>
         <div><div class="sp-name">My account</div><div class="sp-role">Client account</div></div>
       </a>
     </div>
@@ -143,7 +143,7 @@ textarea.f-input{resize:vertical;min-height:110px;line-height:1.6}
   <main class="main">
     <div style="margin-bottom:1.5rem;animation:up .4s ease both">
       <div style="font-size:.78rem;color:var(--muted);margin-bottom:.75rem">
-        <a href="my-hires.html" style="color:var(--muted);text-decoration:none">My Hires</a> › Dispute
+        <a href="my-hires.html" style="color:var(--muted);text-decoration:none">My Hires</a>  Dispute
       </div>
       <div class="page-title">Dispute Resolution</div>
       <div class="page-sub">We're here to help resolve issues fairly for both clients and fundis</div>
@@ -156,12 +156,12 @@ textarea.f-input{resize:vertical;min-height:110px;line-height:1.6}
           <div class="ps-title">Resolution Process</div>
           <div class="ps-timeline">
             <div class="ps-step done">
-              <div class="ps-dot psd-done">✓</div>
-              <div class="ps-info"><div class="ps-label">Contact the fundi directly</div><div class="ps-sub">Always try messaging first — most issues resolve in minutes</div></div>
+              <div class="ps-dot psd-done"></div>
+              <div class="ps-info"><div class="ps-label">Contact the fundi directly</div><div class="ps-sub">Always try messaging first  most issues resolve in minutes</div></div>
             </div>
             <div class="ps-step done">
-              <div class="ps-dot psd-done">✓</div>
-              <div class="ps-info"><div class="ps-label">Job completed / escrow held</div><div class="ps-sub">KES 3,200 locked in escrow pending resolution</div></div>
+              <div class="ps-dot psd-done"></div>
+              <div class="ps-info"><div class="ps-label">Job completed / escrow held</div><div class="ps-sub">KES ... locked in escrow pending resolution</div></div>
             </div>
             <div class="ps-step">
               <div class="ps-dot psd-active" style="font-size:.65rem">!</div>
@@ -180,7 +180,7 @@ textarea.f-input{resize:vertical;min-height:110px;line-height:1.6}
 
         <!-- WARNING -->
         <div class="warn-banner">
-          <div class="wb-icon">⚠️</div>
+          <div class="wb-icon">KX</div>
           <div>
             <div class="wb-title">Before raising a dispute</div>
             <div class="wb-sub">Have you tried messaging the fundi directly? Most issues are resolved within 30 minutes of direct communication. Raising a dispute freezes escrow and can affect the fundi's rating even if the dispute is later withdrawn.</div>
@@ -190,11 +190,11 @@ textarea.f-input{resize:vertical;min-height:110px;line-height:1.6}
         <!-- BOOKING REF -->
         <div class="booking-ref">
           <div class="br-title">Booking in Dispute</div>
-          <div class="br-row"><span class="br-label">Booking ref</span><span class="br-val">#KX-2024-0192</span></div>
-          <div class="br-row"><span class="br-label">Fundi</span><span class="br-val">Mary Akinyi — Painter</span></div>
-          <div class="br-row"><span class="br-label">Job</span><span class="br-val">Paint bedroom + living room</span></div>
-          <div class="br-row"><span class="br-label">Agreed amount</span><span class="br-val">KES 3,200</span></div>
-          <div class="br-row"><span class="br-label">Escrow status</span><span class="br-escrow">🔒 KES 3,200 held</span></div>
+          <div class="br-row"><span class="br-label">Booking ref</span><span class="br-val">#...</span></div>
+          <div class="br-row"><span class="br-label">Fundi</span><span class="br-val">...</span></div>
+          <div class="br-row"><span class="br-label">Job</span><span class="br-val">...</span></div>
+          <div class="br-row"><span class="br-label">Agreed amount</span><span class="br-val">KES ...</span></div>
+          <div class="br-row"><span class="br-label">Escrow status</span><span class="br-escrow">KES ... held</span></div>
         </div>
 
         <!-- DISPUTE REASON -->
@@ -223,7 +223,7 @@ textarea.f-input{resize:vertical;min-height:110px;line-height:1.6}
             </div>
             <div class="reason-option" onclick="selectReason(this)">
               <input type="radio" class="ro-radio" name="reason">
-              <div><div class="ro-label">Other</div><div class="ro-sub">Something else happened — I'll explain below</div></div>
+              <div><div class="ro-label">Other</div><div class="ro-sub">Something else happened  I'll explain below</div></div>
             </div>
           </div>
         </div>
@@ -232,15 +232,15 @@ textarea.f-input{resize:vertical;min-height:110px;line-height:1.6}
         <div class="form-card">
           <div class="fc-title">2. Describe What Happened</div>
           <div class="field-group">
-            <label class="f-label">Your Account <span class="f-req">*</span></label>
-            <textarea class="f-input" placeholder="Explain clearly what was agreed, what happened, and why you believe a refund or partial refund is warranted. Be specific and factual.">The bedroom was painted but the finish is very uneven — you can clearly see brush marks and patchy areas in multiple spots. I showed Mary the problems and she agreed to fix them, but then left without completing the corrections and has not responded to my messages in 6 hours.</textarea>
-            <div class="f-hint">Minimum 100 characters. Be specific — this is reviewed by KaziX admin.</div>
+            <label class="f-label">Your Account <span class="f-req">★</span></label>
+            <textarea class="f-input" placeholder="Explain clearly what was agreed, what happened, and why you believe a refund or partial refund is warranted. Be specific and factual."></textarea>
+            <div class="f-hint">Minimum 100 characters. Be specific  this is reviewed by KaziX admin.</div>
           </div>
           <div class="field-group">
-            <label class="f-label">Resolution You're Seeking <span class="f-req">*</span></label>
+            <label class="f-label">Resolution You're Seeking <span class="f-req">★</span></label>
             <select class="f-input">
-              <option>Full refund of KES 3,200</option>
-              <option selected>Partial refund — fundi returns to fix issues</option>
+              <option>Full refund of KES ...</option>
+              <option selected>Partial refund  fundi returns to fix issues</option>
               <option>Fundi returns to complete the work</option>
               <option>Compensation for damages</option>
             </select>
@@ -248,7 +248,7 @@ textarea.f-input{resize:vertical;min-height:110px;line-height:1.6}
           <div class="field-group">
             <label class="f-label">Amount in Dispute (KES)</label>
             <input class="f-input" type="number" value="1600" placeholder="e.g. 1600">
-            <div class="f-hint">If partial refund — enter the disputed portion</div>
+            <div class="f-hint">If partial refund  enter the disputed portion</div>
           </div>
         </div>
 
@@ -256,15 +256,15 @@ textarea.f-input{resize:vertical;min-height:110px;line-height:1.6}
         <div class="form-card">
           <div class="fc-title">3. Upload Evidence</div>
           <div class="upload-zone" onclick="this.style.borderColor='var(--ink)'">
-            <div class="uz-icon">📸</div>
+            <div class="uz-icon">KX</div>
             <div class="uz-title">Upload photos or videos of the issue</div>
-            <div class="uz-sub">JPG, PNG, MP4 · Max 20MB per file · Up to 5 files</div>
+            <div class="uz-sub">JPG, PNG, MP4  Max 20MB per file  Up to 5 files</div>
           </div>
           <div class="f-hint" style="margin-top:.75rem">Strong evidence (photos of the work with timestamps) significantly speeds up resolution and strengthens your case.</div>
         </div>
 
         <!-- SUBMIT -->
-        <button class="submit-dispute" onclick="submitDispute()">⚠️ Submit Dispute to KaziX Admin</button>
+        <button class="submit-dispute" onclick="submitDispute()">Submit Dispute to KaziX Admin</button>
         <div style="text-align:center;font-size:.75rem;color:var(--muted);margin-top:.75rem">KaziX admin will review and respond within 24 hours. Both you and the fundi will be notified.</div>
       </div>
 
@@ -274,15 +274,15 @@ textarea.f-input{resize:vertical;min-height:110px;line-height:1.6}
         <div class="side-card">
           <div class="sc-title">Resolve Without a Dispute</div>
           <div class="resolve-option" onclick="location.href='messages.html'">
-            <div class="ro-icon2 roi-green">💬</div>
-            <div class="ro-text"><div class="ro-name">Message Mary directly</div><div class="ro-desc">Fastest option — 80% of issues resolved in chat</div></div>
+            <div class="ro-icon2 roi-green">KX</div>
+            <div class="ro-text"><div class="ro-name">Message directly</div><div class="ro-desc">Fastest option  80% of issues resolved in chat</div></div>
           </div>
           <div class="resolve-option">
-            <div class="ro-icon2 roi-saffron">🤝</div>
-            <div class="ro-text"><div class="ro-name">Request fundi return</div><div class="ro-desc">Ask Mary to come back and fix the issues</div></div>
+            <div class="ro-icon2 roi-saffron">KX</div>
+            <div class="ro-text"><div class="ro-name">Request fundi return</div><div class="ro-desc">Ask the fundi to come back and fix the issues</div></div>
           </div>
           <div class="resolve-option">
-            <div class="ro-icon2 roi-rust">💸</div>
+            <div class="ro-icon2 roi-rust">KX</div>
             <div class="ro-text"><div class="ro-name">Negotiate a partial refund</div><div class="ro-desc">Agree on a reduced payment for work done</div></div>
           </div>
         </div>
@@ -290,20 +290,20 @@ textarea.f-input{resize:vertical;min-height:110px;line-height:1.6}
         <!-- POLICY -->
         <div class="side-card">
           <div class="sc-title">KaziX Dispute Policy</div>
-          <div class="policy-item"><div class="policy-icon">⏱</div>Disputes must be raised within <strong>72 hours</strong> of the job completion date</div>
-          <div class="policy-item"><div class="policy-icon">🔒</div>Escrow is <strong>frozen</strong> immediately when a dispute is opened</div>
-          <div class="policy-item"><div class="policy-icon">⚖️</div>Both client and fundi get <strong>equal opportunity</strong> to present evidence</div>
-          <div class="policy-item"><div class="policy-icon">📞</div>Admin may contact both parties by <strong>phone or WhatsApp</strong></div>
-          <div class="policy-item"><div class="policy-icon">✅</div>Decision is made within <strong>2–5 business days</strong> and is final</div>
-          <div class="policy-item"><div class="policy-icon">💳</div>M-Pesa payment is processed within <strong>2 business days</strong> of decision</div>
+          <div class="policy-item"><div class="policy-icon">KX</div>Disputes must be raised within <strong>72 hours</strong> of the job completion date</div>
+          <div class="policy-item"><div class="policy-icon">KX</div>Escrow is <strong>frozen</strong> immediately when a dispute is opened</div>
+          <div class="policy-item"><div class="policy-icon">KX</div>Both client and fundi get <strong>equal opportunity</strong> to present evidence</div>
+          <div class="policy-item"><div class="policy-icon">KX</div>Admin may contact both parties by <strong>phone or WhatsApp</strong></div>
+          <div class="policy-item"><div class="policy-icon">KX</div>Decision is made within <strong>25 business days</strong> and is final</div>
+          <div class="policy-item"><div class="policy-icon">KX</div>M-Pesa payment is processed within <strong>2 business days</strong> of decision</div>
         </div>
 
         <!-- CONTACT SUPPORT -->
         <div class="side-card" style="background:var(--ink);color:#F5F0E8;border-color:var(--ink)">
           <div class="sc-title" style="color:var(--saffron)">Need Help Immediately?</div>
           <p style="font-size:.82rem;color:rgba(245,240,232,.6);margin-bottom:1rem;line-height:1.6">If there is a safety concern or urgent issue, contact our support team directly.</p>
-          <a href="help-centre.html" style="display:block;padding:.7rem 1rem;background:var(--saffron);color:var(--ink);font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;border-radius:2px;text-decoration:none;text-align:center;margin-bottom:.5rem">📞 Contact Support</a>
-          <div style="font-size:.72rem;color:rgba(245,240,232,.4);text-align:center">Available Mon–Fri 8am–6pm EAT</div>
+          <a href="help-centre.html" style="display:block;padding:.7rem 1rem;background:var(--saffron);color:var(--ink);font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;border-radius:2px;text-decoration:none;text-align:center;margin-bottom:.5rem">Contact Support</a>
+          <div style="font-size:.72rem;color:rgba(245,240,232,.4);text-align:center">Available MonFri 8am6pm EAT</div>
         </div>
       </aside>
     </div>
@@ -320,18 +320,18 @@ function submitDispute() {
   if (!confirm('Submit this dispute to KaziX admin? Escrow will be frozen until resolution.')) return;
   document.querySelector('.dispute-layout').innerHTML = `
     <div style="grid-column:1/-1;text-align:center;padding:3rem 2rem">
-      <div style="font-size:3rem;margin-bottom:1rem">⚖️</div>
+      <div style="font-size:3rem;margin-bottom:1rem">KX</div>
       <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.75rem;letter-spacing:-.04em;margin-bottom:.75rem">Dispute Submitted</div>
-      <div style="color:var(--muted);font-size:.95rem;max-width:480px;margin:0 auto 2rem;line-height:1.7">Your dispute has been submitted. KaziX admin will review the case and contact both you and Mary Akinyi within <strong style="color:var(--ink)">24 hours</strong>. Escrow of KES 3,200 is frozen until resolution.</div>
+      <div style="color:var(--muted);font-size:.95rem;max-width:480px;margin:0 auto 2rem;line-height:1.7">Your dispute has been submitted. KaziX admin will review the case and contact both parties within <strong style="color:var(--ink)">24 hours</strong>. The escrow amount is frozen until resolution.</div>
       <div style="display:inline-flex;flex-direction:column;gap:.5rem;text-align:left;background:var(--cream);border-radius:6px;padding:1.25rem 1.5rem;margin-bottom:2rem;font-size:.82rem">
-        <div>📋 Dispute ref: <strong>DSP-2024-0041</strong></div>
-        <div>🔒 Escrow frozen: <strong style="color:var(--saffron)">KES 3,200</strong></div>
-        <div>⏱ Response by: <strong>Within 24 hours</strong></div>
-        <div>📱 You'll be notified by SMS and in-app</div>
+        <div>Dispute ref: <strong>DSP-2024-0041</strong></div>
+        <div>Escrow frozen: <strong style="color:var(--saffron)">KES ...</strong></div>
+        <div>Response by: <strong>Within 24 hours</strong></div>
+        <div>You'll be notified by SMS and in-app</div>
       </div>
       <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
         <a href="my-hires.html" style="padding:.9rem 2rem;background:var(--ink);color:#F5F0E8;font-family:'Syne',sans-serif;font-weight:700;font-size:.875rem;border-radius:2px;text-decoration:none">Back to My Hires</a>
-        <a href="messages.html" style="padding:.9rem 2rem;background:transparent;color:var(--ink);font-family:'Syne',sans-serif;font-weight:700;font-size:.875rem;border-radius:2px;text-decoration:none;border:1.5px solid var(--ink)">Message Mary</a>
+        <a href="messages.html" style="padding:.9rem 2rem;background:transparent;color:var(--ink);font-family:'Syne',sans-serif;font-weight:700;font-size:.875rem;border-radius:2px;text-decoration:none;border:1.5px solid var(--ink)">Message Fundi</a>
       </div>
     </div>`;
   window.scrollTo({top:0,behavior:'smooth'});
@@ -339,20 +339,20 @@ function submitDispute() {
 </script>
 
 <nav class="mobile-nav" aria-label="Primary">
-  <a class="mobile-nav-item" href="client-dashboard.html"><span class="mn-icon">📊</span><span class="mn-label">Dashboard</span></a>
-  <a class="mobile-nav-item active" href="my-jobs.html"><span class="mn-icon">📋</span><span class="mn-label">Jobs</span></a>
-  <a class="mobile-nav-item" href="find-workers.html"><span class="mn-icon">🔍</span><span class="mn-label">Find</span></a>
-  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon">💬</span><span class="mn-label">Messages</span></a>
+  <a class="mobile-nav-item" href="client-dashboard.html"><span class="mn-icon"></span><span class="mn-label">Dashboard</span></a>
+  <a class="mobile-nav-item active" href="my-jobs.html"><span class="mn-icon"></span><span class="mn-label">Jobs</span></a>
+  <a class="mobile-nav-item" href="find-workers.html"><span class="mn-icon"></span><span class="mn-label">Find</span></a>
+  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon"></span><span class="mn-label">Messages</span></a>
   <div class="mobile-nav-more">
     <button class="mobile-nav-item mobile-nav-more-toggle" type="button" aria-controls="mobile-drawer" aria-expanded="false" aria-label="Open navigation menu">
-      <span class="mn-icon">⋯</span><span class="mn-label">More</span>
+      <span class="mn-icon"></span><span class="mn-label">More</span>
     </button>
     <div class="mobile-nav-drawer" id="mobile-drawer" role="navigation" aria-label="Secondary pages" aria-hidden="true">
-      <a class="mobile-nav-drawer-item" href="client-profile.html">👤 Profile</a>
-      <a class="mobile-nav-drawer-item" href="notifications.html">🔔 Notifications</a>
-      <a class="mobile-nav-drawer-item" href="payments.html">💳 Payments</a>
-      <a class="mobile-nav-drawer-item" href="reviews.html">⭐ Reviews</a>
-      <a class="mobile-nav-drawer-item" href="saved-workers.html">❤️ Saved Fundis</a>
+      <a class="mobile-nav-drawer-item" href="client-profile.html"> Profile</a>
+      <a class="mobile-nav-drawer-item" href="notifications.html"> Notifications</a>
+      <a class="mobile-nav-drawer-item" href="payments.html"> Payments</a>
+      <a class="mobile-nav-drawer-item" href="reviews.html"> Reviews</a>
+      <a class="mobile-nav-drawer-item" href="saved-workers.html"> Saved Fundis</a>
     </div>
   </div>
 </nav>

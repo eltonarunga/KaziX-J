@@ -76,7 +76,7 @@
       setText("#sidebarRole", roleLabel);
 
       var greetingName = firstName(name);
-      var greeting = greetingForHour(new Date()) + ", " + greetingName + " 👋";
+      var greeting = greetingForHour(new Date()) + ", " + greetingName;
       setText("#dashboardGreeting", greeting);
       setText("#availabilityLocation", location);
 
