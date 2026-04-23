@@ -8,13 +8,6 @@
 <link rel="stylesheet" href="../assets/css/styles.css">
 
 <style>
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
-.stat-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.25rem 1.5rem;position:relative;overflow:hidden}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
-.stat-card.c-green::before{background:var(--green)}
-.stat-card.c-saffron::before{background:var(--saffron)}
-.stat-card.c-ink::before{background:var(--ink)}
-.stat-card.c-rust::before{background:var(--rust)}
 .sc-label{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem}
 .sc-value{font-family:'Syne',sans-serif;font-weight:800;font-size:1.75rem;letter-spacing:-0.04em;color:var(--ink)}
 .sc-delta{font-size:0.72rem;color:var(--green);font-weight:600;margin-top:0.2rem}
@@ -31,18 +24,8 @@
 .toggle-slider::before{content:'';position:absolute;width:18px;height:18px;top:3px;left:3px;border-radius:50%;background:white;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
 .toggle-switch input:checked + .toggle-slider{background:var(--green)}
 .toggle-switch input:checked + .toggle-slider::before{transform:translateX(18px)}
-.quick-actions{display:flex;gap:0.75rem;margin-bottom:2rem;flex-wrap:wrap}
-.qa-btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.1rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem;border-radius:2px;cursor:pointer;text-decoration:none;transition:all 0.2s;border:1.5px solid var(--border);background:white;color:var(--ink)}
-.qa-btn:hover{border-color:var(--ink);background:var(--cream)}
-.qa-btn.primary{background:var(--ink);color:#F5F0E8;border-color:var(--ink)}
-.qa-btn.primary:hover{background:var(--green);border-color:var(--green)}
-.dash-grid{display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
-.card{background:white;border:1px solid var(--border);border-radius:6px;overflow:hidden}
-.card-head{padding:1.1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem}
 .card-link{font-size:0.78rem;color:var(--rust);text-decoration:none;font-weight:600}
 .card-link:hover{text-decoration:underline}
-.card-body{padding:1.5rem}
 .job-row{display:flex;align-items:center;gap:1rem;padding:0.9rem 1.5rem;border-bottom:1px solid var(--border)}
 .job-row:last-child{border-bottom:none}
 .jr-icon{width:38px;height:38px;border-radius:4px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
@@ -87,7 +70,6 @@
 .earn-total{font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;letter-spacing:-0.04em}
 .earn-sub{font-size:0.72rem;color:var(--muted)}
 @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:900px){.sidebar{display:none}.stats-row{grid-template-columns:1fr 1fr}.dash-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body class="app">
@@ -138,7 +120,7 @@
       <a href="messages.html" class="qa-btn"> Messages</a>
       <a href="worker-earnings.html" class="qa-btn"> Earnings</a>
     </div>
-    <div class="stats-row" style="animation:slideUp 0.4s 0.1s ease both">
+    <div class="stats-grid" style="animation:slideUp 0.4s 0.1s ease both">
       <div class="stat-card c-green"><div class="sc-label">This Month (KES)</div><div class="sc-value">...</div><div class="sc-delta">...</div></div>
       <div class="stat-card c-saffron"><div class="sc-label">Active Contracts</div><div class="sc-value">...</div><div class="sc-delta">...</div></div>
       <div class="stat-card c-ink"><div class="sc-label">Jobs Completed</div><div class="sc-value">...</div><div class="sc-delta">...</div></div>
