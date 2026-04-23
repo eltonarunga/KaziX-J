@@ -66,6 +66,20 @@ pip install -r requirements.txt
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
+### ⚙️ Frontend Environment Setup
+
+The frontend requires an `env.js` file to connect to Supabase. This is generated from a `.env` file in the `frontend/` directory.
+
+1. Create `frontend/.env` with your Supabase credentials:
+   ```env
+   SUPABASE_URL=your_supabase_url
+   SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+2. Generate the `env.js` file:
+   ```bash
+   node frontend/generate-env.js
+   ```
+
 Open `http://localhost:8000/` for the website and `http://localhost:8000/docs` for API docs in development.
 
 ## 🇰🇪 Built for Kenya
