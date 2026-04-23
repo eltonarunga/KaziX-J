@@ -34,7 +34,9 @@
 .badge.investigating{background:rgba(44,62,80,0.12);color:var(--steel)}
 .badge.resolved{background:rgba(27,107,58,0.12);color:var(--green)}
 
-.table{width:100%;border-collapse:collapse;font-size:0.85rem}
+.panel-body{padding:1rem 1.25rem;overflow-x:auto}
+
+.table{width:100%;border-collapse:collapse;font-size:0.85rem;min-width:600px}
 .table th{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);text-align:left;padding:0.75rem 0;border-bottom:1px solid var(--border)}
 .table td{padding:0.85rem 0;border-bottom:1px solid var(--border)}
 .table tr:last-child td{border-bottom:none}

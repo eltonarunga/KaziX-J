@@ -9,14 +9,6 @@
 <style>
 
  /*  STAT CARDS  */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
-.stat-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.25rem 1.5rem;position:relative;overflow:hidden;transition:box-shadow 0.2s}
-.stat-card:hover{box-shadow:0 6px 24px rgba(0,0,0,0.07)}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
-.stat-card.ink::before{background:var(--ink)}
-.stat-card.saffron::before{background:var(--saffron)}
-.stat-card.green::before{background:var(--green)}
-.stat-card.rust::before{background:var(--rust)}
 .stat-label{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem}
 .stat-value{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;letter-spacing:-0.04em;color:var(--ink)}
 .stat-delta{font-size:0.75rem;color:var(--green);font-weight:600;margin-top:0.25rem}
@@ -24,13 +16,8 @@
 .stat-icon{position:absolute;top:1rem;right:1rem;font-size:1.4rem;opacity:0.15}
 
  /*  SECTION BLOCKS  */
-.dash-grid{display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
-.card{background:white;border:1px solid var(--border);border-radius:6px;overflow:hidden}
-.card-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem}
 .card-link{font-size:0.78rem;color:var(--rust);text-decoration:none;font-weight:600}
 .card-link:hover{text-decoration:underline}
-.card-body{padding:1.5rem}
 
  /*  JOB ROWS  */
 .job-row{display:flex;align-items:center;gap:1rem;padding:0.9rem 0;border-bottom:1px solid var(--border)}
@@ -94,7 +81,6 @@
 .qa-btn.primary:hover{background:var(--green)}
 
 @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:900px){.sidebar{display:none}.stats-row{grid-template-columns:1fr 1fr}.dash-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body class="app">
@@ -151,7 +137,7 @@
     </div>
 
     <!-- STAT CARDS -->
-    <div class="stats-row" style="animation:slideUp 0.4s 0.1s ease both">
+    <div class="stats-grid" style="animation:slideUp 0.4s 0.1s ease both">
       <div class="stat-card ink">
         <div class="stat-label">Active Jobs</div>
         <div class="stat-value">...</div>
