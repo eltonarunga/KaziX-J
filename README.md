@@ -1,72 +1,94 @@
 # KaziX — Hire Trusted Fundis in Kenya
 
-KaziX is a modern marketplace designed to connect skilled Kenyan workers (fundis) with clients. The platform prioritizes security and trust through built-in M-Pesa escrow payments, ID verification, and a transparent review system.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.109.0-009688.svg)](https://fastapi.tiangolo.com/)
+
+KaziX is a modern marketplace designed to bridge the trust gap between skilled Kenyan workers (fundis) and clients. By integrating M-Pesa escrow payments, ID verification, and a transparent review system, KaziX provides a secure and efficient ecosystem for the local service industry.
 
 ## 🌟 Key Features
 
 ### For Clients
-- **Find Verified Fundis:** Browse through plumbers, electricians, painters, and more, all with verified IDs.
-- **Secure Escrow:** Payments are held in escrow via M-Pesa and only released once the job is confirmed complete.
-- **Fast Hiring:** Average response time of under 8 minutes.
-- **Real Reviews:** Make informed decisions based on feedback from previous clients.
+- **Verified Professionals:** Browse through a curated list of plumbers, electricians, painters, and more, all with verified IDs.
+- **Secure Escrow Payments:** Funds are held securely and only released when you confirm the job is done to your satisfaction.
+- **Rapid Response:** Average hiring time of under 8 minutes.
+- **Transparency:** Real client reviews and ratings to guide your choices.
 
 ### For Pros (Fundis)
-- **SMS Job Alerts:** Receive notifications for jobs in your area the moment they are posted.
-- **Instant Payments:** Get paid directly to M-Pesa within minutes of job completion.
-- **Reputation Building:** Grow your business with a verified profile and positive ratings.
-- **Payment Guarantee:** Work with confidence knowing the client's funds are secured in escrow before you start.
+- **Instant SMS Alerts:** Receive real-time notifications for job opportunities in your area.
+- **Guaranteed Payment:** Work with peace of mind knowing the client's payment is secured in escrow before you start.
+- **Business Growth:** Build a digital reputation with a verified profile and positive feedback.
+- **Seamless M-Pesa Integration:** Get paid directly to your phone within minutes of job completion.
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** HTML5, CSS3 (Vanilla CSS with modern features like CSS Variables, Grid, and Flexbox).
-- **Typography:** 
-  - `Syne`: For high-impact headings and branding.
-  - `DM Sans`: For clean, readable body text.
-- **Design Aesthetic:** High-contrast "Modern Brutalist" style with a focus on usability and accessibility.
+- **Backend:** [FastAPI](https://fastapi.tiangolo.com/) (Python 3.12+)
+- **Frontend:** Modern Vanilla HTML5, CSS3, and JavaScript.
+- **Database & Auth:** [Supabase](https://supabase.com/)
+- **Payments:** [Safaricom Daraja API](https://developer.safaricom.co.ke/) (M-Pesa)
+- **Notifications:** [Africa's Talking SMS API](https://africastalking.com/)
+- **Design:** Modern Brutalist aesthetic, mobile-first approach.
+  - **Typography:** `Syne` for branding, `DM Sans` for content.
 
 ## 📁 Project Structure
 
 ```text
 KaziX/
-├── frontend/
-│   ├── pages/
-│   │   ├── index.html              # Landing page
-│   │   ├── client-dashboard.html   # Dashboard for clients to manage jobs
-│   │   ├── worker-dashboard.html   # Dashboard for workers (Fundis)
-│   │   └── ...                     # All frontend HTML pages
-│   └── assets/
-│       ├── css/
-│       │   ├── styles.css          # Global styles and design tokens
-│       │   └── admin.css
-│       └── js/
-│           ├── mobile-nav.js
-│           ├── admin-shell.js
-│           └── admin-disputes.js
-├── backend/                    # FastAPI app and API
-└── README.md
+├── backend/                # FastAPI Application
+│   ├── app/                # Core logic, routes, and models
+│   ├── tests/              # Backend test suite
+│   └── supabase/           # Migrations and seed data
+├── frontend/               # Static Frontend Assets
+│   ├── pages/              # HTML templates
+│   └── assets/             # CSS and JS files
+├── Agents.md               # AI Instructions & Versioning
+├── Planning.md             # Project Milestones
+└── Tasks.md                # Pending Tasks
 ```
 
 ## 🚀 Getting Started
 
-KaziX now runs from a single FastAPI backend that serves both the API and the frontend pages.
+### Prerequisites
+- Python 3.12+
+- Supabase account and project
+- M-Pesa Daraja API credentials (Sandbox or Production)
 
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-username/kazix.git
+   cd kazix
+   ```
+
+2. **Backend Setup:**
+   ```bash
+   cd backend
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
+
+3. **Environment Variables:**
+   Create a `.env` file in the `backend/` directory (refer to `backend/app/core/config.py` for required variables).
+
+4. **Run the Application:**
+   ```bash
+   python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+   ```
+   The site will be available at `http://localhost:8000`.
+
+## 🧪 Testing
+
+Run the backend test suite:
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/kazix.git
-
-# Navigate to the directory
-cd kazix/backend
-
-# Install dependencies if needed
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-
-# Start the full site + API
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+cd backend
+export PYTHONPATH=$PYTHONPATH:.
+python3 -m pytest
 ```
 
-Open `http://localhost:8000/` for the website and `http://localhost:8000/docs` for API docs in development.
-
 ## 🇰🇪 Built for Kenya
-KaziX is designed with the local context in mind, focusing on mobile-first accessibility and deep integration with M-Pesa workflows.
+KaziX is specifically engineered for the Kenyan context, focusing on mobile-first accessibility and deep integration with M-Pesa workflows to ensure financial security and trust.
+
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
