@@ -11,12 +11,12 @@ DELETE /v1/jobs/{id}       → client cancels/deletes their job
 GET    /v1/jobs/{id}/applications → client views applicants
 """
 
-from typing import Literal
+from typing import Any, Literal
 
-from fastapi import APIRouter, HTTPException, Query, status
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel, Field, model_validator
 
-from app.api.deps import ClientUser, CurrentUser
+from app.api.deps import ClientUser
 from app.core.logging import get_logger
 from app.core.supabase import get_admin_client, get_anon_client
 
@@ -27,34 +27,63 @@ router = APIRouter()
 # ── Schemas ──────────────────────────────────────────────────
 
 TRADE_TYPES = Literal[
-    "plumber","electrician","mason","mama_fua","carpenter",
-    "painter","roofer","gardener","driver_mover","security","other"
+    "plumber",
+    "electrician",
+    "mason",
+    "mama_fua",
+    "carpenter",
+    "painter",
+    "roofer",
+    "gardener",
+    "driver_mover",
+    "security",
+    "other",
 ]
 
+
 class CreateJobRequest(BaseModel):
-    title:              str             = Field(..., min_length=5, max_length=200)
-    description:        str             = Field(..., min_length=20)
-    trade:              TRADE_TYPES
-    county:             str
-    area:               str
-    street:             str | None      = None
-    budget_min:         int | None      = Field(None, ge=0)
-    budget_max:         int | None      = Field(None, ge=0)
-    payment_type:       Literal["fixed","hourly","daily","negotiable"] = "negotiable"
-    urgency:            Literal["flexible","urgent"] = "flexible"
-    preferred_date:     str | None      = None   # ISO date string
-    preferred_time:     str | None      = None
-    materials_provided: bool            = False
+    title: str = Field(..., min_length=5, max_length=200)
+    description: str = Field(..., min_length=20)
+    trade: TRADE_TYPES
+    county: str
+    area: str
+    street: str | None = None
+    budget_min: int | None = Field(None, ge=0)
+    budget_max: int | None = Field(None, ge=0)
+    payment_type: Literal["fixed", "hourly", "daily", "negotiable"] = "negotiable"
+    urgency: Literal["flexible", "urgent"] = "flexible"
+    preferred_date: str | None = None  # ISO date string
+    preferred_time: str | None = None
+    materials_provided: bool = False
+
+    @model_validator(mode="after")
+    def validate_budget_range(self) -> "CreateJobRequest":
+        if self.budget_min is not None and self.budget_max is not None and self.budget_min > self.budget_max:
+            raise ValueError("budget_min cannot be greater than budget_max")
+        return self
 
 
 class UpdateJobRequest(BaseModel):
-    title:              str | None      = Field(None, min_length=5, max_length=200)
-    description:        str | None      = Field(None, min_length=20)
-    budget_min:         int | None      = Field(None, ge=0)
-    budget_max:         int | None      = Field(None, ge=0)
-    urgency:            Literal["flexible","urgent"] | None = None
-    preferred_date:     str | None      = None
-    status:             Literal["open","cancelled"] | None = None
+    title: str | None = Field(None, min_length=5, max_length=200)
+    description: str | None = Field(None, min_length=20)
+    budget_min: int | None = Field(None, ge=0)
+    budget_max: int | None = Field(None, ge=0)
+    urgency: Literal["flexible", "urgent"] | None = None
+    preferred_date: str | None = None
+    status: Literal["open", "cancelled"] | None = None
+
+    @model_validator(mode="after")
+    def validate_budget_range(self) -> "UpdateJobRequest":
+        if self.budget_min is not None and self.budget_max is not None and self.budget_min > self.budget_max:
+            raise ValueError("budget_min cannot be greater than budget_max")
+        return self
+
+
+def _assert_job_ownership(*, admin: Any, job_id: str, owner_id: str, fields: str = "client_id") -> dict[str, Any]:
+    existing = admin.table("jobs").select(fields).eq("id", job_id).single().execute()
+    if not existing.data or existing.data["client_id"] != owner_id:
+        raise HTTPException(status_code=403, detail="Not your job")
+    return existing.data
 
 
 # ── Routes ───────────────────────────────────────────────────
@@ -140,15 +169,13 @@ async def create_job(body: CreateJobRequest, user: ClientUser):
 
 
 @router.patch("/{job_id}")
-async def update_job(job_id: str, body: UpdateJobRequest, user: CurrentUser):
+async def update_job(job_id: str, body: UpdateJobRequest, user: ClientUser):
     """Client updates their own job."""
     admin = get_admin_client()
 
     # Ownership check
     try:
-        existing = admin.table("jobs").select("client_id").eq("id", job_id).single().execute()
-        if not existing.data or existing.data["client_id"] != user.user_id:
-            raise HTTPException(status_code=403, detail="Not your job")
+        _assert_job_ownership(admin=admin, job_id=job_id, owner_id=user.user_id)
 
         updates = body.model_dump(exclude_none=True)
         if not updates:
@@ -164,16 +191,18 @@ async def update_job(job_id: str, body: UpdateJobRequest, user: CurrentUser):
 
 
 @router.delete("/{job_id}", status_code=204)
-async def delete_job(job_id: str, user: CurrentUser):
+async def delete_job(job_id: str, user: ClientUser):
     """Client cancels/removes their job."""
     admin = get_admin_client()
     try:
-        existing = admin.table("jobs").select("client_id, status").eq("id", job_id).single().execute()
+        existing = _assert_job_ownership(
+            admin=admin,
+            job_id=job_id,
+            owner_id=user.user_id,
+            fields="client_id, status",
+        )
 
-        if not existing.data or existing.data["client_id"] != user.user_id:
-            raise HTTPException(status_code=403, detail="Not your job")
-
-        if existing.data["status"] == "active":
+        if existing["status"] == "active":
             raise HTTPException(
                 status_code=400,
                 detail="Cannot delete an active booking. Raise a dispute instead.",
@@ -189,15 +218,13 @@ async def delete_job(job_id: str, user: CurrentUser):
 
 
 @router.get("/{job_id}/applications")
-async def list_job_applications(job_id: str, user: CurrentUser):
+async def list_job_applications(job_id: str, user: ClientUser):
     """Client views applications for their job."""
     admin = get_admin_client()
 
     try:
         # Verify ownership
-        job = admin.table("jobs").select("client_id").eq("id", job_id).single().execute()
-        if not job.data or job.data["client_id"] != user.user_id:
-            raise HTTPException(status_code=403, detail="Not your job")
+        _assert_job_ownership(admin=admin, job_id=job_id, owner_id=user.user_id)
 
         result = (
             admin.table("applications")
