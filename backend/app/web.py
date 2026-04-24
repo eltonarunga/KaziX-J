@@ -21,7 +21,10 @@ FAVICON_PATH = FRONTEND_DIR / "favicon.svg"
 def mount_frontend(app: FastAPI) -> None:
     """Serve the static site from the FastAPI app."""
     if not FRONTEND_DIR.exists():
-        logger.warning("Frontend directory not found", path=str(FRONTEND_DIR))
+        logger.warning(
+            "Frontend directory not found. Ensure the 'frontend/' directory exists in the project root.",
+            path=str(FRONTEND_DIR)
+        )
         return
 
     @app.get("/", include_in_schema=False)
@@ -43,8 +46,11 @@ def mount_frontend(app: FastAPI) -> None:
     @app.get("/env.js", include_in_schema=False)
     async def frontend_env() -> Response:
         if not ENV_JS_PATH.exists():
-            logger.warning("Frontend env.js not found", path=str(ENV_JS_PATH))
-            return Response(status_code=404)
+            logger.warning(
+                "Frontend env.js not found. Please run 'node frontend/generate-env.js' to generate it.",
+                path=str(ENV_JS_PATH)
+            )
+            return Response(status_code=404, content="alert('KaziX: env.js missing. Run node frontend/generate-env.js');")
         return FileResponse(ENV_JS_PATH, media_type="text/javascript; charset=utf-8")
 
     if PAGES_DIR.exists():
