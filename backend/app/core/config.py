@@ -18,7 +18,7 @@ class Settings(BaseSettings):
 
     # ── App ──────────────────────────────────────────────────
     app_env: Literal["development", "production", "testing"] = "development"
-    app_secret_key: str
+    app_secret_key: str = ""
     app_host: str = "0.0.0.0"
     app_port: int = 8000
     allowed_origins: str = (
@@ -36,10 +36,10 @@ class Settings(BaseSettings):
         return self.app_env == "production"
 
     # ── Supabase ─────────────────────────────────────────────
-    supabase_url: str
-    supabase_anon_key: str
-    supabase_service_role_key: str
-    supabase_jwt_secret: str
+    supabase_url: str = ""
+    supabase_anon_key: str = ""
+    supabase_service_role_key: str = ""
+    supabase_jwt_secret: str = ""
 
     # ── M-Pesa ───────────────────────────────────────────────
     mpesa_consumer_key: str = ""
@@ -62,6 +62,7 @@ class Settings(BaseSettings):
 
     # ── Logging ──────────────────────────────────────────────
     log_level: str = "INFO"
+    sentry_dsn: str = ""
 
 
 @lru_cache

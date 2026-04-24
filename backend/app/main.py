@@ -5,6 +5,12 @@ FastAPI application factory.
 All routers, middleware, and startup hooks are wired here.
 """
 
+import sys
+from pathlib import Path
+
+# Add backend directory to path to support absolute imports on Vercel
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+
 from contextlib import asynccontextmanager
 
 import sentry_sdk
@@ -35,9 +41,9 @@ async def lifespan(app: FastAPI):
 
 
 def create_app() -> FastAPI:
-    if settings.is_production and settings.app_secret_key:
+    if settings.is_production and settings.sentry_dsn:
         sentry_sdk.init(
-            dsn="",   # Set SENTRY_DSN in .env when ready
+            dsn=settings.sentry_dsn,
             environment=settings.app_env,
             traces_sample_rate=0.2,
         )
@@ -63,7 +69,12 @@ def create_app() -> FastAPI:
     if settings.is_production:
         app.add_middleware(
             TrustedHostMiddleware,
-            allowed_hosts=["api.kazix.co.ke", "*.kazix.co.ke"],
+            allowed_hosts=[
+                "api.kazix.co.ke",
+                "*.kazix.co.ke",
+                "*.vercel.app",
+                "localhost",
+            ],
         )
 
     # ── Prometheus metrics (/metrics) ───────────────────────
