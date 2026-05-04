@@ -213,6 +213,7 @@
         <button class="oauth-btn" id="oauthGoogleBtn" onclick="startOAuth('google')">Continue with Google</button>
         <button class="oauth-btn" id="oauthGithubBtn" onclick="startOAuth('github')">Continue with GitHub</button>
       </div>
+      <button class="auth-btn-secondary" id="guestBtn" onclick="guestSignIn()">Sign in as Guest</button>
       <a href="register.html" class="auth-btn-secondary">Create new account</a>
 
       <div class="auth-footer">
@@ -618,6 +619,26 @@ async function startOAuth(provider) {
   } catch (err) {
     if (btn) btn.disabled = false;
     alert(toDisplayError(err, 'Could not start OAuth login.'));
+  }
+}
+
+async function guestSignIn() {
+  const btn = document.getElementById('guestBtn');
+  btn.disabled = true;
+  btn.textContent = 'Signing in...';
+
+  try {
+    const resp = await fetch(`${API_BASE}/v1/auth/guest`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || 'Guest sign-in failed');
+    finishAuth(data);
+  } catch (err) {
+    alert(toDisplayError(err, 'Guest sign-in failed.'));
+    btn.textContent = 'Sign in as Guest';
+    btn.disabled = false;
   }
 }
 

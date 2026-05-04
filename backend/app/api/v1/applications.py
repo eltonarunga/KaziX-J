@@ -36,6 +36,19 @@ async def apply_to_job(body: ApplyRequest, user: FundiUser):
     Fundi applies to a specific job.
     Enforces business rules: job must be open, exists, and not owned by the applicant.
     """
+    if user.is_guest:
+        import uuid
+        from datetime import datetime, timezone
+        return {
+            "id": str(uuid.uuid4()),
+            "job_id": body.job_id,
+            "fundi_id": user.user_id,
+            "bid_amount": body.bid_amount,
+            "cover_note": body.cover_note,
+            "status": "pending",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        }
+
     admin = get_admin_client()
 
     try:

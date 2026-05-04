@@ -496,6 +496,22 @@ async def exchange_oauth_code(body: OAuthExchangeRequest):
     }
 
 
+@router.post("/guest", status_code=200)
+async def guest_sign_in():
+    """
+    Returns a mock guest session with admin privileges for testing and exploration.
+    Used by the "Sign in as Guest" button on the login page.
+    """
+    return {
+        "access_token": "kazix-guest-session-token",
+        "refresh_token": "kazix-guest-refresh-token",
+        "token_type": "bearer",
+        "expires_in": 3600,
+        "is_new_user": False,
+        "redirect_to": "client-dashboard",
+    }
+
+
 @router.post("/profile", status_code=201)
 async def create_profile(body: CreateProfileRequest, user: CurrentSession):
     """
@@ -585,6 +601,15 @@ async def get_session(user: CurrentUser):
     Returns the current user's profile in a single call.
     Import and call from every authenticated page on load.
     """
+    if user.is_guest:
+        return SessionResponse(
+            user_id=user.user_id,
+            role="client",
+            phone="+254700000000",
+            full_name="Guest User",
+            is_verified=True,
+        )
+
     admin = get_admin_client()
     try:
         result = (
@@ -616,6 +641,20 @@ async def bootstrap_auth(user: CurrentSession):
     Returns profile completion state for any authenticated Supabase session
     (OTP or OAuth), allowing frontend to route users after login.
     """
+    if user.user_id == "00000000-0000-0000-0000-000000000000":
+        return BootstrapResponse(
+            is_new_user=False,
+            redirect_to="client-dashboard",
+            role="client",
+            profile={
+                "id": user.user_id,
+                "role": "client",
+                "full_name": "Guest User",
+                "phone": "+254700000000",
+                "is_verified": True,
+            },
+        )
+
     admin = get_admin_client()
     try:
         profile, is_new_user, redirect_to = _resolve_profile_state(admin, user.user_id)
