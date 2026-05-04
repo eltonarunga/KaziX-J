@@ -1,109 +1,97 @@
 # KaziX — Hire Trusted Fundis in Kenya
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.109.0-009688.svg)](https://fastapi.tiangolo.com/)
-
-KaziX is a modern marketplace designed to bridge the trust gap between skilled Kenyan workers (fundis) and clients. By integrating M-Pesa escrow payments, ID verification, and a transparent review system, KaziX provides a secure and efficient ecosystem for the local service industry.
+KaziX is a modern marketplace designed to connect skilled Kenyan workers (fundis) with clients. The platform prioritizes security and trust through built-in M-Pesa escrow payments, ID verification, and a transparent review system.
 
 ## 🌟 Key Features
 
 ### For Clients
-- **Verified Professionals:** Browse through a curated list of plumbers, electricians, painters, and more, all with verified IDs.
-- **Secure Escrow Payments:** Funds are held securely and only released when you confirm the job is done to your satisfaction.
-- **Rapid Response:** Average hiring time of under 8 minutes.
-- **Transparency:** Real client reviews and ratings to guide your choices.
+- **Find Verified Fundis:** Browse through plumbers, electricians, painters, and more, all with verified IDs.
+- **Secure Escrow:** Payments are held in escrow via M-Pesa and only released once the job is confirmed complete.
+- **Fast Hiring:** Average response time of under 8 minutes.
+- **Real Reviews:** Make informed decisions based on feedback from previous clients.
 
 ### For Pros (Fundis)
-- **Instant SMS Alerts:** Receive real-time notifications for job opportunities in your area.
-- **Guaranteed Payment:** Work with peace of mind knowing the client's payment is secured in escrow before you start.
-- **Business Growth:** Build a digital reputation with a verified profile and positive feedback.
-- **Seamless M-Pesa Integration:** Get paid directly to your phone within minutes of job completion.
+- **SMS Job Alerts:** Receive notifications for jobs in your area the moment they are posted.
+- **Instant Payments:** Get paid directly to M-Pesa within minutes of job completion.
+- **Reputation Building:** Grow your business with a verified profile and positive ratings.
+- **Payment Guarantee:** Work with confidence knowing the client's funds are secured in escrow before you start.
 
 ## 🛠️ Tech Stack
 
-- **Backend:** [FastAPI](https://fastapi.tiangolo.com/) (Python 3.12+)
-- **Frontend:** Modern Vanilla HTML5, CSS3, and JavaScript.
-- **Database & Auth:** [Supabase](https://supabase.com/)
-- **Payments:** [Safaricom Daraja API](https://developer.safaricom.co.ke/) (M-Pesa)
-- **Notifications:** [Africa's Talking SMS API](https://africastalking.com/)
-- **Design:** Modern Brutalist aesthetic, mobile-first approach.
-  - **Typography:** `Syne` for branding, `DM Sans` for content.
+- **Frontend:** HTML5, CSS3 (Vanilla CSS with modern features like CSS Variables, Grid, and Flexbox).
+- **Typography:** 
+  - `Syne`: For high-impact headings and branding.
+  - `DM Sans`: For clean, readable body text.
+- **Design Aesthetic:** High-contrast "Modern Brutalist" style with a focus on usability and accessibility.
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 KaziX/
-├── backend/                # FastAPI Application
-│   ├── app/                # Core logic, routes, and models
-│   ├── tests/              # Backend test suite
-│   └── supabase/           # Migrations and seed data
-├── frontend/               # Static Frontend Assets
-│   ├── pages/              # HTML templates
-│   └── assets/             # CSS and JS files
-├── Agents.md               # AI Instructions & Versioning
-├── Planning.md             # Project Milestones
-└── Tasks.md                # Pending Tasks
+├── backend/
+│   ├── app/            # FastAPI application code
+│   ├── scripts/        # Backend utility scripts
+│   ├── supabase/       # Schema, migrations, and seed data
+│   └── tests/          # Backend test suite
+├── frontend/
+│   ├── assets/         # Shared CSS and JavaScript
+│   ├── pages/          # Static HTML pages
+│   └── scripts/        # Frontend build utilities
+├── docs/               # Project guides and operational docs
+├── render.yaml         # Render deployment blueprint
+└── README.md
 ```
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- Python 3.12+
-- Supabase account and project
-- M-Pesa Daraja API credentials (Sandbox or Production)
+KaziX now runs from a single FastAPI backend that serves both the API and the frontend pages.
 
-### Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/your-username/kazix.git
-   cd kazix
-   ```
-
-2. **Backend Setup:**
-   ```bash
-   cd backend
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
-
-3. **Environment Variables:**
-   Create a `.env` file in the `backend/` directory (refer to `backend/app/core/config.py` for required variables).
-
-4. **Run the Application:**
-   ```bash
-   python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
-   ```
-   The site will be available at `http://localhost:8000`.
-
-## 🧪 Testing
-
-Run the backend test suite:
 ```bash
-cd backend
-export PYTHONPATH=$PYTHONPATH:.
-python3 -m pytest
+# Clone the repository
+git clone https://github.com/your-username/kazix.git
+
+# Navigate to the directory
+cd kazix/backend
+
+# Install dependencies if needed
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# Start the full site + API
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
-### ⚙️ Frontend Environment Setup
-
-The frontend requires an `env.js` file to connect to Supabase. This is generated from a `.env` file in the `frontend/` directory.
-
-1. Create `frontend/.env` with your Supabase credentials:
-   ```env
-   SUPABASE_URL=your_supabase_url
-   SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
-2. Generate the `env.js` file:
-   ```bash
-   node frontend/generate-env.js
-   ```
 
 Open `http://localhost:8000/` for the website and `http://localhost:8000/docs` for API docs in development.
 
-## 🇰🇪 Built for Kenya
-KaziX is specifically engineered for the Kenyan context, focusing on mobile-first accessibility and deep integration with M-Pesa workflows to ensure financial security and trust.
+## Deployment
 
-## 📄 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+The recommended production setup is:
+
+- Frontend: Vercel (`frontend/`)
+- Backend API: Render (`backend/`)
+- Database/Auth: Supabase
+
+Deployment files now included in the repo:
+
+- [frontend/vercel.json](/home/jay/Desktop/KaziX/frontend/vercel.json)
+- [frontend/package.json](/home/jay/Desktop/KaziX/frontend/package.json)
+- [frontend/scripts/generate-env.js](/home/jay/Desktop/KaziX/frontend/scripts/generate-env.js)
+- [render.yaml](/home/jay/Desktop/KaziX/render.yaml)
+- [docs/DEPLOYMENT.md](/home/jay/Desktop/KaziX/docs/DEPLOYMENT.md)
+- [docs/ERROR_HANDLING_GUIDE.md](/home/jay/Desktop/KaziX/docs/ERROR_HANDLING_GUIDE.md)
+
+## OAuth Setup
+
+Social login returns to `frontend/pages/auth-callback.html`, and Supabase must be allowed to send users back to that page.
+
+- Supabase Auth redirect URLs should include `http://localhost:8000/pages/auth-callback.html` for local development.
+- Google OAuth must authorize the Supabase callback URL, not the frontend page URL. For this project, that callback is `https://tziamornnxxsfofzyvpj.supabase.co/auth/v1/callback`.
+- Google OAuth should also allow the local JavaScript origin `http://localhost:8000` while developing.
+
+Reference docs:
+- https://supabase.com/docs/guides/auth/social-login/auth-google
+- https://supabase.com/docs/guides/auth/redirect-urls
+
+## 🇰🇪 Built for Kenya
+KaziX is designed with the local context in mind, focusing on mobile-first accessibility and deep integration with M-Pesa workflows.

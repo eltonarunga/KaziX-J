@@ -4,22 +4,36 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-<title>Dashboard  KaziX</title>
+<title>Dashboard — KaziX</title>
 <link rel="stylesheet" href="../assets/css/styles.css">
+<link rel="stylesheet" href="../assets/css/error-components.css">
 <style>
 
- /*  STAT CARDS  */
+/* STAT CARDS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.stat-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.25rem 1.5rem;position:relative;overflow:hidden;transition:box-shadow 0.2s}
+.stat-card:hover{box-shadow:0 6px 24px rgba(0,0,0,0.07)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.ink::before{background:var(--ink)}
+.stat-card.saffron::before{background:var(--saffron)}
+.stat-card.green::before{background:var(--green)}
+.stat-card.rust::before{background:var(--rust)}
 .stat-label{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem}
 .stat-value{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;letter-spacing:-0.04em;color:var(--ink)}
 .stat-delta{font-size:0.75rem;color:var(--green);font-weight:600;margin-top:0.25rem}
 .stat-delta.down{color:var(--rust)}
 .stat-icon{position:absolute;top:1rem;right:1rem;font-size:1.4rem;opacity:0.15}
 
- /*  SECTION BLOCKS  */
+/* SECTION BLOCKS */
+.dash-grid{display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+.card{background:white;border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.card-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem}
 .card-link{font-size:0.78rem;color:var(--rust);text-decoration:none;font-weight:600}
 .card-link:hover{text-decoration:underline}
+.card-body{padding:1.5rem}
 
- /*  JOB ROWS  */
+/* JOB ROWS */
 .job-row{display:flex;align-items:center;gap:1rem;padding:0.9rem 0;border-bottom:1px solid var(--border)}
 .job-row:last-child{border-bottom:none;padding-bottom:0}
 .job-status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
@@ -38,7 +52,7 @@
 .job-apps{font-size:0.75rem;color:var(--muted);text-align:right;white-space:nowrap}
 .job-apps strong{color:var(--ink);font-family:'Syne',sans-serif}
 
- /*  MESSAGE ROWS  */
+/* MESSAGE ROWS */
 .msg-row{display:flex;align-items:flex-start;gap:0.85rem;padding:0.9rem 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;border-radius:4px;padding:0.75rem}
 .msg-row:hover{background:var(--cream)}
 .msg-row:last-child{border-bottom:none}
@@ -50,7 +64,7 @@
 .msg-unread .msg-name,.msg-unread .msg-preview{color:var(--ink)}
 .msg-unread-dot{width:8px;height:8px;border-radius:50%;background:var(--saffron);margin-top:4px;flex-shrink:0}
 
- /*  ACTION ITEMS  */
+/* ACTION ITEMS */
 .action-list{display:flex;flex-direction:column;gap:0.5rem}
 .action-item{display:flex;align-items:flex-start;gap:0.75rem;padding:0.85rem;border-radius:4px;border:1px solid var(--border);background:white;cursor:pointer;transition:all 0.2s;text-decoration:none}
 .action-item:hover{border-color:var(--ink);transform:translateX(3px)}
@@ -63,7 +77,7 @@
 .action-sub{font-size:0.72rem;color:var(--muted)}
 .action-arrow{color:var(--muted);font-size:0.8rem;margin-top:2px}
 
- /*  SPEND CHART (simple CSS bars)  */
+/* SPEND CHART (simple CSS bars) */
 .spend-bars{display:flex;align-items:flex-end;gap:6px;height:80px;margin-bottom:0.5rem}
 .spend-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
 .spend-bar{width:100%;border-radius:2px 2px 0 0;background:var(--saffron);opacity:0.7;transition:opacity 0.2s;cursor:pointer}
@@ -73,7 +87,7 @@
 .spend-total{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:-0.04em;color:var(--ink)}
 .spend-sub{font-size:0.72rem;color:var(--muted)}
 
- /*  QUICK ACTIONS BAR  */
+/* QUICK ACTIONS BAR */
 .quick-actions{display:flex;gap:0.75rem;margin-bottom:2rem;flex-wrap:wrap}
 .qa-btn{display:flex;align-items:center;gap:0.5rem;padding:0.6rem 1.1rem;border-radius:2px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem;cursor:pointer;border:1.5px solid var(--border);background:white;transition:all 0.2s;text-decoration:none;color:var(--ink)}
 .qa-btn:hover{border-color:var(--ink);transform:translateY(-1px)}
@@ -81,6 +95,7 @@
 .qa-btn.primary:hover{background:var(--green)}
 
 @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:900px){.sidebar{display:none}.stats-row{grid-template-columns:1fr 1fr}.dash-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body class="app">
@@ -89,10 +104,26 @@
 <nav class="topnav">
   <a href="index.html" class="logo">Kazi<span>X</span></a>
   <div class="topnav-right">
-    <button class="notif-btn" title="Notifications"><span class="notif-dot"></span></button>
-    <div class="user-chip" onclick="location.href='client-profile.html'">
-      <div class="user-avatar" id="navUserAvatar">KX</div>
-      <span class="user-name" id="navUserName">My account</span>
+    <button class="notif-btn" title="Notifications">🔔<span class="notif-dot"></span></button>
+    <div class="user-menu-container">
+      <div class="user-chip" id="userChipToggle">
+        <div class="user-avatar" id="navUserAvatar">KX</div>
+        <span class="user-name" id="navUserName">My account</span>
+      </div>
+      <div class="user-menu-dropdown" id="userMenuDropdown">
+        <div class="user-menu-header">
+          <div class="user-menu-name" id="userMenuName">My account</div>
+          <div class="user-menu-status">
+            <span class="status-indicator"></span>
+            <span>Logged in</span>
+          </div>
+        </div>
+        <div class="user-menu-body">
+          <a href="#" class="user-menu-item" onclick="window.location.href = 'client-profile.html'; return false;">View Profile</a>
+          <a href="#" class="user-menu-item" onclick="window.location.href = 'client-profile.html'; return false;">Settings</a>
+          <button class="user-menu-item logout" onclick="window.KazixProfile.logout()">Logout</button>
+        </div>
+      </div>
     </div>
   </div>
 </nav>
@@ -101,18 +132,18 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-section">Main</div>
-    <a class="nav-item active" href="client-dashboard.html"><span class="ni-icon"></span>Dashboard</a>
-    <a class="nav-item" href="my-jobs.html"><span class="ni-icon"></span>My Jobs<span class="ni-badge">3</span></a>
-    <a class="nav-item" href="job-applicants.html"><span class="ni-icon"></span>Applications<span class="ni-badge">7</span></a>
-    <a class="nav-item" href="my-hires.html"><span class="ni-icon"></span>My Hires</a>
+    <a class="nav-item active" href="client-dashboard.html"><span class="ni-icon">📊</span>Dashboard</a>
+    <a class="nav-item" href="my-jobs.html"><span class="ni-icon">📋</span>My Jobs<span class="ni-badge">3</span></a>
+    <a class="nav-item" href="job-applicants.html"><span class="ni-icon">👥</span>Applications<span class="ni-badge">7</span></a>
+    <a class="nav-item" href="my-hires.html"><span class="ni-icon">🤝</span>My Hires</a>
     <div class="sidebar-section">Discover</div>
-    <a class="nav-item" href="find-workers.html"><span class="ni-icon"></span>Find Fundis</a>
-    <a class="nav-item" href="saved-workers.html"><span class="ni-icon"></span>Saved Fundis<span class="ni-badge">5</span></a>
-    <a class="nav-item" href="post-job.html"><span class="ni-icon"></span>Post a Job</a>
+    <a class="nav-item" href="find-workers.html"><span class="ni-icon">🔍</span>Find Fundis</a>
+    <a class="nav-item" href="saved-workers.html"><span class="ni-icon">❤️</span>Saved Fundis<span class="ni-badge">5</span></a>
+    <a class="nav-item" href="post-job.html"><span class="ni-icon">➕</span>Post a Job</a>
     <div class="sidebar-section">Account</div>
-    <a class="nav-item" href="messages.html"><span class="ni-icon"></span>Messages<span class="ni-badge">2</span></a>
-    <a class="nav-item" href="payments.html"><span class="ni-icon"></span>Payments</a>
-    <a class="nav-item" href="client-profile.html"><span class="ni-icon"></span>My Profile</a>
+    <a class="nav-item" href="messages.html"><span class="ni-icon">💬</span>Messages<span class="ni-badge">2</span></a>
+    <a class="nav-item" href="payments.html"><span class="ni-icon">💳</span>Payments</a>
+    <a class="nav-item" href="client-profile.html"><span class="ni-icon">👤</span>My Profile</a>
     <div class="sidebar-bottom">
       <a class="sidebar-profile" href="client-profile.html">
         <div class="sp-avatar" id="sidebarAvatar">KX</div>
@@ -124,43 +155,43 @@
   <!-- MAIN -->
   <main class="main">
     <div style="animation:slideUp 0.4s ease both">
-      <div class="page-title" id="dashboardGreeting">Welcome back</div>
+      <div class="page-title" id="dashboardGreeting">Welcome back 👋</div>
       <div class="page-sub">Here's what's happening with your jobs today</div>
     </div>
 
     <!-- QUICK ACTIONS -->
     <div class="quick-actions" style="animation:slideUp 0.4s 0.05s ease both">
-      <a href="post-job.html" class="qa-btn primary"> Post a New Job</a>
-      <a href="find-workers.html" class="qa-btn"> Find Fundis</a>
-      <a href="job-applicants.html" class="qa-btn"> Review Applications <span style="background:var(--saffron);color:var(--ink);font-size:0.65rem;padding:0.1rem 0.45rem;border-radius:10px;margin-left:4px">7 new</span></a>
-      <a href="messages.html" class="qa-btn"> Messages <span style="background:var(--rust);color:white;font-size:0.65rem;padding:0.1rem 0.45rem;border-radius:10px;margin-left:4px">2</span></a>
+      <a href="post-job.html" class="qa-btn primary">➕ Post a New Job</a>
+      <a href="find-workers.html" class="qa-btn">🔍 Find Fundis</a>
+      <a href="job-applicants.html" class="qa-btn">👥 Review Applications <span id="clientQuickApplicationsBadge" style="background:var(--saffron);color:var(--ink);font-size:0.65rem;padding:0.1rem 0.45rem;border-radius:10px;margin-left:4px">0 pending</span></a>
+      <a href="payments.html" class="qa-btn">💳 Payments</a>
     </div>
 
     <!-- STAT CARDS -->
-    <div class="stats-grid" style="animation:slideUp 0.4s 0.1s ease both">
+    <div class="stats-row" style="animation:slideUp 0.4s 0.1s ease both">
       <div class="stat-card ink">
         <div class="stat-label">Active Jobs</div>
-        <div class="stat-value">...</div>
-        <div class="stat-delta">...</div>
-        <div class="stat-icon"></div>
+        <div class="stat-value" id="clientActiveJobsValue">0</div>
+        <div class="stat-delta" id="clientActiveJobsDelta">No live job posts yet</div>
+        <div class="stat-icon">📋</div>
       </div>
       <div class="stat-card saffron">
         <div class="stat-label">Pending Applications</div>
-        <div class="stat-value">...</div>
-        <div class="stat-delta">...</div>
-        <div class="stat-icon"></div>
+        <div class="stat-value" id="clientPendingApplicationsValue">0</div>
+        <div class="stat-delta" id="clientPendingApplicationsDelta">Nothing waiting for review</div>
+        <div class="stat-icon">👥</div>
       </div>
       <div class="stat-card green">
         <div class="stat-label">Jobs Completed</div>
-        <div class="stat-value">...</div>
-        <div class="stat-delta">...</div>
-        <div class="stat-icon"></div>
+        <div class="stat-value" id="clientCompletedJobsValue">0</div>
+        <div class="stat-delta" id="clientCompletedJobsDelta">Completed jobs will stack here</div>
+        <div class="stat-icon">✅</div>
       </div>
       <div class="stat-card rust">
         <div class="stat-label">Total Spent (KES)</div>
-        <div class="stat-value">...</div>
-        <div class="stat-delta">...</div>
-        <div class="stat-icon"></div>
+        <div class="stat-value" id="clientTotalSpentValue">0</div>
+        <div class="stat-delta down" id="clientTotalSpentDelta">This month: KES 0</div>
+        <div class="stat-icon">💳</div>
       </div>
     </div>
 
@@ -170,11 +201,11 @@
       <!-- MY JOBS -->
       <div class="card">
         <div class="card-header">
-          <div class="card-title">My Active Jobs</div>
-          <a href="my-jobs.html" class="card-link">View all </a>
+          <div class="card-title">My Jobs Snapshot</div>
+          <a href="my-jobs.html" class="card-link">View all →</a>
         </div>
-        <div class="card-body" style="padding:2rem 1.5rem;text-align:center;color:var(--muted)">
-          <p>Loading your active jobs...</p>
+        <div class="card-body" id="clientJobsSnapshot" style="padding:0 1.5rem">
+          <div style="padding:1.5rem 0;color:var(--muted);font-size:0.82rem">Loading your latest jobs...</div>
         </div>
       </div>
 
@@ -186,8 +217,8 @@
           <div class="card-header">
             <div class="card-title">Action Needed</div>
           </div>
-          <div class="card-body" style="text-align:center;color:var(--muted)">
-            <p>No actions pending.</p>
+          <div class="card-body" id="clientActionList">
+            <div style="color:var(--muted);font-size:0.82rem">Checking what needs your attention...</div>
           </div>
         </div>
 
@@ -195,33 +226,28 @@
         <div class="card">
           <div class="card-header">
             <div class="card-title">Monthly Spend</div>
-            <a href="payments.html" class="card-link">Details </a>
+            <a href="payments.html" class="card-link">Details →</a>
           </div>
           <div class="card-body">
-            <div class="spend-bars">
-              <div class="spend-bar-wrap"><div class="spend-bar" style="height:35%"></div><div class="spend-bar-label">Aug</div></div>
-              <div class="spend-bar-wrap"><div class="spend-bar" style="height:60%"></div><div class="spend-bar-label">Sep</div></div>
-              <div class="spend-bar-wrap"><div class="spend-bar" style="height:45%"></div><div class="spend-bar-label">Oct</div></div>
-              <div class="spend-bar-wrap"><div class="spend-bar" style="height:80%"></div><div class="spend-bar-label">Nov</div></div>
-              <div class="spend-bar-wrap"><div class="spend-bar" style="height:55%"></div><div class="spend-bar-label">Dec</div></div>
-              <div class="spend-bar-wrap"><div class="spend-bar spend-bar-this" style="height:42%"></div><div class="spend-bar-label" style="font-weight:700;color:var(--ink)">Mar</div></div>
-            </div>
-            <div class="spend-total">KES ...</div>
-            <div class="spend-sub">This month</div>
+            <div class="spend-bars" id="clientSpendBars"></div>
+            <div class="spend-total" id="clientSpendTotal">KES 0</div>
+            <div class="spend-sub" id="clientSpendSub">This month · no payments yet</div>
           </div>
         </div>
 
       </div>
     </div>
 
-    <!-- RECENT MESSAGES -->
+    <!-- MESSAGES -->
     <div class="card" style="animation:slideUp 0.4s 0.2s ease both">
       <div class="card-header">
-        <div class="card-title">Recent Messages</div>
-        <a href="messages.html" class="card-link">View all </a>
+        <div class="card-title">Messages</div>
+        <a href="messages.html" class="card-link">View all →</a>
       </div>
-      <div class="card-body" style="padding:2rem 1.5rem;text-align:center;color:var(--muted)">
-        <p>No recent messages.</p>
+      <div class="card-body" style="padding:1.5rem">
+        <div style="color:var(--muted);font-size:0.82rem;line-height:1.6">
+          Live chat counts are hidden until message sync is connected to backend data. Use the Messages page to continue conversations without placeholder badges.
+        </div>
       </div>
     </div>
 
@@ -230,29 +256,240 @@
 
 
 <nav class="mobile-nav" aria-label="Primary">
-  <a class="mobile-nav-item active" href="client-dashboard.html"><span class="mn-icon"></span><span class="mn-label">Dashboard</span></a>
-  <a class="mobile-nav-item" href="my-jobs.html"><span class="mn-icon"></span><span class="mn-label">Jobs</span></a>
-  <a class="mobile-nav-item" href="find-workers.html"><span class="mn-icon"></span><span class="mn-label">Find</span></a>
-  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon"></span><span class="mn-label">Messages</span></a>
+  <a class="mobile-nav-item active" href="client-dashboard.html"><span class="mn-icon">📊</span><span class="mn-label">Dashboard</span></a>
+  <a class="mobile-nav-item" href="my-jobs.html"><span class="mn-icon">📋</span><span class="mn-label">Jobs</span></a>
+  <a class="mobile-nav-item" href="find-workers.html"><span class="mn-icon">🔍</span><span class="mn-label">Find</span></a>
+  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon">💬</span><span class="mn-label">Messages</span></a>
   <div class="mobile-nav-more">
     <button class="mobile-nav-item mobile-nav-more-toggle" type="button" aria-controls="mobile-drawer" aria-expanded="false" aria-label="Open navigation menu">
-      <span class="mn-icon"></span><span class="mn-label">More</span>
+      <span class="mn-icon">⋯</span><span class="mn-label">More</span>
     </button>
     <div class="mobile-nav-drawer" id="mobile-drawer" role="navigation" aria-label="Secondary pages" aria-hidden="true">
-      <a class="mobile-nav-drawer-item" href="client-profile.html"> Profile</a>
-      <a class="mobile-nav-drawer-item" href="notifications.html"> Notifications</a>
-      <a class="mobile-nav-drawer-item" href="payments.html"> Payments</a>
-      <a class="mobile-nav-drawer-item" href="reviews.html"> Reviews</a>
-      <a class="mobile-nav-drawer-item" href="saved-workers.html"> Saved Fundis</a>
+      <a class="mobile-nav-drawer-item" href="client-profile.html">👤 Profile</a>
+      <a class="mobile-nav-drawer-item" href="notifications.html">🔔 Notifications</a>
+      <a class="mobile-nav-drawer-item" href="payments.html">💳 Payments</a>
+      <a class="mobile-nav-drawer-item" href="reviews.html">⭐ Reviews</a>
+      <a class="mobile-nav-drawer-item" href="saved-workers.html">❤️ Saved Fundis</a>
     </div>
   </div>
 </nav>
 
+<script src="../assets/js/error-messages.js"></script>
+<script src="../assets/js/error-handler.js"></script>
 <script src="../assets/js/profile-utils.js"></script>
 <script src="../assets/js/dashboard-session.js"></script>
 <script>
+const CLIENT_DASHBOARD_TRADE_ICONS = {
+  plumber: '🚿',
+  electrician: '⚡',
+  mason: '🧱',
+  mama_fua: '👗',
+  carpenter: '🪚',
+  painter: '🎨',
+  roofer: '🏠',
+  gardener: '🌿',
+  driver_mover: '🛻',
+  security: '🔒',
+  other: '🛠️',
+};
+const CLIENT_DASHBOARD_STATUS_META = {
+  open: { dot: 'dot-open', badge: 'jb-open', label: 'Open' },
+  reviewing: { dot: 'dot-review', badge: 'jb-review', label: 'Reviewing' },
+  active: { dot: 'dot-active', badge: 'jb-active', label: 'In Progress' },
+  completed: { dot: 'dot-done', badge: 'jb-done', label: 'Completed' },
+  cancelled: { dot: 'dot-done', badge: 'jb-done', label: 'Closed' },
+  expired: { dot: 'dot-done', badge: 'jb-done', label: 'Closed' },
+};
+
+function clientDashboardEscape(value) {
+  return window.KazixProfile.escapeHtml(value);
+}
+
+function clientDashboardCurrency(value) {
+  return `KES ${Number(value || 0).toLocaleString()}`;
+}
+
+function clientDashboardPlural(count, one, many) {
+  return count === 1 ? one : many;
+}
+
+function clientDashboardRelativeTime(value) {
+  if (!value) return 'Recently posted';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Recently posted';
+  const diffHours = Math.round((Date.now() - date.getTime()) / (1000 * 60 * 60));
+  if (diffHours <= 1) return 'Posted just now';
+  if (diffHours < 24) return `Posted ${diffHours}h ago`;
+  const diffDays = Math.round(diffHours / 24);
+  if (diffDays === 1) return 'Posted yesterday';
+  return `Posted ${diffDays} days ago`;
+}
+
+function clientDashboardTradeIcon(trade) {
+  return CLIENT_DASHBOARD_TRADE_ICONS[trade] || CLIENT_DASHBOARD_TRADE_ICONS.other;
+}
+
+function clientDashboardStatusMeta(status) {
+  return CLIENT_DASHBOARD_STATUS_META[status] || CLIENT_DASHBOARD_STATUS_META.open;
+}
+
+function renderClientJobsSnapshot(data) {
+  const root = document.getElementById('clientJobsSnapshot');
+  if (!root) return;
+
+  if (!data.recent_jobs.length) {
+    root.innerHTML = `
+      <div style="padding:1.5rem 0;color:var(--muted);font-size:0.82rem;line-height:1.6">
+        No jobs posted yet. Your first job will appear here as soon as you publish it.
+      </div>
+    `;
+    return;
+  }
+
+  root.innerHTML = data.recent_jobs.map((job) => {
+    const meta = clientDashboardStatusMeta(job.status);
+    const location = [job.area, job.county].filter(Boolean).join(', ');
+    const applicants = Number(job.application_count || 0);
+    return `
+      <div class="job-row">
+        <div class="job-status-dot ${meta.dot}"></div>
+        <div class="job-info">
+          <div class="job-title">${clientDashboardEscape(job.title)}</div>
+          <div class="job-meta">${clientDashboardTradeIcon(job.trade)} ${clientDashboardEscape(window.KazixProfile.formatTrade(job.trade))} · ${clientDashboardEscape(clientDashboardRelativeTime(job.created_at))} · ${clientDashboardEscape(location || 'Location pending')}</div>
+        </div>
+        <span class="job-badge ${meta.badge}">${clientDashboardEscape(meta.label)}</span>
+        <div class="job-apps"><strong>${applicants}</strong><br>${clientDashboardPlural(applicants, 'applicant', 'applicants')}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderClientActions(data) {
+  const root = document.getElementById('clientActionList');
+  if (!root) return;
+
+  const actions = [];
+  const firstPendingJob = data.recent_jobs.find((job) => Number(job.pending_application_count || 0) > 0);
+
+  if (data.applications.pending > 0) {
+    actions.push({
+      href: 'job-applicants.html',
+      iconClass: 'ai-saffron',
+      icon: '👥',
+      title: `Review ${data.applications.pending} pending ${clientDashboardPlural(data.applications.pending, 'application', 'applications')}`,
+      sub: firstPendingJob ? firstPendingJob.title : 'Open your applicants queue',
+    });
+  }
+
+  if (data.hires.active > 0 || data.payments.in_escrow > 0) {
+    actions.push({
+      href: 'my-hires.html',
+      iconClass: 'ai-green',
+      icon: '✅',
+      title: `${data.hires.active} active ${clientDashboardPlural(data.hires.active, 'hire', 'hires')} in motion`,
+      sub: `${clientDashboardCurrency(data.payments.in_escrow)} protected in escrow`,
+    });
+  }
+
+  if (!actions.length && data.jobs.total === 0) {
+    actions.push({
+      href: 'post-job.html',
+      iconClass: 'ai-green',
+      icon: '➕',
+      title: 'Post your first job',
+      sub: 'Fresh employer accounts start by publishing a role.',
+    });
+  }
+
+  if (!actions.length) {
+    actions.push({
+      href: 'my-jobs.html',
+      iconClass: 'ai-rust',
+      icon: '📋',
+      title: 'Review your recent jobs',
+      sub: `${data.jobs.total} ${clientDashboardPlural(data.jobs.total, 'job', 'jobs')} tracked on KaziX`,
+    });
+  }
+
+  root.innerHTML = `
+    <div class="action-list">
+      ${actions.map((action) => `
+        <a href="${action.href}" class="action-item">
+          <div class="action-icon ${action.iconClass}">${action.icon}</div>
+          <div class="action-text"><div class="action-title">${clientDashboardEscape(action.title)}</div><div class="action-sub">${clientDashboardEscape(action.sub)}</div></div>
+          <span class="action-arrow">›</span>
+        </a>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderClientSpendBars(data) {
+  const root = document.getElementById('clientSpendBars');
+  const total = document.getElementById('clientSpendTotal');
+  const sub = document.getElementById('clientSpendSub');
+  if (!root || !total || !sub) return;
+
+  const series = Array.isArray(data.monthly_spend) ? data.monthly_spend : [];
+  const maxAmount = Math.max(1, ...series.map((item) => Number(item.amount || 0)));
+  const previous = series.length > 1 ? Number(series[series.length - 2].amount || 0) : 0;
+  const current = series.length ? Number(series[series.length - 1].amount || 0) : 0;
+
+  root.innerHTML = series.map((item, index) => {
+    const amount = Number(item.amount || 0);
+    const height = Math.max((amount / maxAmount) * 100, amount > 0 ? 12 : 6);
+    const currentMonth = index === (series.length - 1);
+    return `
+      <div class="spend-bar-wrap">
+        <div class="spend-bar ${currentMonth ? 'spend-bar-this' : ''}" style="height:${height}%"></div>
+        <div class="spend-bar-label" style="${currentMonth ? 'font-weight:700;color:var(--ink)' : ''}">${clientDashboardEscape(item.label)}</div>
+      </div>
+    `;
+  }).join('');
+
+  total.textContent = clientDashboardCurrency(current);
+  if (!current && !previous) {
+    sub.textContent = 'This month · no payments yet';
+  } else if (!previous) {
+    sub.textContent = 'This month · first paid booking in the current window';
+  } else {
+    const diff = current - previous;
+    const direction = diff >= 0 ? 'up' : 'down';
+    const magnitude = Math.round((Math.abs(diff) / Math.max(previous, 1)) * 100);
+    sub.innerHTML = `This month · <span style="color:${direction === 'up' ? 'var(--green)' : 'var(--rust)'};font-weight:600">${direction === 'up' ? '↑' : '↓'} ${magnitude}% vs last month</span>`;
+  }
+}
+
+function renderClientDashboard(data) {
+  document.getElementById('clientQuickApplicationsBadge').textContent = `${data.applications.pending} pending`;
+  document.getElementById('clientActiveJobsValue').textContent = String(data.jobs.live);
+  document.getElementById('clientActiveJobsDelta').textContent = `${data.jobs.open} open · ${data.jobs.reviewing} reviewing · ${data.jobs.active} in progress`;
+  document.getElementById('clientPendingApplicationsValue').textContent = String(data.applications.pending);
+  document.getElementById('clientPendingApplicationsDelta').textContent = `${data.applications.shortlisted} shortlisted · ${data.applications.hired} hired`;
+  document.getElementById('clientCompletedJobsValue').textContent = String(data.jobs.completed);
+  document.getElementById('clientCompletedJobsDelta').textContent = `${data.hires.completed} completed bookings recorded`;
+  document.getElementById('clientTotalSpentValue').textContent = Number(data.payments.total_spent || 0).toLocaleString();
+  document.getElementById('clientTotalSpentDelta').textContent = `This month: ${clientDashboardCurrency(data.payments.this_month)}`;
+
+  renderClientJobsSnapshot(data);
+  renderClientActions(data);
+  renderClientSpendBars(data);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
-  window.KazixDashboard.hydrateDashboard({ expectedRole: 'client' });
+  window.KazixDashboard
+    .hydrateDashboard({ expectedRole: 'client' })
+    .then(function () {
+      return window.KazixProfile.getDashboardState({ silent: false });
+    })
+    .then(function (state) {
+      if (state && state.client) {
+        renderClientDashboard(state.client);
+      }
+    })
+    .catch(function (error) {
+      console.error('Failed to render client dashboard state', error);
+    });
 });
 </script>
 <script src="../assets/js/mobile-nav.js"></script>

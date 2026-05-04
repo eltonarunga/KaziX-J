@@ -12,27 +12,163 @@ GET  /v1/auth/session      → returns current user + profile in one call
 GET  /v1/auth/bootstrap    → returns profile completion state for OAuth/OTP sessions
 """
 
+import asyncio
+import base64
+import hashlib
+import json
 import secrets
-import time
+from functools import lru_cache
 from typing import Literal
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
-from fastapi import APIRouter, HTTPException, status
-from gotrue.errors import AuthApiError, AuthRetryableError
+from cryptography.fernet import Fernet, InvalidToken as FernetInvalidToken
+from fastapi import APIRouter, HTTPException, Request, status
+from gotrue.errors import AuthApiError
 from postgrest.exceptions import APIError as PostgrestAPIError
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
 
 from app.api.deps import CurrentSession, CurrentUser
 from app.core.config import get_settings
 from app.core.logging import get_logger
 from app.core.supabase import get_admin_client, get_anon_client, get_user_client
+from app.services.profile_defaults import build_default_profile_row
 from supabase import create_client
 
 logger = get_logger(__name__)
 router = APIRouter()
 settings = get_settings()
 
+# Rate limiter
+try:
+    from slowapi import Limiter
+    from slowapi.util import get_remote_address
+    limiter = Limiter(key_func=get_remote_address)
+except ImportError:
+    limiter = None
+
 _OAUTH_STATE_TTL_SECONDS = 600
-_OAUTH_STATE_STORE: dict[str, dict[str, str | float]] = {}
+_EMAIL_REGISTER_SIGNIN_MAX_ATTEMPTS = 5
+_EMAIL_REGISTER_SIGNIN_RETRY_DELAY_SECONDS = 1.0
+_ALLOWED_AUTH_REDIRECT_TARGETS = frozenset(
+    {
+        "complete-registration",
+        "client-dashboard",
+        "fundi-dashboard",
+        "admin-dashboard",
+    }
+)
+_ALLOWED_FRONTEND_REDIRECT_PATHS = frozenset(
+    {
+        "/pages/auth-callback.html",
+        "/pages/reset-password.html",
+    }
+)
+
+
+def _normalize_origin(url: str) -> str | None:
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        return None
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        return None
+    return f"{parsed.scheme}://{parsed.netloc}"
+
+
+@lru_cache(maxsize=1)
+def _allowed_frontend_redirect_origins() -> frozenset[str]:
+    origins = {
+        origin
+        for origin in (
+            _normalize_origin(settings.frontend_url),
+            *(_normalize_origin(origin) for origin in settings.cors_origins),
+        )
+        if origin
+    }
+    return frozenset(origins)
+
+
+def _default_auth_callback_url() -> str:
+    return f"{settings.frontend_url.rstrip('/')}/pages/auth-callback.html"
+
+
+def _default_password_reset_url() -> str:
+    return f"{settings.frontend_url.rstrip('/')}/pages/reset-password.html"
+
+
+@lru_cache(maxsize=1)
+def _oauth_state_fernet() -> Fernet:
+    digest = hashlib.sha256(settings.app_secret_key.encode("utf-8")).digest()
+    key = base64.urlsafe_b64encode(digest)
+    return Fernet(key)
+
+
+def _encode_oauth_state(*, code_verifier: str, redirect_to: str) -> str:
+    payload = json.dumps(
+        {
+            "code_verifier": code_verifier,
+            "redirect_to": redirect_to,
+            "nonce": secrets.token_urlsafe(12),
+        }
+    ).encode("utf-8")
+    return _oauth_state_fernet().encrypt(payload).decode("utf-8")
+
+
+def _decode_oauth_state(state: str) -> dict[str, str] | None:
+    try:
+        decrypted = _oauth_state_fernet().decrypt(
+            state.encode("utf-8"),
+            ttl=_OAUTH_STATE_TTL_SECONDS,
+        )
+    except FernetInvalidToken:
+        return None
+
+    try:
+        payload = json.loads(decrypted.decode("utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return None
+
+    code_verifier = str(payload.get("code_verifier") or "")
+    redirect_to = str(payload.get("redirect_to") or "")
+    if not code_verifier or not _is_valid_redirect_target(redirect_to):
+        return None
+
+    return {
+        "code_verifier": code_verifier,
+        "redirect_to": redirect_to,
+    }
+
+
+def _replace_url_query_param(url: str, name: str, value: str) -> str:
+    parsed = urlparse(url)
+    query_params = [(key, item_value) for key, item_value in parse_qsl(parsed.query, keep_blank_values=True) if key != name]
+    query_params.append((name, value))
+    return urlunparse(parsed._replace(query=urlencode(query_params)))
+
+
+def _is_valid_redirect_target(redirect_to: str | None) -> bool:
+    if not redirect_to:
+        return False
+    return redirect_to in _ALLOWED_AUTH_REDIRECT_TARGETS
+
+
+def _is_allowed_frontend_redirect_url(redirect_to: str | None) -> bool:
+    if not redirect_to:
+        return True
+
+    try:
+        parsed = urlparse(redirect_to)
+    except ValueError:
+        return False
+
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        return False
+
+    origin = f"{parsed.scheme}://{parsed.netloc}"
+    if origin not in _allowed_frontend_redirect_origins():
+        return False
+
+    return (parsed.path or "/") in _ALLOWED_FRONTEND_REDIRECT_PATHS
 
 
 # ── Schemas ──────────────────────────────────────────────────
@@ -41,6 +177,7 @@ class SendOTPRequest(BaseModel):
     phone: str | None = Field(default=None, pattern=r"^\+254[0-9]{9}$", examples=["+254712345678"])
     email: str | None = Field(default=None, pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
     email_redirect_to: str | None = Field(default=None, min_length=1)
+    should_create_user: bool = False
 
     @model_validator(mode="after")
     def validate_destination(self):
@@ -48,7 +185,16 @@ class SendOTPRequest(BaseModel):
             raise ValueError("Provide exactly one destination: phone or email.")
         if self.phone and self.email_redirect_to:
             raise ValueError("email_redirect_to is only supported for email sign-in.")
+        if self.phone and self.should_create_user:
+            raise ValueError("should_create_user is only supported for email sign-in.")
         return self
+
+    @field_validator("email_redirect_to")
+    @classmethod
+    def validate_email_redirect_to(cls, value: str | None):
+        if value and not _is_allowed_frontend_redirect_url(value):
+            raise ValueError("Invalid email redirect target.")
+        return value
 
 
 class VerifyOTPRequest(BaseModel):
@@ -61,6 +207,33 @@ class VerifyOTPRequest(BaseModel):
         if bool(self.phone) == bool(self.email):
             raise ValueError("Provide exactly one destination: phone or email.")
         return self
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+    redirect_to: str | None = None
+
+    @field_validator("redirect_to")
+    @classmethod
+    def validate_redirect_to(cls, value: str | None):
+        if value and not _is_allowed_frontend_redirect_url(value):
+            raise ValueError("Invalid password recovery redirect target.")
+        return value
+
+
+class ResetPasswordRequest(BaseModel):
+    new_password: str = Field(min_length=8)
+    token_hash: str | None = Field(default=None, min_length=1)
+    access_token: str | None = Field(default=None, min_length=1)
+    refresh_token: str | None = Field(default=None, min_length=1)
+
+    @model_validator(mode="after")
+    def validate_reset_payload(self):
+        if self.token_hash:
+            return self
+        if self.access_token and self.refresh_token:
+            return self
+        raise ValueError("Provide token_hash or both access_token and refresh_token.")
 
 
 class CreateProfileRequest(BaseModel):
@@ -91,6 +264,16 @@ class OTPResponse(BaseModel):
     message: str
 
 
+class EmailRegisterRequest(BaseModel):
+    email: str = Field(..., pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+    password: str = Field(..., min_length=8, max_length=128)
+
+
+class EmailLoginRequest(BaseModel):
+    email: str = Field(..., pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+    password: str = Field(..., min_length=8, max_length=128)
+
+
 class SessionResponse(BaseModel):
     user_id: str
     role: str
@@ -104,6 +287,13 @@ class OAuthStartRequest(BaseModel):
     redirect_to: str = Field(..., min_length=1)
     scopes: str | None = None
 
+    @field_validator("redirect_to")
+    @classmethod
+    def validate_redirect_to(cls, value: str):
+        if not _is_valid_redirect_target(value):
+            raise ValueError("Invalid redirect target.")
+        return value
+
 
 class OAuthStartResponse(BaseModel):
     provider: str
@@ -115,6 +305,13 @@ class OAuthExchangeRequest(BaseModel):
     code: str = Field(..., min_length=1)
     state: str = Field(..., min_length=8)
     redirect_to: str | None = None
+
+    @field_validator("redirect_to")
+    @classmethod
+    def validate_redirect_to(cls, value: str | None):
+        if value and not _is_valid_redirect_target(value):
+            raise ValueError("Invalid redirect target.")
+        return value
 
 
 class BootstrapResponse(BaseModel):
@@ -210,6 +407,27 @@ def _profile_write_http_error(exc: Exception, *, table_name: str) -> HTTPExcepti
     )
 
 
+def _should_retry_profile_write_with_admin(exc: Exception) -> bool:
+    if isinstance(exc, PostgrestAPIError):
+        error_blob = " ".join(
+            str(part or "")
+            for part in (exc.code, exc.message, exc.details, exc.hint)
+        ).lower()
+        return (
+            exc.code in {"42501", "PGRST301", "PGRST302"}
+            or "row-level security" in error_blob
+            or "permission denied" in error_blob
+            or ("jwt" in error_blob and "invalid" in error_blob)
+        )
+
+    message = str(exc).lower()
+    return (
+        "row-level security" in message
+        or "permission denied" in message
+        or ("jwt" in message and "invalid" in message)
+    )
+
+
 def _mask_email(email: str) -> str:
     local, _, domain = email.partition("@")
     if not domain:
@@ -221,35 +439,435 @@ def _mask_email(email: str) -> str:
     return f"{masked_local}@{domain}"
 
 
-def _cleanup_oauth_state(now_ts: float) -> None:
-    expired = [
-        state
-        for state, payload in _OAUTH_STATE_STORE.items()
-        if now_ts - float(payload.get("created_at", 0)) > _OAUTH_STATE_TTL_SECONDS
-    ]
-    for state in expired:
-        _OAUTH_STATE_STORE.pop(state, None)
+def _auth_error_http_exception(
+    exc: Exception,
+    *,
+    default_status: int,
+    default_detail: str,
+) -> HTTPException:
+    message = getattr(exc, "message", None) or str(exc)
+    code = getattr(exc, "code", None)
+    status_code = getattr(exc, "status", None)
+    blob = " ".join(
+        str(part or "")
+        for part in (message, code, status_code)
+    ).lower()
+
+    if code == "user_already_exists" or ("already" in blob and ("registered" in blob or "exists" in blob)):
+        return HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="An account with that email already exists. Sign in instead.",
+        )
+    if code == "invalid_credentials" or "invalid login credentials" in blob:
+        return HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password.",
+        )
+    if code == "weak_password" or ("password" in blob and (
+        "weak" in blob
+        or "characters" in blob
+        or "least" in blob
+        or "length" in blob
+    )):
+        return HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=message or "Password is too weak or too short.",
+        )
+    if code == "over_request_rate_limit" or "rate limit" in blob:
+        return HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Too many requests. Please try again later.",
+        )
+    if code == "signup_disabled" or "signup is disabled" in blob:
+        return HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Signups are currently disabled. Please contact support.",
+        )
+    if code == "email_address_invalid" or "email address is invalid" in blob:
+        return HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="The email address provided is invalid.",
+        )
+
+    # In production, we usually hide internal error details unless they are safe/known.
+    # But if we have a clear Supabase code, it's often safe to pass the message through.
+    final_detail = default_detail
+    if settings.app_env != "production":
+        final_detail = message or default_detail
+    elif code:
+        # If there's a specific code but we didn't match it above,
+        # we might want to still show a generic error but log the code.
+        logger.info("Unmapped auth error code encountered", code=code, message=message)
+
+    return HTTPException(
+        status_code=default_status,
+        detail=final_detail,
+    )
 
 
-def _put_oauth_state(state: str, code_verifier: str) -> None:
-    now_ts = time.time()
-    _cleanup_oauth_state(now_ts)
-    _OAUTH_STATE_STORE[state] = {
-        "code_verifier": code_verifier,
-        "created_at": now_ts,
+def _should_fallback_to_public_email_signup(exc: Exception) -> bool:
+    message = getattr(exc, "message", None) or str(exc)
+    code = getattr(exc, "code", None)
+    blob = " ".join(str(part or "") for part in (message, code)).lower()
+    return code == "not_admin" or "user not allowed" in blob or "not_admin" in blob
+
+
+def _build_auth_payload(response, *, is_new_user: bool, redirect_to: str) -> dict:
+    return {
+        "access_token": response.session.access_token,
+        "refresh_token": response.session.refresh_token,
+        "token_type": "bearer",
+        "expires_in": response.session.expires_in,
+        "is_new_user": is_new_user,
+        "redirect_to": redirect_to,
     }
 
 
-def _pop_oauth_code_verifier(state: str) -> str | None:
-    now_ts = time.time()
-    _cleanup_oauth_state(now_ts)
-    payload = _OAUTH_STATE_STORE.pop(state, None)
-    if not payload:
-        return None
-    return str(payload.get("code_verifier") or "")
+async def _sign_in_after_email_registration(email: str, password: str):
+    sign_in_payload = {
+        "email": email,
+        "password": password,
+    }
+    masked_email = _mask_email(email)
+    missing_session_error: HTTPException | None = None
+    last_auth_error: AuthApiError | None = None
+    last_unexpected_error: Exception | None = None
+
+    # Use a fresh client without any stale session state
+    anon_client = create_client(settings.supabase_url, settings.supabase_anon_key)
+
+    for attempt in range(1, _EMAIL_REGISTER_SIGNIN_MAX_ATTEMPTS + 1):
+        try:
+            response = anon_client.auth.sign_in_with_password(sign_in_payload)
+            if response.session and response.user:
+                if attempt > 1:
+                    logger.info(
+                        "Email registration sign-in succeeded after retry",
+                        email=masked_email,
+                        attempt=attempt,
+                    )
+                return response
+
+            missing_session_error = HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Account was created but no session was returned.",
+            )
+            logger.warning(
+                "Email registration sign-in returned no session",
+                email=masked_email,
+                attempt=attempt,
+                max_attempts=_EMAIL_REGISTER_SIGNIN_MAX_ATTEMPTS,
+            )
+        except AuthApiError as exc:
+            last_auth_error = exc
+            logger.warning(
+                "Email registration sign-in attempt failed",
+                email=masked_email,
+                attempt=attempt,
+                max_attempts=_EMAIL_REGISTER_SIGNIN_MAX_ATTEMPTS,
+                code=getattr(exc, "code", None),
+                error=str(exc),
+            )
+            # If it's a 401, it might be because the user hasn't propagated yet
+            # We continue retrying unless it's a different kind of error
+        except Exception as exc:
+            last_unexpected_error = exc
+            logger.warning(
+                "Email registration sign-in attempt hit unexpected error",
+                email=masked_email,
+                attempt=attempt,
+                max_attempts=_EMAIL_REGISTER_SIGNIN_MAX_ATTEMPTS,
+                error=str(exc),
+            )
+
+        if attempt < _EMAIL_REGISTER_SIGNIN_MAX_ATTEMPTS:
+            await asyncio.sleep(_EMAIL_REGISTER_SIGNIN_RETRY_DELAY_SECONDS * (1.5 ** (attempt - 1)))
+
+    if last_auth_error is not None:
+        detail = "Account created, but sign-in failed. Please try signing in."
+        if settings.app_env != "production":
+            detail = getattr(last_auth_error, "message", None) or str(last_auth_error) or detail
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=detail,
+        )
+
+    if last_unexpected_error is not None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Account created, but sign-in failed. Please try signing in.",
+        )
+
+    if missing_session_error is not None:
+        raise missing_session_error
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Account created, but sign-in failed. Please try signing in.",
+    )
+
+
+def _upsert_self_owned_row(
+    *,
+    user_id: str,
+    access_token: str,
+    table_name: str,
+    payload: dict,
+):
+    """
+    Try the write as the authenticated user first so normal self-service
+    RLS continues to work, then fall back to the service role for the
+    same user-owned row when hosted PostgREST auth/RLS behavior gets in
+    the way of profile completion.
+    """
+    try:
+        return (
+            get_user_client(access_token)
+            .table(table_name)
+            .upsert(payload, on_conflict="id")
+            .execute()
+        )
+    except Exception as exc:
+        if not _should_retry_profile_write_with_admin(exc):
+            raise
+
+        logger.warning(
+            "User-scoped profile write failed; retrying with admin client",
+            user_id=user_id,
+            table_name=table_name,
+            error=str(exc),
+            code=getattr(exc, "code", None),
+            details=getattr(exc, "details", None),
+            hint=getattr(exc, "hint", None),
+        )
+        return (
+            get_admin_client()
+            .table(table_name)
+            .upsert(payload, on_conflict="id")
+            .execute()
+        )
 
 
 # ── Routes ───────────────────────────────────────────────────
+
+@router.post("/email/register", status_code=201)
+async def register_with_email(body: EmailRegisterRequest):
+    """
+    Creates a password-based email account and immediately signs the user in.
+    This avoids OTP/magic-link setup and allows the frontend to proceed straight
+    to profile completion.
+    """
+    admin = get_admin_client()
+    response = None
+    created_user = None
+    try:
+        created = admin.auth.admin.create_user(
+            {
+                "email": body.email,
+                "password": body.password,
+                "email_confirm": True,
+            }
+        )
+        created_user = getattr(created, "user", None)
+    except AuthApiError as exc:
+        if _should_fallback_to_public_email_signup(exc):
+            logger.warning(
+                "Admin email registration unavailable; falling back to public signup",
+                email=_mask_email(body.email),
+                code=getattr(exc, "code", None),
+                error=str(exc),
+            )
+            client = create_client(settings.supabase_url, settings.supabase_anon_key)
+            try:
+                response = client.auth.sign_up(
+                    {
+                        "email": body.email,
+                        "password": body.password,
+                    }
+                )
+                created_user = getattr(response, "user", None)
+            except AuthApiError as signup_exc:
+                logger.warning(
+                    "Public email signup rejected",
+                    email=_mask_email(body.email),
+                    code=getattr(signup_exc, "code", None),
+                    error=str(signup_exc),
+                )
+                raise _auth_error_http_exception(
+                    signup_exc,
+                    default_status=status.HTTP_400_BAD_REQUEST,
+                    default_detail="Could not create account. Please try again.",
+                )
+            except Exception as signup_exc:
+                logger.error(
+                    "Public email signup failed",
+                    email=_mask_email(body.email),
+                    error=str(signup_exc),
+                )
+                raise HTTPException(
+                    status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    detail="Could not create account right now. Please try again.",
+                )
+        else:
+            logger.warning(
+                "Email registration rejected",
+                email=_mask_email(body.email),
+                code=getattr(exc, "code", None),
+                error=str(exc),
+            )
+            raise _auth_error_http_exception(
+                exc,
+                default_status=status.HTTP_400_BAD_REQUEST,
+                default_detail="Could not create account. Please try again.",
+            )
+    except Exception as exc:
+        logger.error(
+            "Email registration failed",
+            email=_mask_email(body.email),
+            error=str(exc),
+        )
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Could not create account right now. Please try again.",
+        )
+
+    if not created_user:
+        logger.error(
+            "Email registration returned no Supabase user",
+            email=_mask_email(body.email),
+        )
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Could not create account right now. Please try again.",
+        )
+
+    user_id = getattr(created_user, "id", None)
+    email_confirmed_at = getattr(created_user, "email_confirmed_at", None)
+
+    logger.info(
+        "Email registration created Supabase user",
+        email=_mask_email(body.email),
+        user_id=user_id,
+        email_confirmed_at=email_confirmed_at,
+    )
+
+    # Ensure user is confirmed if created via admin
+    if user_id and not email_confirmed_at:
+        try:
+            admin.auth.admin.update_user_by_id(
+                user_id,
+                {"email_confirm": True}
+            )
+            logger.info("Manually confirmed email for admin-created user", user_id=user_id)
+        except Exception as exc:
+            logger.warning(
+                "Failed to manually confirm email for admin-created user",
+                user_id=user_id,
+                error=str(exc)
+            )
+
+    # Create a default profile row so /v1/profiles/me doesn't 404 for new users
+    # Users will update this during the profile completion step
+    if user_id:
+        try:
+            default_profile = build_default_profile_row(
+                user_id,
+                email=body.email,
+            )
+            admin.table("profiles").insert(default_profile).execute()
+            logger.info(
+                "Default profile created for new user",
+                user_id=user_id,
+                email=_mask_email(body.email),
+            )
+        except Exception as exc:
+            # Non-blocking: log but don't fail signup if profile creation fails
+            logger.warning(
+                "Default profile creation failed during signup, continuing anyway",
+                user_id=user_id,
+                email=_mask_email(body.email),
+                error=str(exc),
+                code=getattr(exc, "code", None),
+                details=getattr(exc, "details", None),
+            )
+
+    if not response or not response.session or not response.user:
+        response = await _sign_in_after_email_registration(body.email, body.password)
+
+    if not response.session or not response.user:
+        logger.error(
+            "Email registration failed to provide a session after retries",
+            email=_mask_email(body.email),
+            user_id=user_id,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Account was created but no session was returned.",
+        )
+
+    return _build_auth_payload(
+        response,
+        is_new_user=True,
+        redirect_to="complete-registration",
+    )
+
+
+@router.post("/email/login", status_code=200)
+async def login_with_email(body: EmailLoginRequest):
+    """
+    Signs an existing user in with email + password and returns the same
+    session bootstrap payload used by the frontend auth flows.
+    """
+    client = create_client(settings.supabase_url, settings.supabase_anon_key)
+    try:
+        response = client.auth.sign_in_with_password(
+            {
+                "email": body.email,
+                "password": body.password,
+            }
+        )
+    except AuthApiError as exc:
+        logger.warning(
+            "Email login rejected",
+            email=_mask_email(body.email),
+            code=getattr(exc, "code", None),
+            error=str(exc),
+        )
+        raise _auth_error_http_exception(
+            exc,
+            default_status=status.HTTP_401_UNAUTHORIZED,
+            default_detail="Incorrect email or password.",
+        )
+    except Exception as exc:
+        logger.error(
+            "Email login failed",
+            email=_mask_email(body.email),
+            error=str(exc),
+        )
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Could not sign in right now. Please try again.",
+        )
+
+    if not response.session or not response.user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Sign-in did not return a session.",
+        )
+
+    admin = get_admin_client()
+    try:
+        _, is_new_user, redirect_to = _resolve_profile_state(admin, response.user.id)
+    except Exception as exc:
+        logger.error("Email login profile check failed", user_id=response.user.id, error=str(exc))
+        is_new_user = True
+        redirect_to = "complete-registration"
+
+    return _build_auth_payload(
+        response,
+        is_new_user=is_new_user,
+        redirect_to=redirect_to,
+    )
 
 @router.post("/send-otp", response_model=OTPResponse, status_code=200)
 async def send_otp(body: SendOTPRequest):
@@ -258,64 +876,41 @@ async def send_otp(body: SendOTPRequest):
     Phone OTP uses SMS provider configured in Supabase.
     Email sends a magic link when email_redirect_to is provided.
     Otherwise, the email template decides whether users receive a code or link.
+    Set should_create_user=True for registration flows so new email users
+    can be created before profile completion.
+    
+    Handles rate limiting (429) with automatic retry and exponential backoff.
     """
-    client = get_anon_client()
+    from app.services.otp import dispatch_otp_with_retry
+
     try:
         if body.phone:
-            # Supabase signInWithOtp — works for new and existing users
-            # Note: signInWithOtp returns an AuthResponse which contains user/session
-            # but for OTP send, we mostly care if it didn't raise an exception.
-            client.auth.sign_in_with_otp({"phone": body.phone})
-            logger.info("OTP dispatched", channel="phone", phone=body.phone[-4:])  # log last 4 digits only
-            return OTPResponse(success=True, message="OTP sent successfully")
+            success, message = await dispatch_otp_with_retry(
+                destination=body.phone,
+                dispatch_type="phone",
+            )
+        else:  # email
+            success, message = await dispatch_otp_with_retry(
+                destination=str(body.email),
+                dispatch_type="email",
+                use_magic_link=bool(body.email_redirect_to),
+                redirect_to=body.email_redirect_to,
+                should_create_user=body.should_create_user,
+            )
 
-        # Supabase email passwordless auth can send either a magic link or
-        # a one-time code depending on template configuration.
-        email = str(body.email)
-        options = {"should_create_user": True}
-        if body.email_redirect_to:
-            options["email_redirect_to"] = body.email_redirect_to
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=message,
+            )
 
-        client.auth.sign_in_with_otp(
-            {
-                "email": email,
-                "options": options,
-            }
-        )
-        delivery = "magic_link" if body.email_redirect_to else "otp"
-        logger.info("OTP dispatched", channel="email", delivery=delivery, email=_mask_email(email))
-        message = "Magic link sent successfully" if body.email_redirect_to else "Verification code sent successfully"
         return OTPResponse(success=True, message=message)
-    except AuthApiError as exc:
-        logger.warning(
-            "OTP dispatch rejected by Supabase",
-            destination=body.phone[-4:] if body.phone else _mask_email(str(body.email)),
-            status=getattr(exc, "status", None),
-            code=getattr(exc, "code", None),
-            error=str(exc),
-        )
-        api_status = getattr(exc, "status", None)
-        status_code = api_status if isinstance(api_status, int) and 400 <= api_status <= 599 else status.HTTP_400_BAD_REQUEST
-        detail = "Failed to send OTP. Please try again."
-        if settings.app_env == "development":
-            detail = f"Failed to send OTP: {str(exc)}"
-        raise HTTPException(status_code=status_code, detail=detail)
-    except AuthRetryableError as exc:
-        logger.error(
-            "OTP dispatch retryable failure",
-            destination=body.phone[-4:] if body.phone else _mask_email(str(body.email)),
-            error=str(exc),
-        )
-        detail = "Failed to send OTP. Please try again."
-        if settings.app_env == "development":
-            detail = f"Failed to send OTP: {str(exc)}"
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=detail,
-        )
+
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.error(
-            "OTP dispatch failed",
+            "OTP dispatch unexpected error",
             destination=body.phone[-4:] if body.phone else _mask_email(str(body.email)),
             error=str(exc),
         )
@@ -387,6 +982,40 @@ async def verify_otp(body: VerifyOTPRequest):
 
     user_id = response.user.id
     admin = get_admin_client()
+    
+    # Create a default profile row if this is a new user from OTP
+    # This ensures /v1/profiles/me doesn't 404 for new OTP users
+    if response.user:
+        try:
+            existing = (
+                admin.table("profiles")
+                .select("id")
+                .eq("id", user_id)
+                .maybe_single()
+                .execute()
+            )
+            # Only create default profile if one doesn't already exist
+            if not existing.data:
+                destination = body.phone if body.phone else str(body.email)
+                default_profile = build_default_profile_row(
+                    user_id,
+                    phone=body.phone,
+                    email=body.email,
+                )
+                admin.table("profiles").insert(default_profile).execute()
+                logger.info(
+                    "Default profile created for new OTP user",
+                    user_id=user_id,
+                    destination=destination[-4:] if body.phone else _mask_email(destination),
+                )
+        except Exception as exc:
+            # Non-blocking: log but don't fail OTP verification if profile creation fails
+            logger.warning(
+                "Default profile creation failed during OTP verification, continuing anyway",
+                user_id=user_id,
+                error=str(exc),
+                code=getattr(exc, "code", None),
+            )
 
     try:
         _, is_new_user, redirect_to = _resolve_profile_state(admin, user_id)
@@ -395,28 +1024,47 @@ async def verify_otp(body: VerifyOTPRequest):
         is_new_user = True
         redirect_to = "complete-registration"
 
-    return {
-        "access_token":  response.session.access_token,
-        "refresh_token": response.session.refresh_token,
-        "token_type":    "bearer",
-        "expires_in":    response.session.expires_in,
-        "is_new_user":   is_new_user,
-        "redirect_to":   redirect_to,
-    }
+    return _build_auth_payload(response, is_new_user=is_new_user, redirect_to=redirect_to)
 
 
 @router.post("/oauth/start", response_model=OAuthStartResponse, status_code=200)
-async def start_oauth(body: OAuthStartRequest):
+async def start_oauth(body: OAuthStartRequest, request: Request):
     """
     Returns a Supabase OAuth authorization URL for the selected provider.
     Frontend should redirect the browser to the returned URL.
+    Rate limited to 10 requests per minute per IP.
     """
+    # Rate limiting check
+    client_ip = request.client.host if request.client else "unknown"
+    try:
+        if hasattr(request.app, "state") and hasattr(request.app.state, "limiter"):
+            limiter_instance = request.app.state.limiter
+            rate_key = f"oauth_start:{client_ip}"
+            if not limiter_instance.hit(rate_key, 10, 60):
+                logger.warning("OAuth start rate limit exceeded", client_ip=client_ip)
+                raise HTTPException(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail="Too many OAuth requests. Please wait before trying again.",
+                )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.debug("Rate limiting check failed (non-blocking)", error=str(e))
+    
+    callback_url = _default_auth_callback_url()
+    if not _is_allowed_frontend_redirect_url(callback_url):
+        logger.error("OAuth start callback URL is not in the frontend redirect allowlist", callback_url=callback_url)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="OAuth callback is misconfigured. Please contact support.",
+        )
+
     # Build an isolated auth client per request so we can safely capture
     # this login's PKCE code verifier without cross-user collisions.
     client = create_client(settings.supabase_url, settings.supabase_anon_key)
     state = secrets.token_urlsafe(24)
 
-    options = {"redirect_to": body.redirect_to, "query_params": {"state": state}}
+    options = {"redirect_to": callback_url, "query_params": {"state": state}}
     if body.scopes:
         options["scopes"] = body.scopes
 
@@ -432,10 +1080,35 @@ async def start_oauth(body: OAuthStartRequest):
         if not code_verifier:
             raise RuntimeError("Missing PKCE code verifier for OAuth start")
 
-        _put_oauth_state(state, str(code_verifier))
-        return OAuthStartResponse(provider=response.provider, url=response.url, state=state)
+        signed_state = _encode_oauth_state(
+            code_verifier=str(code_verifier),
+            redirect_to=body.redirect_to,
+        )
+        redirect_url = _replace_url_query_param(response.url, "state", signed_state)
+        logger.info(
+            "OAuth start successful",
+            provider=body.provider,
+            redirect_to=body.redirect_to,
+        )
+        return OAuthStartResponse(provider=response.provider, url=redirect_url, state=signed_state)
+    except AuthApiError as exc:
+        logger.error(
+            "OAuth start auth error",
+            provider=body.provider,
+            error=str(exc),
+            code=getattr(exc, "code", None),
+        )
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"OAuth configuration error: {exc.message if hasattr(exc, 'message') else str(exc)}. Check Supabase OAuth provider settings.",
+        )
     except Exception as exc:
-        logger.error("OAuth start failed", provider=body.provider, error=str(exc))
+        logger.error(
+            "OAuth start failed",
+            provider=body.provider,
+            error=str(exc),
+            error_type=type(exc).__name__,
+        )
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Failed to initialize OAuth login.",
@@ -443,35 +1116,92 @@ async def start_oauth(body: OAuthStartRequest):
 
 
 @router.post("/oauth/exchange", status_code=200)
-async def exchange_oauth_code(body: OAuthExchangeRequest):
+async def exchange_oauth_code(body: OAuthExchangeRequest, request: Request):
     """
-    Exchanges Supabase OAuth callback code for a session using the stored PKCE verifier.
+    Exchanges Supabase OAuth callback code for a session using the
+    encrypted PKCE verifier stored inside the signed OAuth state.
+    Rate limited to 5 requests per minute per IP.
     """
-    code_verifier = _pop_oauth_code_verifier(body.state)
-    if not code_verifier:
+    # Rate limiting check
+    client_ip = request.client.host if request.client else "unknown"
+    try:
+        if hasattr(request.app, "state") and hasattr(request.app.state, "limiter"):
+            limiter_instance = request.app.state.limiter
+            rate_key = f"oauth_exchange:{client_ip}"
+            if not limiter_instance.hit(rate_key, 5, 60):
+                logger.warning("OAuth exchange rate limit exceeded", client_ip=client_ip)
+                raise HTTPException(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail="Too many token exchange attempts. Please try again later.",
+                )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.debug("Rate limiting check failed (non-blocking)", error=str(e))
+    oauth_state = _decode_oauth_state(body.state)
+    if not oauth_state:
+        logger.warning(
+            "OAuth exchange: invalid or expired state",
+            state=body.state[:8] if body.state else "missing",
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="OAuth state is invalid or expired. Please start login again.",
         )
 
+    state_redirect_to = oauth_state["redirect_to"]
+    if body.redirect_to and body.redirect_to != state_redirect_to:
+        logger.warning(
+            "OAuth exchange redirect target mismatch",
+            state=body.state[:8],
+            redirect_to=body.redirect_to,
+            state_redirect_to=state_redirect_to,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="OAuth redirect target did not match the signed login request.",
+        )
+
     client = create_client(settings.supabase_url, settings.supabase_anon_key)
     exchange_payload = {
         "auth_code": body.code,
-        "code_verifier": code_verifier,
+        "code_verifier": oauth_state["code_verifier"],
+        "redirect_to": _default_auth_callback_url(),
     }
-    if body.redirect_to:
-        exchange_payload["redirect_to"] = body.redirect_to
 
     try:
         response = client.auth.exchange_code_for_session(exchange_payload)
+    except AuthApiError as exc:
+        logger.error(
+            "OAuth exchange auth error",
+            state=body.state[:8],
+            error=str(exc),
+            code=getattr(exc, "code", None),
+            message=getattr(exc, "message", None),
+        )
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="OAuth verification failed. Check that your authorization code is valid and not expired.",
+        )
     except Exception as exc:
-        logger.error("OAuth exchange failed", state=body.state[:8], error=str(exc))
+        logger.error(
+            "OAuth exchange failed",
+            state=body.state[:8],
+            error=str(exc),
+            error_type=type(exc).__name__,
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Failed to complete OAuth login.",
         )
 
     if not response.session or not response.user:
+        logger.error(
+            "OAuth exchange: missing session or user",
+            state=body.state[:8],
+            has_session=bool(response.session),
+            has_user=bool(response.user),
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="OAuth login did not return a session.",
@@ -486,14 +1216,7 @@ async def exchange_oauth_code(body: OAuthExchangeRequest):
         is_new_user = True
         redirect_to = "complete-registration"
 
-    return {
-        "access_token": response.session.access_token,
-        "refresh_token": response.session.refresh_token,
-        "token_type": "bearer",
-        "expires_in": response.session.expires_in,
-        "is_new_user": is_new_user,
-        "redirect_to": redirect_to,
-    }
+    return _build_auth_payload(response, is_new_user=is_new_user, redirect_to=redirect_to)
 
 
 @router.post("/profile", status_code=201)
@@ -519,8 +1242,6 @@ async def create_profile(body: CreateProfileRequest, user: CurrentSession):
             detail="Maximum rate must be greater than or equal to minimum rate.",
         )
 
-    client = get_user_client(user.access_token)
-
     # Upsert profiles row (idempotent)
     profile_data = {
         "id":                 user.user_id,
@@ -535,10 +1256,11 @@ async def create_profile(body: CreateProfileRequest, user: CurrentSession):
     }
 
     try:
-        profile_result = (
-            client.table("profiles")
-            .upsert(profile_data, on_conflict="id")
-            .execute()
+        profile_result = _upsert_self_owned_row(
+            user_id=user.user_id,
+            access_token=user.access_token,
+            table_name="profiles",
+            payload=profile_data,
         )
     except Exception as exc:
         logger.error(
@@ -563,7 +1285,12 @@ async def create_profile(body: CreateProfileRequest, user: CurrentSession):
             "kyc_status":       "pending",
         }
         try:
-            client.table("fundi_profiles").upsert(fundi_data, on_conflict="id").execute()
+            _upsert_self_owned_row(
+                user_id=user.user_id,
+                access_token=user.access_token,
+                table_name="fundi_profiles",
+                payload=fundi_data,
+            )
         except Exception as exc:
             logger.error(
                 "Fundi profile upsert failed",
@@ -629,3 +1356,118 @@ async def bootstrap_auth(user: CurrentSession):
     except Exception as exc:
         logger.error("Auth bootstrap failed", user_id=user.user_id, error=str(exc))
         raise HTTPException(status_code=500, detail="Failed to bootstrap auth state.")
+
+
+@router.post("/oauth/refresh", status_code=200)
+async def refresh_oauth_token(body: dict):
+    """
+    Refresh expired access token using refresh token.
+    Frontend calls this before access_token expires to get a new one.
+    """
+    refresh_token = body.get("refresh_token")
+    if not refresh_token:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Missing refresh_token",
+        )
+
+    client = create_client(settings.supabase_url, settings.supabase_anon_key)
+    try:
+        response = client.auth.refresh_session(refresh_token)
+        if not response.session:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Refresh token invalid or expired. Please sign in again.",
+            )
+        logger.info("Token refreshed")
+        return {
+            "access_token": response.session.access_token,
+            "refresh_token": response.session.refresh_token,
+            "token_type": "bearer",
+            "expires_in": response.session.expires_in,
+        }
+    except AuthApiError as exc:
+        logger.warning(
+            "Token refresh auth error",
+            error=str(exc),
+            code=getattr(exc, "code", None),
+        )
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Refresh token invalid or expired. Please sign in again.",
+        )
+    except Exception as exc:
+        logger.error("Token refresh failed", error=str(exc))
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Token refresh service unavailable. Please try again.",
+        )
+
+
+@router.post("/logout", status_code=200)
+async def logout(session: CurrentSession):
+    """
+    Logs out the user by signing them out from Supabase.
+    Frontend should clear localStorage tokens and redirect to login.
+    """
+    try:
+        get_anon_client().auth.admin.sign_out(session.access_token)
+        logger.info("User logged out", user_id=session.user_id)
+        return {"success": True, "message": "Logged out successfully"}
+    except Exception as exc:
+        logger.warning("Logout failed", user_id=session.user_id, error=str(exc))
+        # Still return success even if sign_out fails, frontend should clear tokens
+        return {"success": True, "message": "Logged out successfully"}
+
+
+@router.post("/email/forgot-password", status_code=200)
+async def forgot_password(payload: ForgotPasswordRequest):
+    """Trigger Supabase password recovery email."""
+    redirect_to = payload.redirect_to or _default_password_reset_url()
+    if not _is_allowed_frontend_redirect_url(redirect_to):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid password recovery redirect target.",
+        )
+    try:
+        anon_client = get_anon_client()
+        anon_client.auth.reset_password_for_email(
+            payload.email,
+            {"redirect_to": redirect_to},
+        )
+    except Exception as exc:
+        logger.warning(
+            "Password recovery request failed",
+            email=_mask_email(payload.email),
+            error=str(exc),
+        )
+        # Always return 200 so we don't leak which emails exist
+    return {"ok": True, "message": "If an account exists, a reset link has been sent."}
+
+
+@router.post("/email/reset-password", status_code=200)
+async def reset_password(payload: ResetPasswordRequest):
+    """Complete password reset using the recovery token from the email link."""
+    try:
+        anon_client = get_anon_client()
+        if payload.token_hash:
+            verify_result = anon_client.auth.verify_otp(
+                {
+                    "token_hash": payload.token_hash,
+                    "type": "recovery",
+                }
+            )
+            if not verify_result or not verify_result.session:
+                raise ValueError("Recovery token verification returned no session")
+        else:
+            anon_client.auth.set_session(payload.access_token, payload.refresh_token)
+        result = anon_client.auth.update_user({"password": payload.new_password})
+        if not result or not result.user:
+            raise ValueError("Update returned no user")
+    except Exception as exc:
+        logger.warning("Password reset failed", error=str(exc))
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Reset link is invalid or has expired. Please request a new one.",
+        )
+    return {"ok": True, "message": "Password updated. You can now sign in."}

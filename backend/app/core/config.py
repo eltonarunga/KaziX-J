@@ -2,7 +2,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import field_validator
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _ENV_FILE = Path(__file__).resolve().parents[2] / ".env"
@@ -20,16 +20,23 @@ class Settings(BaseSettings):
     app_env: Literal["development", "production", "testing"] = "development"
     app_secret_key: str = ""
     app_host: str = "0.0.0.0"
-    app_port: int = 8000
+    app_port: int = Field(default=8000, validation_alias=AliasChoices("APP_PORT", "PORT"))
     allowed_origins: str = (
         "http://localhost:8000,http://127.0.0.1:8000,"
         "http://localhost:5173,http://127.0.0.1:5173,"
-        "http://localhost:3000,http://127.0.0.1:3000"
+        "http://localhost:3000,http://127.0.0.1:3000,"
+        "https://kazixfrontend.vercel.app,https://kazix.vercel.app,"
+        "https://kazix.co.ke,https://www.kazix.co.ke"
     )
+    allowed_hosts: str = "localhost,127.0.0.1,*.onrender.com,kazix-api.onrender.com,api.kazix.co.ke"
 
     @property
     def cors_origins(self) -> list[str]:
         return [o.strip() for o in self.allowed_origins.split(",") if o.strip()]
+
+    @property
+    def trusted_hosts(self) -> list[str]:
+        return [host.strip() for host in self.allowed_hosts.split(",") if host.strip()]
 
     @property
     def is_production(self) -> bool:
@@ -59,6 +66,16 @@ class Settings(BaseSettings):
     at_api_key: str = ""
     at_username: str = "sandbox"
     at_sender_id: str = "KaziX"
+
+    # ── Frontend ────────────────────────────────────────────────
+    frontend_url: str = "https://kazixfrontend.vercel.app"
+
+    # ── OTP Retry Configuration ──────────────────────────────
+    otp_max_retries: int = 3
+    otp_initial_backoff_ms: int = 100
+    otp_max_backoff_ms: int = 5000
+    otp_backoff_multiplier: float = 2.0
+    otp_jitter_enabled: bool = True
 
     # ── Logging ──────────────────────────────────────────────
     log_level: str = "INFO"
