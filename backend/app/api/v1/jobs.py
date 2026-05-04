@@ -150,6 +150,17 @@ async def get_job(job_id: str):
 @router.post("/", status_code=201)
 async def create_job(body: CreateJobRequest, user: ClientUser):
     """Client creates a new job post."""
+    if user.is_guest:
+        import uuid
+        from datetime import datetime, timezone
+        return {
+            "id": str(uuid.uuid4()),
+            "client_id": user.user_id,
+            "status": "open",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            **body.model_dump()
+        }
+
     admin = get_admin_client()
     data = body.model_dump()
     data["client_id"] = user.user_id

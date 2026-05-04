@@ -48,7 +48,7 @@
 
       localStorage.setItem("kazix_role", role);
 
-      if (options.expectedRole && role !== options.expectedRole) {
+      if (options.expectedRole && role !== options.expectedRole && role !== 'admin') {
         var defaultRedirects = {
           client: "client-dashboard.html",
           fundi: "worker-dashboard.html",
