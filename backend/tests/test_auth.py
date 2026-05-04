@@ -2,12 +2,14 @@ from types import SimpleNamespace
 
 import httpx
 import pytest
+from gotrue.errors import AuthApiError
 from jose import jwt
 from postgrest.exceptions import APIError
 
 from app.api import deps as deps_module
 from app.api.v1 import auth as auth_module
 from app.main import app
+from app.services import otp as otp_service_module
 
 
 class _FakeAuthClient:
@@ -32,6 +34,105 @@ class _FakeAuthLookupClient:
                 user=SimpleNamespace(id=self.user_id)
             )
         )
+
+
+class _FakeLogoutAdmin:
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, str]] = []
+
+    def sign_out(self, jwt: str, scope: str = "global") -> None:
+        self.calls.append((jwt, scope))
+
+
+class _FakeLogoutClient:
+    def __init__(self) -> None:
+        self.auth = SimpleNamespace(admin=_FakeLogoutAdmin())
+
+
+class _FakePasswordAuthClient:
+    def __init__(
+        self,
+        *,
+        user_id: str = "email-user-123",
+        access_token: str = "email-access-token",
+        refresh_token: str = "email-refresh-token",
+        expires_in: int = 3600,
+        sign_in_error: Exception | None = None,
+        sign_in_errors: list[Exception | None] | None = None,
+        sign_up_error: Exception | None = None,
+        sign_up_returns_session: bool = False,
+    ) -> None:
+        self.user_id = user_id
+        self.access_token = access_token
+        self.refresh_token = refresh_token
+        self.expires_in = expires_in
+        self.sign_in_error = sign_in_error
+        self.sign_in_errors = list(sign_in_errors or [])
+        self.sign_up_error = sign_up_error
+        self.sign_up_returns_session = sign_up_returns_session
+        self.payloads: list[dict] = []
+        self.sign_up_payloads: list[dict] = []
+
+    def sign_in_with_password(self, payload: dict):
+        self.payloads.append(payload)
+        if self.sign_in_errors:
+            next_error = self.sign_in_errors.pop(0)
+            if next_error:
+                raise next_error
+        if self.sign_in_error:
+            raise self.sign_in_error
+        return SimpleNamespace(
+            user=SimpleNamespace(id=self.user_id),
+            session=SimpleNamespace(
+                access_token=self.access_token,
+                refresh_token=self.refresh_token,
+                expires_in=self.expires_in,
+            ),
+        )
+
+    def sign_up(self, payload: dict):
+        self.sign_up_payloads.append(payload)
+        if self.sign_up_error:
+            raise self.sign_up_error
+        session = None
+        if self.sign_up_returns_session:
+            session = SimpleNamespace(
+                access_token=self.access_token,
+                refresh_token=self.refresh_token,
+                expires_in=self.expires_in,
+            )
+        return SimpleNamespace(
+            user=SimpleNamespace(id=self.user_id),
+            session=session,
+        )
+
+
+class _FakePasswordClient:
+    def __init__(self, auth_client: _FakePasswordAuthClient) -> None:
+        self.auth = auth_client
+
+
+class _FakeAdminUserAdmin:
+    def __init__(
+        self,
+        *,
+        user_id: str = "email-user-123",
+        create_error: Exception | None = None,
+    ) -> None:
+        self.user_id = user_id
+        self.create_error = create_error
+        self.payloads: list[dict] = []
+
+    def create_user(self, payload: dict):
+        self.payloads.append(payload)
+        if self.create_error:
+            raise self.create_error
+        return SimpleNamespace(user=SimpleNamespace(id=self.user_id))
+
+
+class _FakeRegisterAdminClient:
+    def __init__(self, user_admin: _FakeAdminUserAdmin) -> None:
+        self.auth = SimpleNamespace(admin=user_admin)
 
 
 class _FakeResult:
@@ -131,9 +232,232 @@ def _make_bearer_token(secret: str, user_id: str = "user-123") -> str:
 
 
 @pytest.mark.asyncio
+async def test_email_register_creates_confirmed_user_and_signs_in(monkeypatch) -> None:
+    fake_user_admin = _FakeAdminUserAdmin(user_id="new-email-user")
+    fake_admin = _FakeRegisterAdminClient(fake_user_admin)
+    fake_password_auth = _FakePasswordAuthClient(user_id="new-email-user")
+    fake_password_client = _FakePasswordClient(fake_password_auth)
+
+    monkeypatch.setattr(auth_module, "get_admin_client", lambda: fake_admin)
+    monkeypatch.setattr(auth_module, "create_client", lambda *_args, **_kwargs: fake_password_client)
+
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.post(
+            "/v1/auth/email/register",
+            json={
+                "email": "jane@example.com",
+                "password": "SecurePass123!",
+            },
+        )
+
+    assert response.status_code == 201
+    assert response.json() == {
+        "access_token": "email-access-token",
+        "refresh_token": "email-refresh-token",
+        "token_type": "bearer",
+        "expires_in": 3600,
+        "is_new_user": True,
+        "redirect_to": "complete-registration",
+    }
+    assert fake_user_admin.payloads == [
+        {
+            "email": "jane@example.com",
+            "password": "SecurePass123!",
+            "email_confirm": True,
+        }
+    ]
+    assert fake_password_auth.payloads == [
+        {
+            "email": "jane@example.com",
+            "password": "SecurePass123!",
+        }
+    ]
+
+
+@pytest.mark.asyncio
+async def test_email_register_retries_sign_in_when_first_attempt_fails(monkeypatch) -> None:
+    fake_user_admin = _FakeAdminUserAdmin(user_id="new-email-user")
+    fake_admin = _FakeRegisterAdminClient(fake_user_admin)
+    fake_password_auth = _FakePasswordAuthClient(
+        user_id="new-email-user",
+        sign_in_errors=[
+            AuthApiError("Invalid login credentials", 400, "invalid_credentials"),
+            None,
+        ],
+    )
+    fake_password_client = _FakePasswordClient(fake_password_auth)
+
+    monkeypatch.setattr(auth_module, "get_admin_client", lambda: fake_admin)
+    monkeypatch.setattr(auth_module, "create_client", lambda *_args, **_kwargs: fake_password_client)
+    monkeypatch.setattr(auth_module, "_EMAIL_REGISTER_SIGNIN_RETRY_DELAY_SECONDS", 0)
+
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.post(
+            "/v1/auth/email/register",
+            json={
+                "email": "jane@example.com",
+                "password": "SecurePass123!",
+            },
+        )
+
+    assert response.status_code == 201
+    assert response.json()["redirect_to"] == "complete-registration"
+    assert fake_password_auth.payloads == [
+        {
+            "email": "jane@example.com",
+            "password": "SecurePass123!",
+        },
+        {
+            "email": "jane@example.com",
+            "password": "SecurePass123!",
+        },
+    ]
+
+
+@pytest.mark.asyncio
+async def test_email_register_returns_conflict_for_duplicate_email(monkeypatch) -> None:
+    fake_user_admin = _FakeAdminUserAdmin(
+        create_error=AuthApiError("User already registered", 422, "user_already_exists")
+    )
+    fake_admin = _FakeRegisterAdminClient(fake_user_admin)
+
+    monkeypatch.setattr(auth_module, "get_admin_client", lambda: fake_admin)
+
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.post(
+            "/v1/auth/email/register",
+            json={
+                "email": "jane@example.com",
+                "password": "SecurePass123!",
+            },
+        )
+
+    assert response.status_code == 409
+    assert response.json()["detail"] == "An account with that email already exists. Sign in instead."
+
+
+@pytest.mark.asyncio
+async def test_email_register_falls_back_to_public_signup_when_admin_client_is_not_allowed(monkeypatch) -> None:
+    fake_user_admin = _FakeAdminUserAdmin(
+        create_error=AuthApiError("User not allowed", 403, "not_admin")
+    )
+    fake_admin = _FakeRegisterAdminClient(fake_user_admin)
+    fake_password_auth = _FakePasswordAuthClient(
+        user_id="fallback-email-user",
+        sign_up_returns_session=True,
+    )
+    fake_password_client = _FakePasswordClient(fake_password_auth)
+
+    monkeypatch.setattr(auth_module, "get_admin_client", lambda: fake_admin)
+    monkeypatch.setattr(auth_module, "create_client", lambda *_args, **_kwargs: fake_password_client)
+
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.post(
+            "/v1/auth/email/register",
+            json={
+                "email": "jane@example.com",
+                "password": "SecurePass123!",
+            },
+        )
+
+    assert response.status_code == 201
+    assert response.json() == {
+        "access_token": "email-access-token",
+        "refresh_token": "email-refresh-token",
+        "token_type": "bearer",
+        "expires_in": 3600,
+        "is_new_user": True,
+        "redirect_to": "complete-registration",
+    }
+    assert fake_user_admin.payloads == [
+        {
+            "email": "jane@example.com",
+            "password": "SecurePass123!",
+            "email_confirm": True,
+        }
+    ]
+    assert fake_password_auth.sign_up_payloads == [
+        {
+            "email": "jane@example.com",
+            "password": "SecurePass123!",
+        }
+    ]
+    assert fake_password_auth.payloads == []
+
+
+@pytest.mark.asyncio
+async def test_email_login_returns_existing_profile_redirect(monkeypatch) -> None:
+    fake_password_auth = _FakePasswordAuthClient(user_id="existing-email-user")
+    fake_password_client = _FakePasswordClient(fake_password_auth)
+    fake_admin = _FakeAdminClient(
+        initial_tables={
+            "profiles": {
+                "existing-email-user": {
+                    "id": "existing-email-user",
+                    "role": "fundi",
+                    "full_name": "Jane Fundi",
+                    "phone": "+254712345678",
+                    "is_verified": True,
+                }
+            }
+        }
+    )
+
+    monkeypatch.setattr(auth_module, "create_client", lambda *_args, **_kwargs: fake_password_client)
+    monkeypatch.setattr(auth_module, "get_admin_client", lambda: fake_admin)
+
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.post(
+            "/v1/auth/email/login",
+            json={
+                "email": "jane@example.com",
+                "password": "SecurePass123!",
+            },
+        )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "access_token": "email-access-token",
+        "refresh_token": "email-refresh-token",
+        "token_type": "bearer",
+        "expires_in": 3600,
+        "is_new_user": False,
+        "redirect_to": "fundi-dashboard",
+    }
+
+
+@pytest.mark.asyncio
+async def test_email_login_returns_unauthorized_for_bad_credentials(monkeypatch) -> None:
+    fake_password_auth = _FakePasswordAuthClient(
+        sign_in_error=AuthApiError("Invalid login credentials", 400, "invalid_credentials")
+    )
+    fake_password_client = _FakePasswordClient(fake_password_auth)
+
+    monkeypatch.setattr(auth_module, "create_client", lambda *_args, **_kwargs: fake_password_client)
+
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.post(
+            "/v1/auth/email/login",
+            json={
+                "email": "jane@example.com",
+                "password": "SecurePass123!",
+            },
+        )
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Incorrect email or password."
+
+
+@pytest.mark.asyncio
 async def test_send_otp_for_signup_forwards_magic_link_redirect(monkeypatch) -> None:
     fake_client = _FakeSupabaseClient()
-    monkeypatch.setattr(auth_module, "get_anon_client", lambda: fake_client)
+    monkeypatch.setattr(otp_service_module, "get_anon_client", lambda: fake_client)
 
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
@@ -141,7 +465,8 @@ async def test_send_otp_for_signup_forwards_magic_link_redirect(monkeypatch) -> 
             "/v1/auth/send-otp",
             json={
                 "email": "test@example.com",
-                "email_redirect_to": "http://localhost:8000/pages/auth-callback.html",
+                "email_redirect_to": "http://localhost:5000/pages/auth-callback.html",
+                "should_create_user": True,
             },
         )
 
@@ -155,7 +480,34 @@ async def test_send_otp_for_signup_forwards_magic_link_redirect(monkeypatch) -> 
             "email": "test@example.com",
             "options": {
                 "should_create_user": True,
-                "email_redirect_to": "http://localhost:8000/pages/auth-callback.html",
+                "email_redirect_to": "http://localhost:5000/pages/auth-callback.html",
+            },
+        }
+    ]
+
+
+@pytest.mark.asyncio
+async def test_send_otp_for_login_keeps_magic_link_login_only(monkeypatch) -> None:
+    fake_client = _FakeSupabaseClient()
+    monkeypatch.setattr(otp_service_module, "get_anon_client", lambda: fake_client)
+
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.post(
+            "/v1/auth/send-otp",
+            json={
+                "email": "test@example.com",
+                "email_redirect_to": "http://localhost:5000/pages/auth-callback.html",
+            },
+        )
+
+    assert response.status_code == 200
+    assert fake_client.auth.payloads == [
+        {
+            "email": "test@example.com",
+            "options": {
+                "should_create_user": False,
+                "email_redirect_to": "http://localhost:5000/pages/auth-callback.html",
             },
         }
     ]
@@ -248,6 +600,48 @@ async def test_create_profile_returns_conflict_for_duplicate_phone(monkeypatch) 
 
 
 @pytest.mark.asyncio
+async def test_create_profile_falls_back_to_admin_client_when_user_upsert_fails(monkeypatch) -> None:
+    secret = "test-jwt-secret"
+    failing_user_client = _ErroringAdminClient(
+        execute_errors={
+            "profiles": {
+                "message": 'new row violates row-level security policy for table "profiles"',
+                "code": "42501",
+                "details": "",
+                "hint": "",
+            }
+        }
+    )
+    fake_admin = _FakeAdminClient()
+
+    monkeypatch.setattr(deps_module, "settings", SimpleNamespace(supabase_jwt_secret=secret))
+    monkeypatch.setattr(auth_module, "get_user_client", lambda _token: failing_user_client)
+    monkeypatch.setattr(auth_module, "get_admin_client", lambda: fake_admin)
+
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.post(
+            "/v1/auth/profile",
+            headers={"Authorization": f"Bearer {_make_bearer_token(secret)}"},
+            json={
+                "full_name": "Jane Wanjiku",
+                "phone": "+254712345678",
+                "email": "jane@example.com",
+                "county": "Nairobi",
+                "area": "Westlands",
+                "role": "client",
+                "mpesa_number": "+254712345678",
+                "preferred_language": "en",
+            },
+        )
+
+    assert response.status_code == 201
+    assert response.json()["success"] is True
+    assert fake_admin.tables["profiles"]["user-123"]["full_name"] == "Jane Wanjiku"
+    assert fake_admin.tables["profiles"]["user-123"]["role"] == "client"
+
+
+@pytest.mark.asyncio
 async def test_create_profile_rejects_inverted_fundi_rate_range(monkeypatch) -> None:
     secret = "test-jwt-secret"
     fake_admin = _FakeAdminClient()
@@ -307,18 +701,21 @@ async def test_bootstrap_allows_authenticated_new_user_without_existing_profile(
 @pytest.mark.asyncio
 async def test_bootstrap_accepts_asymmetric_supabase_tokens(monkeypatch) -> None:
     fake_admin = _FakeAdminClient()
-    fake_lookup_client = _FakeAuthLookupClient(user_id="user-rs256")
 
     monkeypatch.setattr(
         deps_module,
         "settings",
         SimpleNamespace(supabase_jwt_secret="test-jwt-secret"),
     )
-    monkeypatch.setattr(deps_module, "get_anon_client", lambda: fake_lookup_client)
+    monkeypatch.setattr(
+        deps_module,
+        "_decode_asymmetric_user_id",
+        lambda _token: "user-rs256",
+    )
     monkeypatch.setattr(
         deps_module.jwt,
         "get_unverified_header",
-        lambda _token: {"alg": "RS256"},
+        lambda _token: {"alg": "ES256"},
     )
     monkeypatch.setattr(auth_module, "get_admin_client", lambda: fake_admin)
 
@@ -336,3 +733,31 @@ async def test_bootstrap_accepts_asymmetric_supabase_tokens(monkeypatch) -> None
         "role": "client",
         "profile": None,
     }
+
+
+@pytest.mark.asyncio
+async def test_logout_uses_authenticated_session_token(monkeypatch) -> None:
+    secret = "test-jwt-secret"
+    fake_client = _FakeLogoutClient()
+    access_token = _make_bearer_token(secret)
+
+    monkeypatch.setattr(
+        deps_module,
+        "settings",
+        SimpleNamespace(supabase_jwt_secret=secret),
+    )
+    monkeypatch.setattr(auth_module, "get_anon_client", lambda: fake_client)
+
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.post(
+            "/v1/auth/logout",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "success": True,
+        "message": "Logged out successfully",
+    }
+    assert fake_client.auth.admin.calls == [(access_token, "global")]

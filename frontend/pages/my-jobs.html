@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-<title>My Jobs  KaziX</title>
+<title>My Jobs — KaziX</title>
 <link rel="stylesheet" href="../assets/css/styles.css">
 <style>
 
- /*  STATUS TABS  */
+/* STATUS TABS */
 .status-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:2rem}
 .stab{padding:0.75rem 1.5rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s;display:flex;align-items:center;gap:0.4rem}
 .stab:hover{color:var(--ink)}
@@ -16,7 +16,7 @@
 .stab .tab-count{background:var(--cream);color:var(--muted);font-size:0.65rem;padding:0.1rem 0.45rem;border-radius:10px}
 .stab.active .tab-count{background:var(--ink);color:#F5F0E8}
 
- /*  JOB CARDS  */
+/* JOB CARDS */
 .jobs-list{display:flex;flex-direction:column;gap:1rem}
 .job-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.5rem;transition:all 0.2s;position:relative;overflow:hidden;animation:slideUp 0.4s ease both}
 .job-card:hover{box-shadow:0 6px 24px rgba(0,0,0,0.08);transform:translateY(-2px)}
@@ -58,104 +58,357 @@
 .hw-name{font-weight:600;color:var(--ink)}
 .hw-stars{color:var(--saffron);font-size:0.72rem}
 
- /*  EMPTY STATE  */
+/* EMPTY STATE */
 .empty-state{text-align:center;padding:4rem 2rem;color:var(--muted)}
 .es-icon{font-size:3rem;margin-bottom:1rem;opacity:0.4}
 .es-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:var(--ink);margin-bottom:0.5rem}
 .es-sub{font-size:0.875rem;margin-bottom:1.5rem}
 
- /*  POST BTN  */
+/* POST BTN */
 .post-btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.8rem 1.75rem;background:var(--ink);color:#F5F0E8;font-family:'Syne',sans-serif;font-weight:700;font-size:0.875rem;border:none;border-radius:2px;cursor:pointer;text-decoration:none;transition:background 0.2s}
 .post-btn:hover{background:var(--green)}
 
 @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:900px){.sidebar{display:none}}
 </style>
+<style id="auth-gate-style">body{visibility:hidden}</style>
+<script>
+(function(){
+  if (!localStorage.getItem("kazix_access_token")) {
+    var next = encodeURIComponent(location.pathname + location.search);
+    location.replace("login.html?next=" + next);
+    return;
+  }
+  document.addEventListener("DOMContentLoaded", function(){
+    var s = document.getElementById("auth-gate-style");
+    if (s) s.remove();
+  });
+})();
+</script>
 </head>
 <body class="app">
 <nav class="topnav">
   <a href="index.html" class="logo">Kazi<span>X</span></a>
   <div class="topnav-right">
-    <button class="notif-btn">Notifications <span class="notif-dot"></span></button>
+    <button class="notif-btn">🔔<span class="notif-dot"></span></button>
     <div class="user-chip"><div class="user-avatar">KX</div><span class="user-name">My account</span></div>
   </div>
 </nav>
 <div class="app-shell">
   <aside class="sidebar">
     <div class="sidebar-section">Main</div>
-    <a class="nav-item" href="client-dashboard.html"><span class="ni-icon"></span>Dashboard</a>
-    <a class="nav-item active" href="my-jobs.html"><span class="ni-icon"></span>My Jobs<span class="ni-badge">3</span></a>
-    <a class="nav-item" href="job-applicants.html"><span class="ni-icon"></span>Applications<span class="ni-badge">7</span></a>
-    <a class="nav-item" href="my-hires.html"><span class="ni-icon"></span>My Hires</a>
+    <a class="nav-item" href="client-dashboard.html"><span class="ni-icon">📊</span>Dashboard</a>
+    <a class="nav-item active" href="my-jobs.html"><span class="ni-icon">📋</span>My Jobs<span class="ni-badge">3</span></a>
+    <a class="nav-item" href="job-applicants.html"><span class="ni-icon">👥</span>Applications<span class="ni-badge">7</span></a>
+    <a class="nav-item" href="my-hires.html"><span class="ni-icon">🤝</span>My Hires</a>
     <div class="sidebar-section">Discover</div>
-    <a class="nav-item" href="find-workers.html"><span class="ni-icon"></span>Find Fundis</a>
-    <a class="nav-item" href="saved-workers.html"><span class="ni-icon"></span>Saved Fundis<span class="ni-badge">5</span></a>
-    <a class="nav-item" href="post-job.html"><span class="ni-icon"></span>Post a Job</a>
+    <a class="nav-item" href="find-workers.html"><span class="ni-icon">🔍</span>Find Fundis</a>
+    <a class="nav-item" href="saved-workers.html"><span class="ni-icon">❤️</span>Saved Fundis<span class="ni-badge">5</span></a>
+    <a class="nav-item" href="post-job.html"><span class="ni-icon">➕</span>Post a Job</a>
     <div class="sidebar-section">Account</div>
-    <a class="nav-item" href="messages.html"><span class="ni-icon"></span>Messages<span class="ni-badge">2</span></a>
-    <a class="nav-item" href="payments.html"><span class="ni-icon"></span>Payments</a>
-    <a class="nav-item" href="client-profile.html"><span class="ni-icon"></span>My Profile</a>
+    <a class="nav-item" href="messages.html"><span class="ni-icon">💬</span>Messages<span class="ni-badge">2</span></a>
+    <a class="nav-item" href="payments.html"><span class="ni-icon">💳</span>Payments</a>
+    <a class="nav-item" href="client-profile.html"><span class="ni-icon">👤</span>My Profile</a>
     <div class="sidebar-bottom">
-      <div class="sidebar-profile"><div class="sp-avatar">KX</div><div><div class="sp-name">My account</div><div class="sp-role">Client account</div></div></div>
+      <div class="sidebar-profile"><div class="sp-avatar">🏠</div><div><div class="sp-name">My account</div><div class="sp-role">Client account</div></div></div>
     </div>
   </aside>
 
   <main class="main">
     <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;animation:slideUp 0.4s ease both">
       <div><div class="page-title">My Jobs</div><div class="page-sub">All jobs you've posted on KaziX</div></div>
-      <a href="post-job.html" class="post-btn">Post New Job</a>
+      <a href="post-job.html" class="post-btn">➕ Post New Job</a>
     </div>
 
     <!-- TABS -->
     <div class="status-tabs">
-      <div class="stab active" onclick="filterJobs('all',this)">All Jobs <span class="tab-count">15</span></div>
-      <div class="stab" onclick="filterJobs('open',this)">Open <span class="tab-count">2</span></div>
-      <div class="stab" onclick="filterJobs('reviewing',this)">Reviewing <span class="tab-count">1</span></div>
-      <div class="stab" onclick="filterJobs('in_progress',this)">In Progress <span class="tab-count">1</span></div>
-      <div class="stab" onclick="filterJobs('completed',this)">Completed <span class="tab-count">10</span></div>
-      <div class="stab" onclick="filterJobs('expired',this)">Expired <span class="tab-count">1</span></div>
+      <div class="stab active" data-status="all" onclick="filterJobs('all',this)">All Jobs <span class="tab-count">0</span></div>
+      <div class="stab" data-status="open" onclick="filterJobs('open',this)">Open <span class="tab-count">0</span></div>
+      <div class="stab" data-status="reviewing" onclick="filterJobs('reviewing',this)">Reviewing <span class="tab-count">0</span></div>
+      <div class="stab" data-status="active" onclick="filterJobs('active',this)">In Progress <span class="tab-count">0</span></div>
+      <div class="stab" data-status="completed" onclick="filterJobs('completed',this)">Completed <span class="tab-count">0</span></div>
+      <div class="stab" data-status="closed" onclick="filterJobs('closed',this)">Closed <span class="tab-count">0</span></div>
     </div>
 
     <!-- JOB CARDS -->
     <div class="jobs-list" id="jobsList">
-      <div class="empty-state" id="loadingState">
-        <div class="es-icon">KX</div>
-        <div class="es-title">Loading your jobs...</div>
-        <div class="es-sub">Fetching your active job posts and hire history.</div>
+      <div class="empty-state">
+        <div class="es-icon">⏳</div>
+        <div class="es-title">Loading your jobs…</div>
+        <div class="es-sub">Fetching the latest postings from the backend.</div>
       </div>
     </div><!-- /jobs-list -->
   </main>
 </div>
 
 <script>
-function filterJobs(status, el) {
-  document.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  document.querySelectorAll('.job-card').forEach(card => {
-    if (status === 'all' || card.dataset.status === status) {
-      card.style.display = 'block';
-    } else {
-      card.style.display = 'none';
+const TRADE_ICONS = {
+  plumber: '🚿',
+  electrician: '⚡',
+  mason: '🧱',
+  mama_fua: '👗',
+  carpenter: '🪚',
+  painter: '🎨',
+  roofer: '🏠',
+  gardener: '🌿',
+  driver_mover: '🛻',
+  security: '🔒',
+};
+const TRADE_LABELS = {
+  plumber: 'Plumber',
+  electrician: 'Electrician',
+  mason: 'Mason',
+  mama_fua: 'Mama Fua',
+  carpenter: 'Carpenter',
+  painter: 'Painter',
+  roofer: 'Roofer',
+  gardener: 'Gardener',
+  driver_mover: 'Driver / Mover',
+  security: 'Security',
+};
+const STATUS_META = {
+  open: { label: 'Open', badgeClass: 'sb-open', cardClass: 'open' },
+  reviewing: { label: 'Reviewing', badgeClass: 'sb-review', cardClass: 'reviewing' },
+  active: { label: 'In Progress', badgeClass: 'sb-active', cardClass: 'in_progress' },
+  completed: { label: 'Completed', badgeClass: 'sb-done', cardClass: 'completed' },
+  cancelled: { label: 'Cancelled', badgeClass: 'sb-exp', cardClass: 'expired' },
+  expired: { label: 'Expired', badgeClass: 'sb-exp', cardClass: 'expired' },
+};
+
+let allJobs = [];
+let currentFilter = 'all';
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function formatBudget(job) {
+  const min = Number.isFinite(job.budget_min) ? job.budget_min : null;
+  const max = Number.isFinite(job.budget_max) ? job.budget_max : null;
+  if (min !== null && max !== null) {
+    return `KES ${min.toLocaleString()} - ${max.toLocaleString()}`;
+  }
+  if (min !== null) {
+    return `From KES ${min.toLocaleString()}`;
+  }
+  if (max !== null) {
+    return `Up to KES ${max.toLocaleString()}`;
+  }
+  return 'Budget on request';
+}
+
+function formatRelativeDate(value) {
+  if (!value) return 'Recently';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Recently';
+
+  const diffMs = Date.now() - date.getTime();
+  const diffHours = Math.round(diffMs / (1000 * 60 * 60));
+  if (diffHours < 1) return 'Posted just now';
+  if (diffHours < 24) return `Posted ${diffHours}h ago`;
+  const diffDays = Math.round(diffHours / 24);
+  if (diffDays === 1) return 'Posted yesterday';
+  return `Posted ${diffDays} days ago`;
+}
+
+function formatPreferredDate(value) {
+  if (!value) return 'Flexible timing';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function isClosedStatus(status) {
+  return status === 'cancelled' || status === 'expired';
+}
+
+function getVisibleJobs() {
+  if (currentFilter === 'all') {
+    return allJobs;
+  }
+  if (currentFilter === 'closed') {
+    return allJobs.filter((job) => isClosedStatus(job.status));
+  }
+  return allJobs.filter((job) => job.status === currentFilter);
+}
+
+function renderTabs() {
+  const counts = {
+    all: allJobs.length,
+    open: allJobs.filter((job) => job.status === 'open').length,
+    reviewing: allJobs.filter((job) => job.status === 'reviewing').length,
+    active: allJobs.filter((job) => job.status === 'active').length,
+    completed: allJobs.filter((job) => job.status === 'completed').length,
+    closed: allJobs.filter((job) => isClosedStatus(job.status)).length,
+  };
+
+  document.querySelectorAll('.stab').forEach((tab) => {
+    const status = tab.dataset.status;
+    const countNode = tab.querySelector('.tab-count');
+    if (countNode && Object.prototype.hasOwnProperty.call(counts, status)) {
+      countNode.textContent = counts[status];
     }
+    tab.classList.toggle('active', status === currentFilter);
   });
 }
+
+function renderEmptyState(message, body) {
+  document.getElementById('jobsList').innerHTML = `
+    <div class="empty-state">
+      <div class="es-icon">📭</div>
+      <div class="es-title">${escapeHtml(message)}</div>
+      <div class="es-sub">${escapeHtml(body)}</div>
+      <a href="post-job.html" class="post-btn">➕ Post New Job</a>
+    </div>
+  `;
+}
+
+function jobCardMarkup(job, index) {
+  const statusMeta = STATUS_META[job.status] || STATUS_META.open;
+  const tradeLabel = TRADE_LABELS[job.trade] || 'Skilled Worker';
+  const tradeIcon = TRADE_ICONS[job.trade] || '🛠️';
+  const location = [job.area, job.county].filter(Boolean).join(', ');
+  const summary = job.description
+    ? escapeHtml(job.description.length > 170 ? `${job.description.slice(0, 167)}...` : job.description)
+    : 'No description provided yet.';
+  const timingLabel = job.preferred_time
+    ? `${formatPreferredDate(job.preferred_date)} · ${escapeHtml(job.preferred_time)}`
+    : formatPreferredDate(job.preferred_date);
+  const canClose = ['open', 'reviewing'].includes(job.status);
+
+  return `
+    <div class="job-card ${statusMeta.cardClass}" data-status="${escapeHtml(job.status)}" style="animation-delay:${(index + 1) * 0.05}s">
+      <div class="jc-top">
+        <div class="jc-icon">${tradeIcon}</div>
+        <div class="jc-meta">
+          <div class="jc-title">${escapeHtml(job.title)}</div>
+          <div class="jc-sub">
+            <span>${tradeIcon} ${escapeHtml(tradeLabel)}</span>
+            <span>📍 ${escapeHtml(location || 'Location pending')}</span>
+            <span>📅 ${escapeHtml(formatRelativeDate(job.created_at))}</span>
+            <span>🗓️ ${escapeHtml(timingLabel)}</span>
+          </div>
+        </div>
+        <div class="jc-right">
+          <span class="status-badge ${statusMeta.badgeClass}">${escapeHtml(statusMeta.label)}</span>
+          <div class="jc-budget">${escapeHtml(formatBudget(job))}</div>
+        </div>
+      </div>
+      <div style="font-size:0.84rem;line-height:1.65;color:var(--muted);margin-bottom:1rem">${summary}</div>
+      <div class="jc-stats">
+        <div class="jc-stat">
+          <div class="jc-stat-val">${escapeHtml(job.urgency === 'urgent' ? 'Urgent' : 'Flexible')}</div>
+          <div class="jc-stat-label">Urgency</div>
+        </div>
+        <div class="jc-stat">
+          <div class="jc-stat-val">${escapeHtml(job.payment_type || 'fixed')}</div>
+          <div class="jc-stat-label">Payment</div>
+        </div>
+        <div class="jc-stat">
+          <div class="jc-stat-val">${escapeHtml(job.street || 'Private')}</div>
+          <div class="jc-stat-label">Street</div>
+        </div>
+        <div class="jc-actions">
+          <a href="job-detail.html?id=${encodeURIComponent(job.id)}" class="jc-btn jc-btn-primary">🔎 Open Listing</a>
+          ${canClose ? `<button class="jc-btn jc-btn-danger" type="button" onclick="closeJob('${escapeHtml(job.id)}')">✕ Close Job</button>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderJobs() {
+  renderTabs();
+  const visibleJobs = getVisibleJobs();
+
+  if (!visibleJobs.length) {
+    const emptyCopy = currentFilter === 'all'
+      ? ['No jobs posted yet', 'Create your first job and it will appear here right away.']
+      : ['No jobs in this status', 'Switch tabs or post a new job to keep hiring moving.'];
+    renderEmptyState(emptyCopy[0], emptyCopy[1]);
+    return;
+  }
+
+  document.getElementById('jobsList').innerHTML = visibleJobs
+    .map((job, index) => jobCardMarkup(job, index))
+    .join('');
+}
+
+function filterJobs(status, target) {
+  currentFilter = status;
+  if (target) {
+    document.querySelectorAll('.stab').forEach((tab) => tab.classList.remove('active'));
+    target.classList.add('active');
+  }
+  renderJobs();
+}
+
+async function fetchJobs() {
+  try {
+    const payload = await window.KazixProfile.requestJson('/v1/jobs/mine', {
+      auth: true,
+      showError: false,
+    });
+    allJobs = Array.isArray(payload?.data) ? payload.data : [];
+    renderJobs();
+  } catch (error) {
+    console.error('Failed to load employer jobs', error);
+    renderEmptyState(
+      'Could not load your jobs',
+      error.message || 'Try refreshing the page in a moment.'
+    );
+  }
+}
+
+async function closeJob(jobId) {
+  const confirmed = window.confirm('Close this job? It will stop accepting new applications.');
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    await window.KazixProfile.requestJson(`/v1/jobs/${encodeURIComponent(jobId)}`, {
+      auth: true,
+      method: 'DELETE',
+      showError: false,
+    });
+    allJobs = allJobs.map((job) => (
+      job.id === jobId
+        ? { ...job, status: 'cancelled' }
+        : job
+    ));
+    window.KazixProfile.clearDashboardStateCache();
+    window.KazixProfile.hydrateDashboardState({ silent: true, force: true });
+    renderJobs();
+  } catch (error) {
+    console.error('Failed to close job', error);
+    window.alert(error.message || 'Could not close this job right now.');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', fetchJobs);
 </script>
 
 <nav class="mobile-nav" aria-label="Primary">
-  <a class="mobile-nav-item" href="client-dashboard.html"><span class="mn-icon"></span><span class="mn-label">Dashboard</span></a>
-  <a class="mobile-nav-item active" href="my-jobs.html"><span class="mn-icon"></span><span class="mn-label">Jobs</span></a>
-  <a class="mobile-nav-item" href="find-workers.html"><span class="mn-icon"></span><span class="mn-label">Find</span></a>
-  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon"></span><span class="mn-label">Messages</span></a>
+  <a class="mobile-nav-item" href="client-dashboard.html"><span class="mn-icon">📊</span><span class="mn-label">Dashboard</span></a>
+  <a class="mobile-nav-item active" href="my-jobs.html"><span class="mn-icon">📋</span><span class="mn-label">Jobs</span></a>
+  <a class="mobile-nav-item" href="find-workers.html"><span class="mn-icon">🔍</span><span class="mn-label">Find</span></a>
+  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon">💬</span><span class="mn-label">Messages</span></a>
   <div class="mobile-nav-more">
     <button class="mobile-nav-item mobile-nav-more-toggle" type="button" aria-controls="mobile-drawer" aria-expanded="false" aria-label="Open navigation menu">
-      <span class="mn-icon"></span><span class="mn-label">More</span>
+      <span class="mn-icon">⋯</span><span class="mn-label">More</span>
     </button>
     <div class="mobile-nav-drawer" id="mobile-drawer" role="navigation" aria-label="Secondary pages" aria-hidden="true">
-      <a class="mobile-nav-drawer-item" href="client-profile.html"> Profile</a>
-      <a class="mobile-nav-drawer-item" href="notifications.html"> Notifications</a>
-      <a class="mobile-nav-drawer-item" href="payments.html"> Payments</a>
-      <a class="mobile-nav-drawer-item" href="reviews.html"> Reviews</a>
-      <a class="mobile-nav-drawer-item" href="saved-workers.html"> Saved Fundis</a>
+      <a class="mobile-nav-drawer-item" href="client-profile.html">👤 Profile</a>
+      <a class="mobile-nav-drawer-item" href="notifications.html">🔔 Notifications</a>
+      <a class="mobile-nav-drawer-item" href="payments.html">💳 Payments</a>
+      <a class="mobile-nav-drawer-item" href="reviews.html">⭐ Reviews</a>
+      <a class="mobile-nav-drawer-item" href="saved-workers.html">❤️ Saved Fundis</a>
     </div>
   </div>
 </nav>

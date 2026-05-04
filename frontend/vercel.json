@@ -1,0 +1,38 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build",
+  "outputDirectory": ".",
+  "rewrites": [
+    {
+      "source": "/v1/:path*",
+      "destination": "https://kazix.onrender.com/v1/:path*"
+    },
+    {
+      "source": "/health",
+      "destination": "https://kazix.onrender.com/health"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/pages/index.html",
+      "permanent": false
+    },
+    {
+      "source": "/pages",
+      "destination": "/pages/index.html",
+      "permanent": false
+    }
+  ],
+  "headers": [
+    {
+      "source": "/env.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    }
+  ]
+}

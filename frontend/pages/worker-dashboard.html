@@ -4,10 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-<title>Dashboard  KaziX Pro</title>
+<title>Dashboard — KaziX Pro</title>
 <link rel="stylesheet" href="../assets/css/styles.css">
+<link rel="stylesheet" href="../assets/css/error-components.css">
 
 <style>
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.stat-card{background:white;border:1px solid var(--border);border-radius:6px;padding:1.25rem 1.5rem;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.c-green::before{background:var(--green)}
+.stat-card.c-saffron::before{background:var(--saffron)}
+.stat-card.c-ink::before{background:var(--ink)}
+.stat-card.c-rust::before{background:var(--rust)}
 .sc-label{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem}
 .sc-value{font-family:'Syne',sans-serif;font-weight:800;font-size:1.75rem;letter-spacing:-0.04em;color:var(--ink)}
 .sc-delta{font-size:0.72rem;color:var(--green);font-weight:600;margin-top:0.2rem}
@@ -24,8 +32,18 @@
 .toggle-slider::before{content:'';position:absolute;width:18px;height:18px;top:3px;left:3px;border-radius:50%;background:white;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
 .toggle-switch input:checked + .toggle-slider{background:var(--green)}
 .toggle-switch input:checked + .toggle-slider::before{transform:translateX(18px)}
+.quick-actions{display:flex;gap:0.75rem;margin-bottom:2rem;flex-wrap:wrap}
+.qa-btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.6rem 1.1rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.8rem;border-radius:2px;cursor:pointer;text-decoration:none;transition:all 0.2s;border:1.5px solid var(--border);background:white;color:var(--ink)}
+.qa-btn:hover{border-color:var(--ink);background:var(--cream)}
+.qa-btn.primary{background:var(--ink);color:#F5F0E8;border-color:var(--ink)}
+.qa-btn.primary:hover{background:var(--green);border-color:var(--green)}
+.dash-grid{display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+.card{background:white;border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.card-head{padding:1.1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem}
 .card-link{font-size:0.78rem;color:var(--rust);text-decoration:none;font-weight:600}
 .card-link:hover{text-decoration:underline}
+.card-body{padding:1.5rem}
 .job-row{display:flex;align-items:center;gap:1rem;padding:0.9rem 1.5rem;border-bottom:1px solid var(--border)}
 .job-row:last-child{border-bottom:none}
 .jr-icon{width:38px;height:38px;border-radius:4px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
@@ -70,28 +88,45 @@
 .earn-total{font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;letter-spacing:-0.04em}
 .earn-sub{font-size:0.72rem;color:var(--muted)}
 @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:900px){.sidebar{display:none}.stats-row{grid-template-columns:1fr 1fr}.dash-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body class="app">
 <nav class="topnav">
   <a href="index.html" class="logo">Kazi<span>X</span></a>
   <div class="topnav-right">
-    <button class="notif-btn" onclick="location.href='notifications.html'"><span class="notif-dot"></span></button>
-    <div class="user-chip"><div class="user-avatar" id="navUserAvatar">KX</div><span class="user-name" id="navUserName">My account</span></div>
+    <button class="notif-btn" onclick="location.href='notifications.html'">🔔<span class="notif-dot"></span></button>
+    <div class="user-menu-container">
+      <div class="user-chip" id="userChipToggle"><div class="user-avatar" id="navUserAvatar">KX</div><span class="user-name" id="navUserName">My account</span></div>
+      <div class="user-menu-dropdown" id="userMenuDropdown">
+        <div class="user-menu-header">
+          <div class="user-menu-name" id="userMenuName">My account</div>
+          <div class="user-menu-status">
+            <span class="status-indicator"></span>
+            <span>Logged in</span>
+          </div>
+        </div>
+        <div class="user-menu-body">
+          <a href="#" class="user-menu-item" onclick="window.location.href = window.KazixProfile.roleHomePath(localStorage.getItem('kazix_role') || 'client'); return false;">View Profile</a>
+          <a href="#" class="user-menu-item" onclick="window.location.href = 'client-profile.html'; return false;">Settings</a>
+          <button class="user-menu-item logout" onclick="window.KazixProfile.logout()">Logout</button>
+        </div>
+      </div>
+    </div>
   </div>
 </nav>
 <div class="app-shell">
   <aside class="sidebar">
     <div class="sidebar-section">Work</div>
-    <a class="nav-item active" href="worker-dashboard.html"><span class="ni-icon"></span>Dashboard</a>
-    <a class="nav-item" href="worker-jobs.html"><span class="ni-icon"></span>Find Jobs<span class="ni-badge">8</span></a>
-    <a class="nav-item" href="my-applications.html"><span class="ni-icon"></span>My Applications<span class="ni-badge">3</span></a>
-    <a class="nav-item" href="worker-hires.html"><span class="ni-icon"></span>Active Contracts<span class="ni-badge">2</span></a>
+    <a class="nav-item active" href="worker-dashboard.html"><span class="ni-icon">📊</span>Dashboard</a>
+    <a class="nav-item" href="worker-jobs.html"><span class="ni-icon">🔍</span>Find Jobs<span class="ni-badge">8</span></a>
+    <a class="nav-item" href="my-applications.html"><span class="ni-icon">📋</span>My Applications<span class="ni-badge">3</span></a>
+    <a class="nav-item" href="worker-hires.html"><span class="ni-icon">🤝</span>Active Contracts<span class="ni-badge">2</span></a>
     <div class="sidebar-section">Account</div>
-    <a class="nav-item" href="messages.html"><span class="ni-icon"></span>Messages<span class="ni-badge">1</span></a>
-    <a class="nav-item" href="worker-earnings.html"><span class="ni-icon"></span>Earnings</a>
-    <a class="nav-item" href="worker-reviews.html"><span class="ni-icon"></span>My Reviews</a>
-    <a class="nav-item" href="worker-profile-edit.html"><span class="ni-icon"></span>My Profile</a>
+    <a class="nav-item" href="messages.html"><span class="ni-icon">💬</span>Messages<span class="ni-badge">1</span></a>
+    <a class="nav-item" href="worker-earnings.html"><span class="ni-icon">💳</span>Earnings</a>
+    <a class="nav-item" href="worker-reviews.html"><span class="ni-icon">⭐</span>My Reviews</a>
+    <a class="nav-item" href="worker-profile-edit.html"><span class="ni-icon">👤</span>My Profile</a>
     <div class="sidebar-bottom">
       <div class="sidebar-profile">
         <div class="sp-avatar" id="sidebarAvatar">KX</div>
@@ -101,68 +136,63 @@
   </aside>
   <main class="main">
     <div style="animation:slideUp 0.4s ease both">
-      <div class="page-title" id="dashboardGreeting">Welcome back</div>
-      <div class="page-sub">You have 8 new job alerts near you today</div>
+      <div class="page-title" id="dashboardGreeting">Welcome back 👋</div>
+      <div class="page-sub" id="workerDashboardSub">Checking the latest opportunities in your area...</div>
     </div>
     <div class="avail-banner" style="animation:slideUp 0.4s 0.05s ease both">
       <div class="avail-left">
         <div class="avail-dot" id="availDot"></div>
-        <div><div class="avail-title" id="availTitle">You are available for work</div><div class="avail-sub" id="availSub">Clients and job alerts can reach you  <span id="availabilityLocation">your area</span></div></div>
+        <div><div class="avail-title" id="availTitle">You are available for work</div><div class="avail-sub" id="availSub">Clients and job alerts can reach you · <span id="availabilityLocation">your area</span></div></div>
       </div>
       <div class="avail-toggle-row">
         <span id="availLabel">Available</span>
-        <label class="toggle-switch"><input type="checkbox" checked onchange="toggleAvail(this.checked)"><span class="toggle-slider"></span></label>
+        <label class="toggle-switch"><input type="checkbox" id="availabilityToggle" checked onchange="toggleAvail(this.checked)"><span class="toggle-slider"></span></label>
       </div>
     </div>
     <div class="quick-actions" style="animation:slideUp 0.4s 0.08s ease both">
-      <a href="worker-jobs.html" class="qa-btn primary"> Browse Jobs</a>
-      <a href="my-applications.html" class="qa-btn"> Applications</a>
-      <a href="messages.html" class="qa-btn"> Messages</a>
-      <a href="worker-earnings.html" class="qa-btn"> Earnings</a>
+      <a href="worker-jobs.html" class="qa-btn primary">🔍 Browse Jobs</a>
+      <a href="my-applications.html" class="qa-btn">📋 Applications <span id="workerApplicationsBadge" style="background:var(--saffron);color:var(--ink);font-size:0.65rem;padding:0.1rem 0.45rem;border-radius:10px;margin-left:4px">0</span></a>
+      <a href="worker-hires.html" class="qa-btn">🤝 Contracts</a>
+      <a href="worker-earnings.html" class="qa-btn">💳 Earnings</a>
     </div>
-    <div class="stats-grid" style="animation:slideUp 0.4s 0.1s ease both">
-      <div class="stat-card c-green"><div class="sc-label">This Month (KES)</div><div class="sc-value">...</div><div class="sc-delta">...</div></div>
-      <div class="stat-card c-saffron"><div class="sc-label">Active Contracts</div><div class="sc-value">...</div><div class="sc-delta">...</div></div>
-      <div class="stat-card c-ink"><div class="sc-label">Jobs Completed</div><div class="sc-value">...</div><div class="sc-delta">...</div></div>
-      <div class="stat-card c-rust"><div class="sc-label">My Rating</div><div class="sc-value">...</div><div class="sc-delta">...</div></div>
+    <div class="stats-row" style="animation:slideUp 0.4s 0.1s ease both">
+      <div class="stat-card c-green"><div class="sc-label">This Month (KES)</div><div class="sc-value" id="workerMonthValue">0</div><div class="sc-delta" id="workerMonthDelta">No released payouts yet</div></div>
+      <div class="stat-card c-saffron"><div class="sc-label">Active Contracts</div><div class="sc-value" id="workerContractsValue">0</div><div class="sc-delta" id="workerContractsDelta">No active contracts right now</div></div>
+      <div class="stat-card c-ink"><div class="sc-label">Jobs Completed</div><div class="sc-value" id="workerCompletedValue">0</div><div class="sc-delta" id="workerCompletedDelta">Completed work will appear here</div></div>
+      <div class="stat-card c-rust"><div class="sc-label">My Rating</div><div class="sc-value" id="workerRatingValue">0.0★</div><div class="sc-delta" id="workerRatingDelta">No ratings recorded yet</div></div>
     </div>
     <div class="dash-grid" style="animation:slideUp 0.4s 0.15s ease both">
       <div class="card">
         <div class="card-head">
-          <div class="card-title">Nearby Job Alerts <span style="background:var(--saffron);color:var(--ink);font-size:0.62rem;font-weight:700;padding:0.15rem 0.45rem;border-radius:10px;margin-left:0.4rem">8 new</span></div>
-          <a href="worker-jobs.html" class="card-link">View all </a>
+          <div class="card-title">Nearby Job Alerts <span id="workerAlertCountBadge" style="background:var(--saffron);color:var(--ink);font-size:0.62rem;font-weight:700;padding:0.15rem 0.45rem;border-radius:10px;margin-left:0.4rem">0 live</span></div>
+          <a href="worker-jobs.html" class="card-link">View all →</a>
         </div>
-        <div style="padding:2rem 1.5rem;text-align:center;color:var(--muted)">
-          <p>Finding job alerts near you...</p>
+        <div id="workerAlertsList">
+          <div style="padding:1.5rem;color:var(--muted);font-size:0.82rem">Loading job alerts...</div>
         </div>
       </div>
       <div style="display:flex;flex-direction:column;gap:1.5rem">
         <div class="card">
-          <div class="rating-block"><div class="rating-big">...</div><div class="rating-stars"></div><div class="rating-count">... reviews</div></div>
-          <div style="padding:2rem 1.25rem;text-align:center;color:var(--muted)">
-            <p>No feedback yet.</p>
+          <div class="rating-block"><div class="rating-big" id="workerProfileRating">0.0</div><div class="rating-stars" id="workerProfileStars">☆☆☆☆☆</div><div class="rating-count" id="workerProfileCount">No completed jobs yet</div></div>
+          <div style="padding:0.75rem 1.25rem">
+            <div class="mini-review"><div class="mr-top"><span class="mr-name">Profile snapshot</span><span class="mr-stars" id="workerProfileTrade">KaziX Pro</span></div><div class="mr-text" id="workerProfileNote">Your live reputation summary appears here as jobs are completed and rated.</div></div>
+            <a href="worker-reviews.html" class="card-link" style="display:block;margin-top:0.75rem;font-size:0.78rem">View all →</a>
           </div>
         </div>
         <div class="card">
-          <div class="card-head"><div class="card-title">Monthly Earnings</div><a href="worker-earnings.html" class="card-link">Details </a></div>
+          <div class="card-head"><div class="card-title">Monthly Earnings</div><a href="worker-earnings.html" class="card-link">Details →</a></div>
           <div class="card-body">
-            <div class="bar-chart">
-              <div class="bar-wrap"><div class="bar filled" style="height:52%"></div><div class="bar-label">Oct</div></div>
-              <div class="bar-wrap"><div class="bar filled" style="height:48%"></div><div class="bar-label">Nov</div></div>
-              <div class="bar-wrap"><div class="bar filled" style="height:65%"></div><div class="bar-label">Dec</div></div>
-              <div class="bar-wrap"><div class="bar filled" style="height:60%"></div><div class="bar-label">Feb</div></div>
-              <div class="bar-wrap"><div class="bar current" style="height:87%"></div><div class="bar-label now">Mar</div></div>
-            </div>
-            <div class="earn-total">KES ...</div>
-            <div class="earn-sub">This month</div>
+            <div class="bar-chart" id="workerEarningsBars"></div>
+            <div class="earn-total" id="workerEarningsTotal">KES 0</div>
+            <div class="earn-sub" id="workerEarningsSub">This month · no released earnings yet</div>
           </div>
         </div>
       </div>
     </div>
     <div class="card" style="animation:slideUp 0.4s 0.2s ease both">
-      <div class="card-head"><div class="card-title">Active Contracts</div><a href="worker-hires.html" class="card-link">View all </a></div>
-      <div style="padding:2rem 1.5rem;text-align:center;color:var(--muted)">
-        <p>No active contracts.</p>
+      <div class="card-head"><div class="card-title">Active Contracts</div><a href="worker-hires.html" class="card-link">View all →</a></div>
+      <div id="workerContractsList">
+        <div style="padding:1.5rem;color:var(--muted);font-size:0.82rem">Loading contracts...</div>
       </div>
     </div>
   </main>
@@ -173,28 +203,211 @@ var workerAvailabilityLocation = 'your area';
 function toggleAvail(on){
   document.getElementById('availDot').className='avail-dot'+(on?'':' offline');
   document.getElementById('availTitle').textContent=on?'You are available for work':'You are offline';
-  document.getElementById('availSub').textContent=on?'Clients and job alerts can reach you  ' + workerAvailabilityLocation:'Job alerts and messages are paused';
+  document.getElementById('availSub').textContent=on?'Clients and job alerts can reach you · ' + workerAvailabilityLocation:'Job alerts and messages are paused';
   document.getElementById('availLabel').textContent=on?'Available':'Offline';
+}
+
+const WORKER_DASHBOARD_TRADE_ICONS = {
+  plumber: '🚿',
+  electrician: '⚡',
+  mason: '🧱',
+  mama_fua: '👗',
+  carpenter: '🪚',
+  painter: '🎨',
+  roofer: '🏠',
+  gardener: '🌿',
+  driver_mover: '🛻',
+  security: '🔒',
+  other: '🛠️',
+};
+
+function workerDashboardEscape(value) {
+  return window.KazixProfile.escapeHtml(value);
+}
+
+function workerDashboardCurrency(value) {
+  return `KES ${Number(value || 0).toLocaleString()}`;
+}
+
+function workerDashboardRelativeTime(value) {
+  if (!value) return 'Just posted';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Just posted';
+  const diffHours = Math.round((Date.now() - date.getTime()) / (1000 * 60 * 60));
+  if (diffHours <= 1) return 'Just posted';
+  if (diffHours < 24) return `${diffHours}h ago`;
+  const diffDays = Math.round(diffHours / 24);
+  if (diffDays === 1) return 'Yesterday';
+  return `${diffDays} days ago`;
+}
+
+function workerDashboardContractLabel(status) {
+  if (status === 'in_progress') return { pill: 'sp-active', label: '● In Progress' };
+  if (status === 'confirmed') return { pill: 'sp-pending', label: 'Confirmed' };
+  return { pill: 'sp-pending', label: 'Tracked' };
+}
+
+function workerDashboardTradeIcon(trade) {
+  return WORKER_DASHBOARD_TRADE_ICONS[trade] || WORKER_DASHBOARD_TRADE_ICONS.other;
+}
+
+function workerDashboardStars(rating) {
+  const rounded = Math.round(Number(rating || 0));
+  return '★★★★★'.slice(0, rounded).padEnd(5, '☆');
+}
+
+function renderWorkerAlerts(data) {
+  const root = document.getElementById('workerAlertsList');
+  if (!root) return;
+
+  if (!data.recent_alerts.length) {
+    root.innerHTML = `
+      <div style="padding:1.5rem;color:var(--muted);font-size:0.82rem;line-height:1.6">
+        No matching job alerts yet. As new ${workerDashboardEscape(window.KazixProfile.formatTrade(data.availability.trade || 'other')).toLowerCase()} work appears, it will show up here automatically.
+      </div>
+    `;
+    return;
+  }
+
+  root.innerHTML = data.recent_alerts.map((job) => {
+    const location = [job.area, job.county].filter(Boolean).join(', ');
+    const urgentTag = job.urgency === 'urgent'
+      ? '<span class="utag utag-urgent">Urgent</span>'
+      : '<span class="utag utag-new">Open</span>';
+    const budgetBits = [];
+    if (Number(job.budget_min || 0) > 0) budgetBits.push(Number(job.budget_min).toLocaleString());
+    if (Number(job.budget_max || 0) > 0 && Number(job.budget_max) !== Number(job.budget_min || 0)) budgetBits.push(Number(job.budget_max).toLocaleString());
+    const budgetLabel = budgetBits.length ? `KES ${budgetBits.join(' - ')}` : 'Budget open';
+
+    return `
+      <div class="job-row">
+        <div class="jr-icon">${workerDashboardTradeIcon(job.trade)}</div>
+        <div class="jr-info"><div class="jr-title">${workerDashboardEscape(job.title)} ${urgentTag}</div><div class="jr-meta"><span>📍 ${workerDashboardEscape(location || 'Location pending')}</span><span>${workerDashboardEscape(workerDashboardRelativeTime(job.created_at))}</span></div></div>
+        <div style="text-align:right"><div class="jr-budget">${workerDashboardEscape(budgetLabel)}</div><button class="apply-btn" style="margin-top:0.3rem" onclick="location.href='job-detail.html?id=${encodeURIComponent(job.id)}'">Open →</button></div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderWorkerContracts(data) {
+  const root = document.getElementById('workerContractsList');
+  if (!root) return;
+
+  const activeContracts = data.recent_contracts.filter((contract) => ['confirmed', 'in_progress'].includes(contract.status));
+  if (!activeContracts.length) {
+    root.innerHTML = `
+      <div style="padding:1.5rem;color:var(--muted);font-size:0.82rem;line-height:1.6">
+        No active contracts yet. When a client hires you, the booking will appear here together with its escrow status.
+      </div>
+    `;
+    return;
+  }
+
+  root.innerHTML = activeContracts.map((contract) => {
+    const location = [contract.area, contract.county].filter(Boolean).join(', ');
+    const statusMeta = workerDashboardContractLabel(contract.status);
+    return `
+      <div class="contract-row">
+        <div class="cr-avatar">${workerDashboardTradeIcon(contract.trade)}</div>
+        <div class="cr-info"><div class="cr-title">${workerDashboardEscape(contract.title)}</div><div class="cr-sub">${workerDashboardEscape(location || 'Location pending')} · ${workerDashboardEscape(contract.start_date || 'Start date flexible')}</div></div>
+        <span class="status-pill ${statusMeta.pill}">${workerDashboardEscape(statusMeta.label)}</span>
+        <div class="cr-amount">${workerDashboardEscape(workerDashboardCurrency(contract.agreed_amount))}<div class="cr-amount-sub">${workerDashboardEscape(contract.escrow_status || 'pending escrow')}</div></div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderWorkerEarnings(data) {
+  const root = document.getElementById('workerEarningsBars');
+  const total = document.getElementById('workerEarningsTotal');
+  const sub = document.getElementById('workerEarningsSub');
+  if (!root || !total || !sub) return;
+
+  const series = Array.isArray(data.monthly_earnings) ? data.monthly_earnings : [];
+  const maxAmount = Math.max(1, ...series.map((item) => Number(item.net || 0)));
+  const previous = series.length > 1 ? Number(series[series.length - 2].net || 0) : 0;
+  const current = series.length ? Number(series[series.length - 1].net || 0) : 0;
+
+  root.innerHTML = series.map((item, index) => {
+    const amount = Number(item.net || 0);
+    const height = Math.max((amount / maxAmount) * 100, amount > 0 ? 12 : 6);
+    const currentMonth = index === (series.length - 1);
+    return `
+      <div class="bar-wrap"><div class="bar ${currentMonth ? 'current' : 'filled'}" style="height:${height}%"></div><div class="bar-label ${currentMonth ? 'now' : ''}">${workerDashboardEscape(item.label)}</div></div>
+    `;
+  }).join('');
+
+  total.textContent = workerDashboardCurrency(current);
+  if (!current && !previous) {
+    sub.textContent = 'This month · no released earnings yet';
+  } else if (!previous) {
+    sub.textContent = 'This month · first payout in the current window';
+  } else {
+    const diff = current - previous;
+    const direction = diff >= 0 ? '↑' : '↓';
+    const color = diff >= 0 ? 'var(--green)' : 'var(--rust)';
+    const magnitude = Math.round((Math.abs(diff) / Math.max(previous, 1)) * 100);
+    sub.innerHTML = `This month · <span style="color:${color};font-weight:600">${direction} ${magnitude}% vs last month</span>`;
+  }
+}
+
+function renderWorkerDashboard(data) {
+  const toggle = document.getElementById('availabilityToggle');
+  if (toggle) {
+    toggle.checked = Boolean(data.availability.is_available);
+    toggleAvail(toggle.checked);
+  }
+
+  document.getElementById('workerDashboardSub').textContent = data.alerts.total
+    ? `You have ${data.alerts.total} matching job alert${data.alerts.total === 1 ? '' : 's'} right now`
+    : 'No matching job alerts yet. We will surface new work here as it opens.';
+  document.getElementById('workerApplicationsBadge').textContent = String(data.applications.total);
+  document.getElementById('workerAlertCountBadge').textContent = `${data.alerts.total} live`;
+  document.getElementById('workerMonthValue').textContent = Number(data.earnings.this_month_net || 0).toLocaleString();
+  document.getElementById('workerMonthDelta').textContent = `Released gross this month: ${workerDashboardCurrency(data.earnings.this_month_gross)}`;
+  document.getElementById('workerContractsValue').textContent = String(data.contracts.active);
+  document.getElementById('workerContractsDelta').textContent = `${workerDashboardCurrency(data.contracts.in_escrow)} currently held in escrow`;
+  document.getElementById('workerCompletedValue').textContent = String(data.rating.completed_jobs);
+  document.getElementById('workerCompletedDelta').textContent = `${data.applications.hired} hire${data.applications.hired === 1 ? '' : 's'} confirmed from your applications`;
+  document.getElementById('workerRatingValue').textContent = `${Number(data.rating.average || 0).toFixed(1)}★`;
+  document.getElementById('workerRatingDelta').textContent = data.rating.completed_jobs
+    ? `${data.rating.completed_jobs} completed jobs on your worker profile`
+    : 'No ratings recorded yet';
+  document.getElementById('workerProfileRating').textContent = Number(data.rating.average || 0).toFixed(1);
+  document.getElementById('workerProfileStars').textContent = workerDashboardStars(data.rating.average);
+  document.getElementById('workerProfileCount').textContent = data.rating.completed_jobs
+    ? `${data.rating.completed_jobs} completed jobs tracked on KaziX`
+    : 'No completed jobs tracked yet';
+  document.getElementById('workerProfileTrade').textContent = window.KazixProfile.formatTrade(data.availability.trade || 'other');
+  document.getElementById('workerProfileNote').textContent = data.alerts.total
+    ? `You currently match ${data.alerts.total} open ${window.KazixProfile.formatTrade(data.availability.trade || 'other').toLowerCase()} ${data.alerts.total === 1 ? 'job' : 'jobs'}.`
+    : 'Stay available to start receiving matching work as new jobs are posted.';
+
+  renderWorkerAlerts(data);
+  renderWorkerContracts(data);
+  renderWorkerEarnings(data);
 }
 </script>
 
 <nav class="mobile-nav" aria-label="Primary">
-  <a class="mobile-nav-item active" href="worker-dashboard.html"><span class="mn-icon"></span><span class="mn-label">Dashboard</span></a>
-  <a class="mobile-nav-item" href="worker-jobs.html"><span class="mn-icon"></span><span class="mn-label">Jobs</span></a>
-  <a class="mobile-nav-item" href="my-applications.html"><span class="mn-icon"></span><span class="mn-label">Applications</span></a>
-  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon"></span><span class="mn-label">Messages</span></a>
+  <a class="mobile-nav-item active" href="worker-dashboard.html"><span class="mn-icon">📊</span><span class="mn-label">Dashboard</span></a>
+  <a class="mobile-nav-item" href="worker-jobs.html"><span class="mn-icon">🔍</span><span class="mn-label">Jobs</span></a>
+  <a class="mobile-nav-item" href="my-applications.html"><span class="mn-icon">📋</span><span class="mn-label">Applications</span></a>
+  <a class="mobile-nav-item" href="messages.html"><span class="mn-icon">💬</span><span class="mn-label">Messages</span></a>
   <div class="mobile-nav-more">
     <button class="mobile-nav-item mobile-nav-more-toggle" type="button" aria-controls="mobile-drawer" aria-expanded="false" aria-label="Open navigation menu">
-      <span class="mn-icon"></span><span class="mn-label">More</span>
+      <span class="mn-icon">⋯</span><span class="mn-label">More</span>
     </button>
     <div class="mobile-nav-drawer" id="mobile-drawer" role="navigation" aria-label="Secondary pages" aria-hidden="true">
-      <a class="mobile-nav-drawer-item" href="worker-profile-edit.html"> Profile</a>
-      <a class="mobile-nav-drawer-item" href="worker-earnings.html"> Earnings</a>
-      <a class="mobile-nav-drawer-item" href="worker-reviews.html"> Reviews</a>
+      <a class="mobile-nav-drawer-item" href="worker-profile-edit.html">👤 Profile</a>
+      <a class="mobile-nav-drawer-item" href="worker-earnings.html">💳 Earnings</a>
+      <a class="mobile-nav-drawer-item" href="worker-reviews.html">⭐ Reviews</a>
     </div>
   </div>
 </nav>
 
+<script src="../assets/js/error-messages.js"></script>
+<script src="../assets/js/error-handler.js"></script>
 <script src="../assets/js/profile-utils.js"></script>
 <script src="../assets/js/dashboard-session.js"></script>
 <script>
@@ -206,8 +419,23 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!locationEl) return;
       workerAvailabilityLocation = locationEl.textContent || workerAvailabilityLocation;
       if (document.getElementById('availLabel').textContent === 'Available') {
-        document.getElementById('availSub').textContent = 'Clients and job alerts can reach you  ' + workerAvailabilityLocation;
+        document.getElementById('availSub').textContent = 'Clients and job alerts can reach you · ' + workerAvailabilityLocation;
       }
+      return window.KazixProfile.getDashboardState({ silent: false });
+    })
+    .then(function (state) {
+      if (state && state.fundi) {
+        renderWorkerDashboard(state.fundi);
+      }
+      var locationEl = document.getElementById('availabilityLocation');
+      if (!locationEl) return;
+      workerAvailabilityLocation = locationEl.textContent || workerAvailabilityLocation;
+      if (document.getElementById('availLabel').textContent === 'Available') {
+        document.getElementById('availSub').textContent = 'Clients and job alerts can reach you · ' + workerAvailabilityLocation;
+      }
+    })
+    .catch(function (error) {
+      console.error('Failed to render worker dashboard state', error);
     });
 });
 </script>

@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-<title>Sign In  KaziX</title>
+<title>Sign In — KaziX</title>
 <link rel="stylesheet" href="../assets/css/styles.css">
+<link rel="stylesheet" href="../assets/css/error-components.css">
 <style>
   :root{--ink:#0D0D0D;--cream:#F5F0E8;--saffron:#F5A623;--rust:#C0392B;--green:#1B6B3A;--steel:#2C3E50;--muted:#7A7468;--card-bg:#FFFFFF;--border:rgba(13,13,13,0.1)}
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -13,7 +14,7 @@
   body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden;min-height:100vh}
   body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:0.35}
 
-   /*  NAV  */
+  /* NAV */
   nav{display:flex;align-items:center;justify-content:space-between;padding:1.4rem 5%;background:rgba(245,240,232,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
   .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:-0.04em;color:var(--ink);text-decoration:none}
   .logo span{color:var(--saffron)}
@@ -21,10 +22,10 @@
   .nav-register strong{color:var(--ink)}
   .nav-register:hover strong{color:var(--green)}
 
-   /*  AUTH LAYOUT  */
+  /* AUTH LAYOUT */
   .auth-layout{display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 73px)}
 
-   /*  LEFT PANEL  decorative  */
+  /* LEFT PANEL — decorative */
   .auth-left{background:var(--ink);color:var(--cream);padding:5rem;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
   .auth-left::after{content:'INGIA';position:absolute;right:-5%;bottom:-5%;font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(80px,16vw,220px);opacity:0.05;letter-spacing:-0.06em;line-height:0.9;pointer-events:none}
   .auth-left-eyebrow{font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--saffron);margin-bottom:1.5rem}
@@ -35,7 +36,7 @@
   .auth-perk{display:flex;align-items:center;gap:0.85rem;font-size:0.875rem;color:rgba(245,240,232,0.75)}
   .perk-icon{width:32px;height:32px;border-radius:50%;background:rgba(245,166,35,0.15);color:var(--saffron);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
 
-   /*  RIGHT PANEL  form  */
+  /* RIGHT PANEL — form */
   .auth-right{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:3rem 2rem;background:white}
   .auth-form-wrap{width:100%;max-width:420px}
   .auth-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.75rem;letter-spacing:-0.04em;margin-bottom:0.4rem}
@@ -43,7 +44,7 @@
   .auth-sub a{color:var(--ink);font-weight:600;text-decoration:none}
   .auth-sub a:hover{color:var(--green)}
 
-   /*  FORM FIELDS  */
+  /* FORM FIELDS */
   .field-group{margin-bottom:1.25rem}
   .field-label{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;display:block}
   .field-input{width:100%;padding:0.9rem 1rem;border:1.5px solid var(--border);border-radius:2px;font-family:'DM Sans',sans-serif;font-size:0.95rem;background:var(--cream);color:var(--ink);outline:none;transition:border-color 0.2s,background 0.2s}
@@ -66,7 +67,7 @@
   .status-copy strong{color:var(--ink)}
   .status-note{font-size:0.78rem;color:var(--muted);margin-top:0.75rem}
 
-   /*  OTP PANEL  */
+  /* OTP PANEL */
   .otp-panel{display:none;animation:slideUp 0.4s ease both}
   .otp-panel.show{display:block}
   .otp-sent-msg{background:#E1F5EE;border:1px solid #9FE1CB;border-radius:2px;padding:0.85rem 1rem;font-size:0.82rem;color:var(--green);margin-bottom:1.5rem;display:flex;align-items:center;gap:0.5rem}
@@ -79,14 +80,14 @@
   .otp-change-phone{font-size:0.78rem;color:var(--muted);margin-top:0.25rem}
   .otp-change-phone button{background:none;border:none;color:var(--ink);font-weight:600;cursor:pointer;font-size:0.78rem;font-family:'DM Sans',sans-serif;padding:0;text-decoration:underline}
 
-   /*  SUBMIT BUTTON  */
+  /* SUBMIT BUTTON */
   .auth-btn{width:100%;padding:1rem;background:var(--ink);color:var(--cream);font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;letter-spacing:0.02em;border:none;border-radius:2px;cursor:pointer;transition:background 0.2s;margin-top:0.75rem}
   .auth-btn:hover{background:var(--green)}
   .auth-btn:disabled{background:var(--muted);cursor:not-allowed}
   .auth-btn-secondary{width:100%;padding:0.9rem;background:transparent;color:var(--ink);font-family:'Syne',sans-serif;font-weight:600;font-size:0.875rem;border:1.5px solid var(--ink);border-radius:2px;cursor:pointer;transition:all 0.2s;margin-top:0.5rem;text-decoration:none;display:block;text-align:center}
   .auth-btn-secondary:hover{background:var(--ink);color:var(--cream)}
 
-   /*  DIVIDER  */
+  /* DIVIDER */
   .divider{display:flex;align-items:center;gap:1rem;margin:1.5rem 0;color:var(--muted);font-size:0.78rem}
   .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
   .oauth-actions{display:flex;flex-direction:column;gap:0.6rem;margin-bottom:0.75rem}
@@ -94,7 +95,7 @@
   .oauth-btn:hover{border-color:var(--ink);background:var(--cream)}
   .oauth-btn:disabled{opacity:0.65;cursor:not-allowed}
 
-   /*  ROLE TOGGLE  */
+  /* ROLE TOGGLE */
   .role-toggle{display:flex;border:1.5px solid var(--border);border-radius:2px;overflow:hidden;margin-bottom:2rem}
   .role-option{flex:1;padding:0.75rem;text-align:center;cursor:pointer;font-size:0.82rem;font-weight:600;font-family:'Syne',sans-serif;transition:all 0.2s;user-select:none;background:white;color:var(--muted)}
   .role-option.active{background:var(--ink);color:var(--cream)}
@@ -102,7 +103,7 @@
   .method-option{flex:1;padding:0.78rem 0.9rem;border:1.5px solid var(--border);border-radius:2px;background:white;color:var(--muted);font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:700;text-align:center;cursor:pointer;transition:all 0.2s;user-select:none}
   .method-option.active{border-color:var(--ink);background:var(--ink);color:var(--cream)}
 
-   /*  FOOTER NOTE  */
+  /* FOOTER NOTE */
   .auth-footer{margin-top:2rem;font-size:0.72rem;color:var(--muted);text-align:center;line-height:1.5}
   .auth-footer a{color:var(--ink);text-decoration:none}
 
@@ -118,7 +119,7 @@
 
 <nav>
   <a href="index.html" class="logo">Kazi<span>X</span></a>
-  <a href="register.html" class="nav-register">Don't have an account? <strong>Register free </strong></a>
+  <a href="register.html" class="nav-register">Don't have an account? <strong>Register free →</strong></a>
 </nav>
 
 <div class="auth-layout">
@@ -129,10 +130,10 @@
     <h2>Karibu<br>tena kwenye<br><em>KaziX</em></h2>
     <p>Kenya's largest marketplace for skilled workers and artisans. Sign in to manage your jobs, track payments, and connect with fundis.</p>
     <div class="auth-perks">
-      <div class="auth-perk"><div class="perk-icon"></div>12,000+ verified fundis across 47 counties</div>
-      <div class="auth-perk"><div class="perk-icon"></div>M-Pesa secure escrow payments</div>
-      <div class="auth-perk"><div class="perk-icon"></div>ID-verified professionals you can trust</div>
-      <div class="auth-perk"><div class="perk-icon"></div>Real reviews from real Kenyan clients</div>
+      <div class="auth-perk"><div class="perk-icon">📍</div>12,000+ verified fundis across 47 counties</div>
+      <div class="auth-perk"><div class="perk-icon">📱</div>M-Pesa secure escrow payments</div>
+      <div class="auth-perk"><div class="perk-icon">✓</div>ID-verified professionals you can trust</div>
+      <div class="auth-perk"><div class="perk-icon">⭐</div>Real reviews from real Kenyan clients</div>
     </div>
   </div>
 
@@ -142,14 +143,23 @@
 
       <!-- ROLE TOGGLE -->
       <div class="role-toggle">
-        <div class="role-option active" onclick="setRole(this,'client')"> I need a Fundi</div>
-        <div class="role-option" onclick="setRole(this,'pro')"> I am a Fundi</div>
+        <div class="role-option active" onclick="setRole(this,'client')">👤 I need a Fundi</div>
+        <div class="role-option" onclick="setRole(this,'pro')">🔧 I am a Fundi</div>
       </div>
 
       <div class="auth-title">Sign in</div>
-      <div class="auth-sub" id="authSub">Start with email for a secure sign-in link, or switch to phone OTP if you prefer.<br>New here? <a href="register.html">Create a free account </a></div>
+      <div class="auth-sub" id="authSub">Use your email and password to access your KaziX account.<br>New here? <a href="register.html">Create a free account →</a></div>
 
-      <div class="method-toggle">
+      <div id="loginNextNotice" style="display:none;background:#FFF8E1;border:1px solid #F5A623;border-radius:8px;padding:.75rem 1rem;margin-bottom:1rem;font-size:.9rem;color:#0D0D0D;">
+        Please sign in to continue.
+      </div>
+      <script>
+        if (new URLSearchParams(location.search).get('next')) {
+          document.getElementById('loginNextNotice').style.display = 'block';
+        }
+      </script>
+
+      <div class="method-toggle" style="display:none">
         <div class="method-option active" onclick="setAuthMethod(this,'email')">Email sign-in</div>
         <div class="method-option" onclick="setAuthMethod(this,'phone')">Phone OTP</div>
       </div>
@@ -158,39 +168,36 @@
         <div class="field-group">
           <label class="field-label">Email Address</label>
           <input class="field-input" type="email" id="emailInput" placeholder="you@example.com" autocomplete="email" oninput="validateEmail()">
-          <div class="field-hint">We'll send a secure sign-in link to this email address.</div>
+          <div class="field-hint">Use the same email address you registered with.</div>
         </div>
-        <button class="auth-btn" id="sendEmailBtn" onclick="sendMagicLink()" disabled>Send Sign-In Link </button>
-
-        <div class="email-status" id="emailStatus">
-          <div class="status-card">
-            <div class="status-icon"></div>
-            <div>
-              <div class="status-title">Check your inbox</div>
-              <div class="status-copy">We sent a sign-in link to <strong id="sentEmail">you@example.com</strong>. Open the email and tap the button to continue.</div>
-              <div class="status-note" id="emailStatusNote">Waiting for confirmation</div>
-            </div>
-          </div>
-          <div class="otp-resend">Didn't receive it? <button id="resendEmailBtn" onclick="resendMagicLink()" disabled>Resend link (<span id="emailCountdown">60</span>s)</button></div>
-          <div class="otp-change-phone">Need a different address? <button onclick="resetEmailState()">Use another email</button></div>
+        <div class="field-group">
+          <label class="field-label">Password</label>
+          <input class="field-input" type="password" id="passwordInput" placeholder="Your password" autocomplete="current-password" oninput="validateEmail()">
+          <div class="field-hint">Minimum 8 characters.</div>
         </div>
+        <div style="text-align:right; margin-top:.4rem;">
+          <a href="/pages/forgot-password.html" style="font-size:.9rem; color:#0D0D0D;">
+            Forgot password?
+          </a>
+        </div>
+        <button class="auth-btn" id="sendEmailBtn" onclick="signInWithEmailPassword()" disabled>Sign In →</button>
       </div>
 
-      <div class="auth-method-panel" id="phonePanel">
+      <div class="auth-method-panel" id="phonePanel" style="display:none">
         <div id="phoneStep">
           <div class="field-group">
             <label class="field-label">Phone Number</label>
             <div class="phone-input-wrap">
-              <div class="phone-prefix"> +254</div>
+              <div class="phone-prefix">🇰🇪 +254</div>
               <input class="phone-input" type="tel" id="phoneInput" placeholder="7XX XXX XXX" maxlength="9" autocomplete="tel" oninput="validatePhone()">
             </div>
             <div class="field-hint">We'll send a 6-digit OTP to this number via SMS.</div>
           </div>
-          <button class="auth-btn" id="sendOtpBtn" onclick="sendOTP()" disabled>Send OTP </button>
+          <button class="auth-btn" id="sendOtpBtn" onclick="sendOTP()" disabled>Send OTP →</button>
         </div>
 
         <div class="otp-panel" id="otpStep">
-          <div class="otp-sent-msg"> OTP sent to +254 <span id="sentPhone">7XX XXX XXX</span></div>
+          <div class="otp-sent-msg">✓ OTP sent to +254 <span id="sentPhone">7XX XXX XXX</span></div>
           <div class="field-group">
             <label class="field-label">Enter 6-digit OTP</label>
             <div class="otp-inputs">
@@ -226,20 +233,44 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../env.js"></script>
+<script src="../assets/js/error-messages.js"></script>
+<script src="../assets/js/error-handler.js"></script>
+<script src="../assets/js/form-handler.js"></script>
 <script>
-const API_BASE = (window.KAZIX_API_BASE || window.location.origin).replace(/\/$/, '');
+function resolveApiBase() {
+  const configured = String(window.KAZIX_API_BASE || window.KAZIX_CONFIG?.KAZIX_API_BASE || '').trim();
+  const host = window.location.hostname;
+  const proxyHosts = new Set([
+    'kazixfrontend.vercel.app',
+    'kazix.vercel.app',
+    'kazix.co.ke',
+    'www.kazix.co.ke',
+  ]);
+  const useSameOriginProxy = proxyHosts.has(host) || host.endsWith('.kazix.co.ke');
+
+  if (configured) {
+    try {
+      const configuredUrl = new URL(configured, window.location.origin);
+      if (configuredUrl.origin === window.location.origin && configuredUrl.pathname === '/') {
+        return '';
+      }
+      return configuredUrl.toString().replace(/\/$/, '');
+    } catch (_error) {
+      return configured.replace(/\/$/, '');
+    }
+  }
+
+  if (useSameOriginProxy) {
+    return '';
+  }
+
+  return window.location.origin.replace(/\/$/, '');
+}
+
+const API_BASE = resolveApiBase();
+const API_BASE_LABEL = API_BASE || window.location.origin;
 const SUPABASE_URL = window.SUPABASE_URL || window.KAZIX_CONFIG?.SUPABASE_URL;
 const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || window.KAZIX_CONFIG?.SUPABASE_ANON_KEY;
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  throw new Error('Missing Supabase configuration. Generate frontend/env.js from frontend/.env and include it before page scripts.');
-}
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-let countdownTimer;
-let emailCountdownTimer;
-let magicLinkPollTimer;
-let currentRole = 'client';
-let currentAuthMethod = 'email';
 const AUTH_WAITER_SESSION_KEY = 'kazix_auth_waiter_id';
 const AUTH_WAITING_OWNER_KEY = 'kazix_auth_waiting_owner';
 const AUTH_WAITING_FLOW_KEY = 'kazix_auth_waiting_flow';
@@ -247,15 +278,61 @@ const AUTH_WAITING_HEARTBEAT_KEY = 'kazix_auth_waiting_heartbeat';
 const AUTH_WAITING_STARTED_KEY = 'kazix_auth_waiting_started_at';
 const authWaiterId = sessionStorage.getItem(AUTH_WAITER_SESSION_KEY)
   || (window.crypto?.randomUUID?.() || `auth-${Date.now()}-${Math.random().toString(16).slice(2)}`);
-let authWaitHeartbeatTimer;
+let authWaitHeartbeatTimer = null;
 sessionStorage.setItem(AUTH_WAITER_SESSION_KEY, authWaiterId);
+const SUPABASE_CONFIG_ERROR = !window.supabase
+  ? 'Supabase browser client failed to load. Refresh the page and try again.'
+  : (!SUPABASE_URL || !SUPABASE_ANON_KEY
+      ? 'Missing Supabase configuration. Generate frontend/env.js from frontend/.env and include it before page scripts.'
+      : null);
+const supabaseClient = SUPABASE_CONFIG_ERROR
+  ? null
+  : window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let countdownTimer;
+let emailCountdownTimer;
+let magicLinkPollTimer;
+let currentRole = 'client';
+let currentAuthMethod = 'email';
+
+function requireSupabaseClient() {
+  if (supabaseClient) {
+    return supabaseClient;
+  }
+  throw new Error(SUPABASE_CONFIG_ERROR || 'Supabase configuration is unavailable.');
+}
 
 function toDisplayError(err, fallback) {
   const message = err?.message?.trim();
   if (message === 'Failed to fetch') {
-    return `Cannot reach API at ${API_BASE}. Start the FastAPI app and, if you are using a separate frontend origin, ensure ALLOWED_ORIGINS includes ${window.location.origin}.`;
+    return `Cannot reach API at ${API_BASE_LABEL}. Start the FastAPI app and, if you are using a separate frontend origin, ensure ALLOWED_ORIGINS includes ${window.location.origin}.`;
   }
   return message || fallback;
+}
+
+function summarizeResponseText(text) {
+  return text.replace(/\s+/g, ' ').trim().slice(0, 240);
+}
+
+async function readApiResponse(resp) {
+  const text = await resp.text();
+  if (!text) return null;
+
+  try {
+    return JSON.parse(text);
+  } catch (_error) {
+    if (!resp.ok) {
+      return {
+        detail: summarizeResponseText(text) || `Request failed with ${resp.status} ${resp.statusText}.`,
+      };
+    }
+    throw new Error('The server returned an unexpected response.');
+  }
+}
+
+function isRecoverableEmailSendError(err) {
+  const message = err?.message?.trim() || '';
+  return err instanceof TypeError || message === 'Failed to fetch';
 }
 
 function getCanonicalLocalCallbackUrl(flow = 'login') {
@@ -314,8 +391,8 @@ function setAuthMethod(el, method) {
   document.getElementById('emailPanel').classList.toggle('active', method === 'email');
   document.getElementById('phonePanel').classList.toggle('active', method === 'phone');
   document.getElementById('authSub').innerHTML = method === 'email'
-    ? 'Start with email for a secure sign-in link, or switch to phone OTP if you prefer.<br>New here? <a href="register.html">Create a free account </a>'
-    : 'Use your phone number to receive a verification code, or switch back to email sign-in.<br>New here? <a href="register.html">Create a free account </a>';
+    ? 'Start with email for a secure sign-in link, or switch to phone OTP if you prefer.<br>New here? <a href="register.html">Create a free account →</a>'
+    : 'Use your phone number to receive a verification code, or switch back to email sign-in.<br>New here? <a href="register.html">Create a free account →</a>';
 }
 
 function validatePhone() {
@@ -325,8 +402,67 @@ function validatePhone() {
 
 function validateEmail() {
   const emailInput = document.getElementById('emailInput');
-  if (emailInput.readOnly) return;
-  document.getElementById('sendEmailBtn').disabled = !isValidEmail(emailInput.value);
+  const passwordInput = document.getElementById('passwordInput');
+  document.getElementById('sendEmailBtn').disabled = !isValidEmail(emailInput.value) || (passwordInput?.value || '').length < 8;
+}
+
+async function signInWithEmailPassword() {
+  const email = document.getElementById('emailInput').value.trim();
+  const password = document.getElementById('passwordInput').value;
+  if (!isValidEmail(email) || password.length < 8) {
+    validateEmail();
+    return;
+  }
+
+  const btn = document.getElementById('sendEmailBtn');
+  btn.disabled = true;
+  btn.textContent = 'Signing in…';
+
+  try {
+    const resp = await fetch(`${API_BASE}/v1/auth/email/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+    });
+    const data = await readApiResponse(resp);
+    if (!resp.ok) throw new Error(data?.detail || 'Could not sign in.');
+    finishAuth(data);
+  } catch (err) {
+    alert(toDisplayError(err, 'Could not sign in.'));
+    btn.textContent = 'Sign In →';
+    validateEmail();
+  }
+}
+
+async function startOAuth(provider) {
+  const btn = document.getElementById(
+    provider === 'google' ? 'oauthGoogleBtn' : 'oauthGithubBtn'
+  );
+  if (btn) btn.disabled = true;
+
+  try {
+    const authClient = requireSupabaseClient();
+    const redirectTo = getMagicLinkCallbackUrl('login');
+    localStorage.setItem('kazix_auth_flow', 'login');
+    markAuthTabWaiting('login');
+
+    const { error } = await authClient.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo,
+        ...(provider === 'google' ? { scopes: 'openid email profile' } : {}),
+      },
+    });
+    if (error) throw error;
+  } catch (err) {
+    clearAuthTabWaiting();
+    if (btn) btn.disabled = false;
+    console.error('OAuth start error:', err);
+    alert(toDisplayError(err, `Could not start ${provider} login. Please try again.`));
+  }
 }
 
 function mapRedirectToPage(redirectTo) {
@@ -364,16 +500,47 @@ function clearAuthTabWaiting() {
 
 function persistSession(payload) {
   if (!payload?.access_token) return;
+  const expiresIn = Number(payload.expires_in);
+  const expiresAt = Number.isFinite(Number(payload.expires_at)) && Number(payload.expires_at) > 0
+    ? Math.floor(Number(payload.expires_at))
+    : (Number.isFinite(expiresIn) && expiresIn > 0
+        ? Math.floor(Date.now() / 1000) + Math.floor(expiresIn)
+        : null);
+
   localStorage.setItem('kazix_access_token', payload.access_token);
   if (payload.refresh_token) localStorage.setItem('kazix_refresh_token', payload.refresh_token);
-  if (payload.expires_in) localStorage.setItem('kazix_expires_in', String(payload.expires_in));
+  if (Number.isFinite(expiresIn) && expiresIn > 0) {
+    localStorage.setItem('kazix_expires_in', String(Math.floor(expiresIn)));
+  } else {
+    localStorage.removeItem('kazix_expires_in');
+  }
+  if (expiresAt !== null) {
+    localStorage.setItem('kazix_expires_at', String(expiresAt));
+  } else {
+    localStorage.removeItem('kazix_expires_at');
+  }
   if (payload.token_type) localStorage.setItem('kazix_token_type', payload.token_type);
+}
+
+function getNextFromUrl() {
+  try {
+    const raw = new URLSearchParams(location.search).get('next');
+    if (!raw) return null;
+    const decoded = decodeURIComponent(raw);
+    // Only allow same-origin relative paths to prevent open-redirect attacks
+    if (decoded.startsWith('/') && !decoded.startsWith('//')) {
+      // Strip the leading "/pages/" so it matches the relative form used elsewhere
+      return decoded.replace(/^\/pages\//, '').replace(/^\//, '');
+    }
+    return null;
+  } catch (_e) { return null; }
 }
 
 function finishAuth(payload) {
   clearAuthTabWaiting();
   persistSession(payload);
-  const next = mapRedirectToPage(payload.redirect_to);
+  const fromUrl = getNextFromUrl();
+  const next = fromUrl || mapRedirectToPage(payload.redirect_to);
   window.location.href = next;
 }
 
@@ -388,17 +555,37 @@ function primeMagicLinkState(email) {
 }
 
 async function requestMagicLink(email) {
-  const resp = await fetch(`${API_BASE}/v1/auth/send-otp`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
+  const callbackUrl = getMagicLinkCallbackUrl('login');
+
+  try {
+    const resp = await fetch(`${API_BASE}/v1/auth/send-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        email_redirect_to: callbackUrl,
+        should_create_user: false,
+      }),
+    });
+    const data = await readApiResponse(resp);
+    if (!resp.ok) throw new Error(data?.detail || 'Failed to send sign-in link');
+    return data;
+  } catch (error) {
+    if (!isRecoverableEmailSendError(error)) {
+      throw error;
+    }
+    const authClient = requireSupabaseClient();
+    console.warn('Magic link API unavailable, falling back to Supabase browser auth.', error);
+    const { error: supabaseError } = await authClient.auth.signInWithOtp({
       email,
-      email_redirect_to: getMagicLinkCallbackUrl('login'),
-    }),
-  });
-  const data = await resp.json();
-  if (!resp.ok) throw new Error(data.detail || 'Failed to send sign-in link');
-  return data;
+      options: {
+        shouldCreateUser: false,
+        emailRedirectTo: callbackUrl,
+      },
+    });
+    if (supabaseError) throw supabaseError;
+    return { success: true };
+  }
 }
 
 function startEmailCountdown() {
@@ -424,11 +611,11 @@ function startMagicLinkPoll() {
   magicLinkPollTimer = setInterval(() => {
     if (localStorage.getItem('kazix_magic_link_complete') === '1') {
       clearInterval(magicLinkPollTimer);
-      const nextPage = localStorage.getItem('kazix_auth_next_page') || 'index.html';
+      const nextPage = getNextFromUrl() || localStorage.getItem('kazix_auth_next_page') || 'index.html';
       localStorage.removeItem('kazix_magic_link_complete');
       localStorage.removeItem('kazix_auth_next_page');
       clearAuthTabWaiting();
-      document.getElementById('emailStatusNote').textContent = 'Email confirmed. Redirecting now';
+      document.getElementById('emailStatusNote').textContent = 'Email confirmed. Redirecting now…';
       document.getElementById('emailStatusNote').style.color = '#1B6B3A';
       setTimeout(() => {
         window.location.href = nextPage;
@@ -440,7 +627,7 @@ function startMagicLinkPoll() {
 function showEmailSentState(email) {
   document.getElementById('sentEmail').textContent = email;
   document.getElementById('emailStatus').classList.add('show');
-  document.getElementById('emailStatusNote').textContent = 'Waiting for confirmation';
+  document.getElementById('emailStatusNote').textContent = 'Waiting for confirmation…';
   document.getElementById('emailStatusNote').style.color = '';
   document.getElementById('emailInput').readOnly = true;
   document.getElementById('sendEmailBtn').textContent = 'Sign-In Link Sent';
@@ -456,10 +643,10 @@ function resetEmailState() {
   localStorage.removeItem('kazix_magic_link_complete');
   localStorage.removeItem('kazix_auth_next_page');
   document.getElementById('emailStatus').classList.remove('show');
-  document.getElementById('emailStatusNote').textContent = 'Waiting for confirmation';
+  document.getElementById('emailStatusNote').textContent = 'Waiting for confirmation…';
   document.getElementById('emailStatusNote').style.color = '';
   document.getElementById('emailInput').readOnly = false;
-  document.getElementById('sendEmailBtn').textContent = 'Send Sign-In Link ';
+  document.getElementById('sendEmailBtn').textContent = 'Send Sign-In Link →';
   validateEmail();
   document.getElementById('emailInput').focus();
 }
@@ -470,7 +657,7 @@ async function sendMagicLink() {
 
   const btn = document.getElementById('sendEmailBtn');
   btn.disabled = true;
-  btn.textContent = 'Sending link';
+  btn.textContent = 'Sending link…';
 
   try {
     primeMagicLinkState(email);
@@ -479,7 +666,7 @@ async function sendMagicLink() {
   } catch (err) {
     clearAuthTabWaiting();
     alert(toDisplayError(err, 'Could not send sign-in link.'));
-    btn.textContent = 'Send Sign-In Link ';
+    btn.textContent = 'Send Sign-In Link →';
     validateEmail();
   }
 }
@@ -513,7 +700,7 @@ async function sendOTP() {
 
   const btn = document.getElementById('sendOtpBtn');
   btn.disabled = true;
-  btn.textContent = 'Sending OTP';
+  btn.textContent = 'Sending OTP…';
 
   try {
     const resp = await fetch(`${API_BASE}/v1/auth/send-otp`, {
@@ -521,13 +708,13 @@ async function sendOTP() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone: `+254${phone}` }),
     });
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.detail || 'Failed to send OTP');
+    const data = await readApiResponse(resp);
+    if (!resp.ok) throw new Error(data?.detail || 'Failed to send OTP');
     showOTPPanel(phone);
   } catch (err) {
     alert(toDisplayError(err, 'Could not send OTP.'));
   } finally {
-    btn.textContent = 'Send OTP ';
+    btn.textContent = 'Send OTP →';
     validatePhone();
   }
 }
@@ -583,7 +770,7 @@ async function verifyOTP() {
   if (code.length !== 6 || phone.length !== 9) return;
 
   const btn = document.getElementById('verifyBtn');
-  btn.textContent = 'Signing in';
+  btn.textContent = 'Signing in…';
   btn.disabled = true;
 
   try {
@@ -592,8 +779,8 @@ async function verifyOTP() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone: `+254${phone}`, token: code }),
     });
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.detail || 'Invalid OTP');
+    const data = await readApiResponse(resp);
+    if (!resp.ok) throw new Error(data?.detail || 'Invalid OTP');
     finishAuth(data);
   } catch (err) {
     alert(toDisplayError(err, 'OTP verification failed.'));
@@ -602,71 +789,35 @@ async function verifyOTP() {
   }
 }
 
-async function startOAuth(provider) {
-  const btn = document.getElementById(
-    provider === 'google' ? 'oauthGoogleBtn' : 'oauthGithubBtn'
-  );
-  if (btn) btn.disabled = true;
-
-  try {
-    const redirectTo = `${window.location.origin}${window.location.pathname}`;
-    const { error } = await supabaseClient.auth.signInWithOAuth({
-      provider,
-      options: { redirectTo },
-    });
-    if (error) throw error;
-  } catch (err) {
-    if (btn) btn.disabled = false;
-    alert(toDisplayError(err, 'Could not start OAuth login.'));
-  }
-}
-
-async function handleOAuthCallback() {
-  const params = new URLSearchParams(window.location.search);
-  const hasOAuthParams = params.has('code') || params.has('error') || params.has('error_description');
-  if (params.has('error_description')) {
-    alert(params.get('error_description'));
-    return;
-  }
-
-  const { data, error } = await supabaseClient.auth.getSession();
-  if (error) {
-    if (hasOAuthParams) alert(toDisplayError(error, 'OAuth callback failed.'));
-    return;
-  }
-  if (!data?.session) return;
-
-  try {
-    const resp = await fetch(`${API_BASE}/v1/auth/bootstrap`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${data.session.access_token}`,
-      },
-    });
-    const bootstrap = await resp.json();
-    if (!resp.ok) throw new Error(bootstrap.detail || 'OAuth bootstrap failed');
-
-    const payload = {
-      access_token: data.session.access_token,
-      refresh_token: data.session.refresh_token,
-      token_type: 'bearer',
-      expires_in: Math.max(0, Math.floor((new Date(data.session.expires_at * 1000) - new Date()) / 1000)),
-      is_new_user: bootstrap.is_new_user,
-      redirect_to: bootstrap.redirect_to,
-    };
-
-    const cleanUrl = `${window.location.origin}${window.location.pathname}`;
-    window.history.replaceState({}, '', cleanUrl);
-    finishAuth(payload);
-  } catch (err) {
-    alert(toDisplayError(err, 'OAuth callback failed.'));
-  }
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-  await handleOAuthCallback();
+document.addEventListener('DOMContentLoaded', () => {
   validateEmail();
   validatePhone();
+  if (SUPABASE_CONFIG_ERROR) {
+    console.error(SUPABASE_CONFIG_ERROR);
+    document.getElementById('oauthGoogleBtn').disabled = true;
+    document.getElementById('oauthGithubBtn').disabled = true;
+  }
+});
+
+// Listen for storage changes from other tabs (e.g., when auth-callback.html sets kazix_magic_link_complete)
+window.addEventListener('storage', (e) => {
+  if (e.key === 'kazix_magic_link_complete' && e.newValue === '1') {
+    // Immediately redirect without waiting for the next poll interval
+    const nextPage = getNextFromUrl() || localStorage.getItem('kazix_auth_next_page') || 'index.html';
+    clearAuthTabWaiting();
+    persistSession({
+      access_token: localStorage.getItem('kazix_access_token'),
+      refresh_token: localStorage.getItem('kazix_refresh_token'),
+      token_type: localStorage.getItem('kazix_token_type') || 'bearer',
+      expires_in: Number(localStorage.getItem('kazix_expires_in')) || 3600,
+      expires_at: Number(localStorage.getItem('kazix_expires_at')) || null,
+      is_new_user: false,
+      redirect_to: localStorage.getItem('kazix_auth_next_page')?.includes('register') ? 'complete-registration' : 'dashboard',
+    });
+    const cleanUrl = `${window.location.origin}${window.location.pathname}`;
+    window.history.replaceState({}, '', cleanUrl);
+    window.location.href = nextPage;
+  }
 });
 
 window.addEventListener('beforeunload', clearAuthTabWaiting);
